@@ -120,7 +120,7 @@ export default function VideoExperience() {
 
   return (
     <div className="dp-exp">
-      <div className="dp-exp__viewport">
+      <div className="dp-exp__viewport" style={{ backgroundImage: `url(${posterSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <video
           ref={videoRef}
           className="dp-exp__canvas dp-vid__video"
