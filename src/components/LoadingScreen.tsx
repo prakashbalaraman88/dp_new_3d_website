@@ -68,7 +68,7 @@ export default function LoadingScreen() {
         {/* Logo */}
         <div className="flex justify-center mb-12">
           <motion.img 
-            src="https://res.cloudinary.com/dnu3ijmha/image/upload/v1731918485/1-01_gqois3.png"
+            src="/assets/images/logo.png"
             alt="DezignPool Logo"
             className="h-32 w-auto"
             initial={{ scale: 0.8, opacity: 0 }}

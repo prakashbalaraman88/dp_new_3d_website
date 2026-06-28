@@ -11,7 +11,7 @@ interface SEOProps {
 export default function SEO({
   title = "DezignPool - Premium Architecture & Interior Design",
   description = "Transform your space with DezignPool's luxury architecture and interior design services. Specializing in residential, commercial, and hospitality projects in Bangalore.",
-  image = "https://res.cloudinary.com/dnu3ijmha/image/upload/v1731918485/1-01_gqois3.png",
+  image = "https://dezignpool.com/assets/images/logo.png",
   url = "https://dezignpool.com",
   type = "website"
 }: SEOProps) {
