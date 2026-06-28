@@ -1,0 +1,233 @@
+.dp-exp {
+  position: relative;
+  width: 100%;
+  background: #23282a;
+  color: #f5f3ee;
+}
+
+.dp-exp__spacer {
+  height: 380vh;
+}
+
+.dp-exp__viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.dp-exp__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.dp-exp__vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  z-index: 2;
+}
+
+/* Top bar */
+.dp-exp__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px clamp(18px, 4vw, 48px);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.dp-exp__back {
+  pointer-events: auto;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #e4e7e0;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+.dp-exp__back:hover {
+  color: #d4af37;
+}
+
+.dp-exp__tag {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(236, 205, 120, 0.92);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Scroll progress bar */
+.dp-exp__progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  z-index: 5;
+}
+.dp-exp__progress span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #92a188, #d4af37);
+}
+
+/* Text acts (cross-faded by scroll) */
+.dp-exp__act {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  width: min(92vw, 1000px);
+  text-align: center;
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.dp-exp__eyebrow {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: clamp(11px, 1.4vw, 13px);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(236, 205, 120, 0.95);
+  margin: 0 0 22px;
+  overflow: hidden;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
+}
+
+.dp-exp__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  font-size: clamp(40px, 7.4vw, 98px);
+  line-height: 1.04;
+  letter-spacing: -0.005em;
+  color: #f9f7f2;
+  margin: 0;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.dp-exp__title em {
+  font-style: italic;
+  font-weight: 500;
+  background: linear-gradient(120deg, #f2d784, #e8c453 42%, #cda02c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.55));
+}
+
+.dp-exp__line {
+  display: inline-block;
+}
+
+.dp-exp__sub {
+  margin: 28px 0 0;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: clamp(13px, 1.6vw, 16px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(248, 246, 241, 0.92);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.75);
+}
+
+.dp-exp__cta {
+  pointer-events: auto;
+  display: inline-block;
+  margin-top: 38px;
+  padding: 15px 40px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #e3c36a, #d4af37);
+  color: #2a2410;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  box-shadow: 0 10px 40px rgba(212, 175, 55, 0.25);
+}
+.dp-exp__cta:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 50px rgba(212, 175, 55, 0.4);
+}
+
+/* Scroll cue */
+.dp-exp__cue {
+  position: absolute;
+  left: 50%;
+  bottom: 38px;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 42px;
+  border: 1px solid rgba(245, 243, 238, 0.4);
+  border-radius: 14px;
+  z-index: 4;
+  pointer-events: none;
+}
+.dp-exp__cue span {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  width: 3px;
+  height: 8px;
+  border-radius: 2px;
+  background: #d4af37;
+  transform: translateX(-50%);
+  animation: dpCue 1.6s ease-in-out infinite;
+}
+
+@keyframes dpCue {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dp-exp__cue span {
+    animation: none;
+  }
+}
+
+/* Video experience */
+.dp-vid__video {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+.dp-vid__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  /* Soft dark halo directly behind the text for legibility, fading out so the
+     kitchen stays bright at the edges; plus subtle top/bottom bands for the UI. */
+  background:
+    radial-gradient(68% 48% at 50% 46%, rgba(8, 10, 11, 0.66) 0%, rgba(8, 10, 11, 0.4) 38%, rgba(8, 10, 11, 0.12) 68%, rgba(8, 10, 11, 0) 100%),
+    linear-gradient(180deg, rgba(12, 15, 16, 0.6) 0%, rgba(12, 15, 16, 0) 20%, rgba(12, 15, 16, 0) 68%, rgba(12, 15, 16, 0.74) 100%);
+}
