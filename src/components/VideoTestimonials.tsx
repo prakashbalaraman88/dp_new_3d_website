@@ -13,15 +13,15 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    video: "https://res.cloudinary.com/dnu3ijmha/video/upload/v1732181254/Customer_stories_1_raaxuv.mp4",
-    poster: "https://res.cloudinary.com/dnu3ijmha/image/upload/t_My Logo/v1732189774/ultra-realistic-3d-render-of-a-modern-living-space_otdkzx.png",
+    video: "/assets/videos/testimonials/customer-story-1.mp4",
+    poster: "/assets/images/testimonials/testimonial-1-poster.png",
     name: "Ajay",
     role: "Brigade Exotica",
     quote: "The team transformed our vision into reality beyond expectations"
   },
   {
-    video: "https://res.cloudinary.com/dnu3ijmha/video/upload/v1732179446/Testimonial__Mr_zpjnlq.mp4",
-    poster: "https://res.cloudinary.com/dnu3ijmha/image/upload/t_My Logo/v1732186034/2_yetnny.jpg",
+    video: "/assets/videos/testimonials/customer-story-2.mp4",
+    poster: "/assets/images/testimonials/testimonial-2-poster.jpg",
     name: "Praveen",
     role: "Vaishnavi North",
     quote: "It's not only spacious but fantastic in terms of how it is organized"
@@ -60,7 +60,7 @@ export default function VideoTestimonials() {
           "@type": "LocalBusiness",
           "name": "DezignPool",
           "@id": "https://dezignpool.com",
-          "image": "https://res.cloudinary.com/dnu3ijmha/image/upload/v1731918485/1-01_gqois3.png",
+          "image": "https://dezignpool.com/assets/images/logo.png",
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "Goodu. No 1, Greenvalley Cleartitle",

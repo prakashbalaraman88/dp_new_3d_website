@@ -25,6 +25,11 @@ import FAQ from './components/FAQ';
 const HeroExperience = lazy(() => import('./experience/HeroExperience'));
 const VideoExperience = lazy(() => import('./experience/VideoExperience'));
 const JourneyExperience = lazy(() => import('./discover/JourneyExperience'));
+// Calculator suite is heavy (firebase / jspdf / xlsx / openai) — lazy-load per route.
+const Calculator = lazy(() => import('./pages/Calculator'));
+const InteriorCalculator = lazy(() => import('./pages/InteriorCalculator'));
+const ProjectDetail = lazy(() => import('./components/Projects/ProjectDetail'));
+const ChatWidget = lazy(() => import('./components/ChatWidget'));
 
 function HomePage() {
   const heroVideoUrl = '/assets/videos/hero-video.mp4';
@@ -71,6 +76,7 @@ function SiteLayout() {
         <Breadcrumbs />
         <Outlet />
         <Footer />
+        <ChatWidget />
       </div>
     </>
   );
@@ -92,6 +98,9 @@ export default function App() {
               <Route path="/classic" element={<HomePage />} />
               <Route path="/about" element={<About />} />
               <Route path="/services" element={<ServicesPage />} />
+              <Route path="/calculator" element={<Calculator />} />
+              <Route path="/interior-calculator" element={<InteriorCalculator />} />
+              <Route path="/project/:id" element={<ProjectDetail />} />
             </Route>
           </Routes>
         </Suspense>
