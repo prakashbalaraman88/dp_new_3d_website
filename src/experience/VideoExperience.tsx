@@ -33,6 +33,18 @@ export default function VideoExperience() {
     let duration = 0;
     let lastP = 0;
 
+    const onLoaded = () => {
+      if (video) {
+        video.style.transition = 'opacity 0.6s ease';
+        video.style.opacity = '1';
+      }
+    };
+    if (video) {
+      video.style.opacity = '0';
+      if (video.readyState >= 3) onLoaded();
+      else video.addEventListener('loadeddata', onLoaded, { once: true });
+    }
+
     const setEl = (el: HTMLElement | null, opacity: number, ty: number) => {
       if (!el) return;
       el.style.opacity = String(opacity);
@@ -79,7 +91,10 @@ export default function VideoExperience() {
       onScroll();
       return () => {
         window.removeEventListener('scroll', onScroll);
-        if (video) video.removeEventListener('loadedmetadata', onMeta);
+        if (video) {
+          video.removeEventListener('loadedmetadata', onMeta);
+          video.removeEventListener('loadeddata', onLoaded);
+        }
         docEl.style.scrollBehavior = prevScrollBehavior;
       };
     }
@@ -113,22 +128,32 @@ export default function VideoExperience() {
       cancelAnimationFrame(raf);
       lenis.destroy();
       ctx.revert();
-      if (video) video.removeEventListener('loadedmetadata', onMeta);
+      if (video) {
+        video.removeEventListener('loadedmetadata', onMeta);
+        video.removeEventListener('loadeddata', onLoaded);
+      }
       docEl.style.scrollBehavior = prevScrollBehavior;
     };
   }, [reducedMotion]);
 
   return (
     <div className="dp-exp">
-      <div className="dp-exp__viewport" style={{ backgroundImage: `url(${posterSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="dp-exp__viewport">
+        <img
+          src={posterSrc}
+          alt=""
+          aria-hidden="true"
+          className="dp-exp__canvas dp-vid__video"
+          style={{ objectFit: 'cover' }}
+        />
         <video
           ref={videoRef}
           className="dp-exp__canvas dp-vid__video"
           src={videoSrc}
-          poster={posterSrc}
           muted
           playsInline
           preload="auto"
+          style={{ opacity: 0 }}
         />
 
         <div className="dp-vid__scrim" />

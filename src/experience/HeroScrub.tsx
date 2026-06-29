@@ -33,7 +33,7 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
     const video = videoRef.current;
     let duration = 0;
     let lastP = 0;
-    window.scrollTo(0, 0); // always start the hero at the top (incl. re-entry from the quiz)
+    window.scrollTo(0, 0);
 
     const setEl = (el: HTMLElement | null, opacity: number, ty: number) => {
       if (!el) return;
@@ -62,6 +62,22 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
 
     update(0);
 
+    // Fade in the video once the browser has decoded the first frame.
+    const onLoaded = () => {
+      if (video) {
+        video.style.transition = 'opacity 0.6s ease';
+        video.style.opacity = '1';
+      }
+    };
+    if (video) {
+      video.style.opacity = '0';
+      if (video.readyState >= 3) {
+        onLoaded();
+      } else {
+        video.addEventListener('loadeddata', onLoaded, { once: true });
+      }
+    }
+
     const onMeta = () => {
       duration = video?.duration || 0;
       scrub(reducedMotion ? 1 : lastP);
@@ -87,7 +103,10 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
       onScroll();
       return () => {
         window.removeEventListener('scroll', onScroll);
-        if (video) video.removeEventListener('loadedmetadata', onMeta);
+        if (video) {
+          video.removeEventListener('loadedmetadata', onMeta);
+          video.removeEventListener('loadeddata', onLoaded);
+        }
         docEl.style.scrollBehavior = prevScrollBehavior;
       };
     }
@@ -102,8 +121,6 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
     let raf = 0;
     const loop = (time: number) => {
       lenis.raf(time);
-      // Drive the video from the latest scroll target, but only when the decoder
-      // is free — never queue seeks faster than it can render (kills the jitter).
       if (video && duration > 0 && !video.seeking) {
         const target = Math.min(duration - 0.05, Math.max(0, lastP * duration));
         if (Math.abs(video.currentTime - target) > 0.02) video.currentTime = target;
@@ -127,29 +144,45 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
       cancelAnimationFrame(raf);
       lenis.destroy();
       ctx.revert();
-      if (video) video.removeEventListener('loadedmetadata', onMeta);
+      if (video) {
+        video.removeEventListener('loadedmetadata', onMeta);
+        video.removeEventListener('loadeddata', onLoaded);
+      }
       docEl.style.scrollBehavior = prevScrollBehavior;
     };
   }, [reducedMotion, onComplete]);
 
   return (
     <div className="dp-exp">
-      <div className="dp-exp__viewport" style={{ backgroundImage: `url(${posterSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="dp-exp__viewport">
+        {/* Poster image: always visible, video fades over it once decoded */}
+        <img
+          src={posterSrc}
+          alt=""
+          aria-hidden="true"
+          className="dp-exp__canvas dp-vid__video"
+          style={{ objectFit: 'cover' }}
+        />
         <video
           ref={videoRef}
           className="dp-exp__canvas dp-vid__video"
           src={videoSrc}
-          poster={posterSrc}
           muted
           playsInline
           preload="auto"
+          style={{ opacity: 0 }}
         />
 
         <div className="dp-vid__scrim" />
         <div className="dp-exp__vignette" />
 
         <header className="dp-exp__bar" style={{ justifyContent: 'center' }}>
-          <img src="/assets/images/logo.png" alt="DezignPool" className="h-20 sm:h-24 w-auto object-contain" style={{ filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.55))' }} />
+          <img
+            src="/assets/images/logo.png"
+            alt="DezignPool"
+            className="h-20 sm:h-24 w-auto object-contain"
+            style={{ filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.55))' }}
+          />
         </header>
 
         <div className="dp-exp__progress">
