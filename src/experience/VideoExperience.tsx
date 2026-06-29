@@ -11,7 +11,6 @@ const smoothstep = (e0: number, e1: number, x: number) => {
 };
 
 export default function VideoExperience() {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const act1Ref = useRef<HTMLDivElement>(null);
   const act2Ref = useRef<HTMLDivElement>(null);
   const act3Ref = useRef<HTMLDivElement>(null);
@@ -22,28 +21,13 @@ export default function VideoExperience() {
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Pick the clip that matches the device at mount (portrait clip for phones).
   const isMobile =
     typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
   const videoSrc = isMobile ? '/videos/kitchen-mobile.mp4' : '/videos/kitchen-desktop.mp4';
   const posterSrc = isMobile ? '/videos/kitchen-mobile-poster.jpg' : '/videos/kitchen-desktop-poster.jpg';
 
   useEffect(() => {
-    const video = videoRef.current;
-    let duration = 0;
     let lastP = 0;
-
-    const onLoaded = () => {
-      if (video) {
-        video.style.transition = 'opacity 0.6s ease';
-        video.style.opacity = '1';
-      }
-    };
-    if (video) {
-      video.style.opacity = '0';
-      if (video.readyState >= 3) onLoaded();
-      else video.addEventListener('loadeddata', onLoaded, { once: true });
-    }
 
     const setEl = (el: HTMLElement | null, opacity: number, ty: number) => {
       if (!el) return;
@@ -60,27 +44,13 @@ export default function VideoExperience() {
       if (cueRef.current) cueRef.current.style.opacity = String(1 - smoothstep(0.02, 0.08, p));
       if (barRef.current) barRef.current.style.width = (p * 100).toFixed(2) + '%';
     };
-    const scrub = (p: number) => {
-      if (video && duration > 0) video.currentTime = Math.min(duration - 0.01, Math.max(0, p * duration));
-    };
 
     update(0);
-
-    const onMeta = () => {
-      duration = video?.duration || 0;
-      scrub(reducedMotion ? 1 : lastP);
-    };
-    if (video) {
-      video.muted = true;
-      if (video.readyState >= 1) onMeta();
-      else video.addEventListener('loadedmetadata', onMeta);
-    }
 
     const docEl = document.documentElement;
     const prevScrollBehavior = docEl.style.scrollBehavior;
     docEl.style.scrollBehavior = 'auto';
 
-    // Reduced motion: hold the finished frame, drive text from native scroll.
     if (reducedMotion) {
       const onScroll = () => {
         const max = docEl.scrollHeight - window.innerHeight;
@@ -91,10 +61,6 @@ export default function VideoExperience() {
       onScroll();
       return () => {
         window.removeEventListener('scroll', onScroll);
-        if (video) {
-          video.removeEventListener('loadedmetadata', onMeta);
-          video.removeEventListener('loadeddata', onLoaded);
-        }
         docEl.style.scrollBehavior = prevScrollBehavior;
       };
     }
@@ -103,7 +69,6 @@ export default function VideoExperience() {
     lenis.on('scroll', () => {
       lastP = lenis.limit > 0 ? lenis.scroll / lenis.limit : 0;
       update(lastP);
-      scrub(lastP);
     });
 
     let raf = 0;
@@ -128,10 +93,6 @@ export default function VideoExperience() {
       cancelAnimationFrame(raf);
       lenis.destroy();
       ctx.revert();
-      if (video) {
-        video.removeEventListener('loadedmetadata', onMeta);
-        video.removeEventListener('loadeddata', onLoaded);
-      }
       docEl.style.scrollBehavior = prevScrollBehavior;
     };
   }, [reducedMotion]);
@@ -144,16 +105,18 @@ export default function VideoExperience() {
           alt=""
           aria-hidden="true"
           className="dp-exp__canvas dp-vid__video"
-          style={{ objectFit: 'cover' }}
         />
         <video
-          ref={videoRef}
-          className="dp-exp__canvas dp-vid__video"
+          className="dp-exp__canvas dp-vid__video dp-vid__autoplay"
           src={videoSrc}
+          autoPlay
           muted
+          loop
           playsInline
           preload="auto"
-          style={{ opacity: 0 }}
+          onCanPlay={(e) => {
+            (e.currentTarget as HTMLVideoElement).style.opacity = '1';
+          }}
         />
 
         <div className="dp-vid__scrim" />
@@ -180,7 +143,7 @@ export default function VideoExperience() {
             </span>
           </h1>
           <p className="dp-exp__sub">
-            <span className="dp-exp__line">Scroll to watch it come together.</span>
+            <span className="dp-exp__line">Scroll to continue.</span>
           </p>
         </div>
 
