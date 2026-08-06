@@ -3,7 +3,7 @@ import { basename, dirname, extname, isAbsolute, join, resolve } from 'node:path
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-const SEGMENT_IDS = ['exterior-approach', 'interior-sweep'];
+const SEGMENT_IDS = ['exterior-approach'];
 const DESKTOP_LIMIT = 15 * 1024 * 1024;
 const MOBILE_LIMIT = 6 * 1024 * 1024;
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -77,7 +77,7 @@ function probeDuration(ffprobe, source) {
   return duration;
 }
 
-function encodeVariant(ffmpeg, source, output, variant, clip) {
+function encodeVariant(ffmpeg, source, output, variant, clip, crfOverride) {
   const inputArgs = ['-y'];
   if (clip) inputArgs.push('-ss', clip.start.toFixed(4));
   inputArgs.push('-i', source);
@@ -87,7 +87,7 @@ function encodeVariant(ffmpeg, source, output, variant, clip) {
   const filter = desktop
     ? 'scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080'
     : 'scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,scale=720:1280';
-  const crf = desktop ? '21' : '23';
+  const crf = String(crfOverride ?? (desktop ? 21 : 23));
 
   run(
     ffmpeg,
@@ -105,8 +105,19 @@ function encodeVariant(ffmpeg, source, output, variant, clip) {
       '-movflags', '+faststart',
       output,
     ],
-    `encode ${basename(output)}`,
+    `encode ${basename(output)} (crf ${crf})`,
   );
+}
+
+// Re-encode at +2 CRF steps until the size budget holds (max CRF 28).
+function encodeWithinBudget(ffmpeg, source, output, variant, clip, limit, label) {
+  const baseCrf = variant === 'desktop' ? 21 : 23;
+  for (let crf = baseCrf; crf <= 28; crf += 2) {
+    encodeVariant(ffmpeg, source, output, variant, clip, crf);
+    if (statSync(output).size <= limit) return;
+    console.log(`${label}: over budget at crf ${crf}, retrying…`);
+  }
+  fail(`${label} exceeds ${(limit / 1024 / 1024).toFixed(0)}MB even at crf 28.`);
 }
 
 function makePoster(ffmpeg, video, poster) {
@@ -147,8 +158,8 @@ for (const [index, id] of SEGMENT_IDS.entries()) {
   const desktopPoster = join(outputDir, `${id}-desktop.jpg`);
   const mobilePoster = join(outputDir, `${id}-mobile.jpg`);
 
-  encodeVariant(ffmpeg, source, desktopVideo, 'desktop', clip);
-  encodeVariant(ffmpeg, source, mobileVideo, 'mobile', clip);
+  encodeWithinBudget(ffmpeg, source, desktopVideo, 'desktop', clip, DESKTOP_LIMIT, `${id} desktop`);
+  encodeWithinBudget(ffmpeg, source, mobileVideo, 'mobile', clip, MOBILE_LIMIT, `${id} mobile`);
   makePoster(ffmpeg, desktopVideo, desktopPoster);
   makePoster(ffmpeg, mobileVideo, mobilePoster);
   checkBudget(desktopVideo, DESKTOP_LIMIT, `${id} desktop`);

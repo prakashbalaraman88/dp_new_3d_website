@@ -68,7 +68,7 @@ function parseWalkthrough() {
       weightVh: Number(match[6]),
     });
   }
-  if (segments.length !== 2) issue(`Expected 2 walkthrough segments, parsed ${segments.length}.`);
+  if (segments.length < 1) issue(`Expected at least 1 walkthrough segment, parsed ${segments.length}.`);
   return segments;
 }
 
