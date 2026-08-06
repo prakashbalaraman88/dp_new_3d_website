@@ -39,7 +39,9 @@ export default function JourneyExperience() {
   }, [bridge, phase]);
 
   const toQuiz = useCallback(() => {
+    bridgeRef.current?.lenis.scrollTo(0, { immediate: true });
     bridgeRef.current?.stop();
+    window.scrollTo(0, 0);
     setPhase('quiz');
   }, []);
   const toHero = useCallback(() => {
