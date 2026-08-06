@@ -1,7 +1,8 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type Lenis from 'lenis';
-import HeroScrub from '../experience/HeroScrub';
+import WalkthroughScrub from '../experience/WalkthroughScrub';
+import { createScrollBridge, type ScrollBridge } from '../experience/scrollBridge';
 import DiscoverExperience from './DiscoverExperience';
 import Showcase from './Showcase';
 import JourneyNav from './JourneyNav';
@@ -17,22 +18,49 @@ export default function JourneyExperience() {
   const [targetSection, setTargetSection] = useState<string | null>(null);
   const [quizProgress, setQuizProgress] = useState(0);
   const showcaseLenis = useRef<Lenis | null>(null);
+  const bridgeRef = useRef<ScrollBridge | null>(null);
+  const [bridge, setBridge] = useState<ScrollBridge | null>(null);
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
 
-  const toQuiz = useCallback(() => setPhase('quiz'), []);
+  useEffect(() => {
+    const journeyBridge = createScrollBridge();
+    bridgeRef.current = journeyBridge;
+    setBridge(journeyBridge);
+    return () => {
+      journeyBridge?.destroy();
+      bridgeRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (phase === 'quiz') bridge?.stop();
+    else bridge?.start();
+  }, [bridge, phase]);
+
+  const toQuiz = useCallback(() => {
+    bridgeRef.current?.stop();
+    setPhase('quiz');
+  }, []);
   const toHero = useCallback(() => {
     setTargetSection(null);
+    bridgeRef.current?.start();
+    bridgeRef.current?.lenis.scrollTo(0, { immediate: true });
+    window.scrollTo(0, 0);
     setPhase('hero');
   }, []);
   const toShowcase = useCallback((a: Answers) => {
     setAnswers(a);
     setTargetSection(null);
+    bridgeRef.current?.start();
+    bridgeRef.current?.lenis.scrollTo(0, { immediate: true });
+    window.scrollTo(0, 0);
     setPhase('showcase');
   }, []);
   const goToSection = useCallback((id: string) => {
     if (phaseRef.current === 'showcase') {
-      showcaseLenis.current?.scrollTo('#' + id, { offset: -64 });
+      if (showcaseLenis.current) showcaseLenis.current.scrollTo('#' + id, { offset: -64 });
+      else document.getElementById(id)?.scrollIntoView();
     } else {
       setTargetSection(id);
       setPhase('showcase');
@@ -45,7 +73,7 @@ export default function JourneyExperience() {
       <AnimatePresence mode="wait">
       {phase === 'hero' && (
         <motion.div key="hero" exit={{ opacity: 0 }} transition={{ duration: 0.6, ease: 'easeInOut' }}>
-          <HeroScrub onComplete={toQuiz} />
+          <WalkthroughScrub bridge={bridge} onComplete={toQuiz} />
         </motion.div>
       )}
       {phase === 'quiz' && (
@@ -55,7 +83,7 @@ export default function JourneyExperience() {
       )}
       {phase === 'showcase' && (
         <motion.div key="showcase" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: 'easeInOut' }}>
-          <Showcase answers={answers} initialSection={targetSection} lenisRef={showcaseLenis} />
+          <Showcase answers={answers} initialSection={targetSection} lenisRef={showcaseLenis} scrollBridge={bridge} />
         </motion.div>
       )}
       </AnimatePresence>

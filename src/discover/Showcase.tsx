@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState, type MutableRefObject } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import Lenis from 'lenis';
+import type Lenis from 'lenis';
 import AmbientBackground from '../components/AmbientBackground';
 import KineticText from '../components/KineticText';
+import type { ScrollBridge } from '../experience/scrollBridge';
 import HowItWorks from './HowItWorks';
 import { buildReport, type Answers } from './report';
 import {
@@ -59,39 +60,40 @@ export default function Showcase({
   answers,
   initialSection,
   lenisRef,
+  scrollBridge,
 }: {
   answers: Answers;
   initialSection?: string | null;
   lenisRef?: MutableRefObject<Lenis | null>;
+  scrollBridge?: ScrollBridge | null;
 }) {
   const { matched, rest } = useMemo(() => rankProjects(answers), [answers]);
   const report = useMemo(() => buildReport(answers), [answers]);
   const wa = useMemo(() => whatsappLink(answers), [answers]);
   const [active, setActive] = useState<ShowcaseProject | null>(null);
 
-  // Smooth, inertial scrolling on desktop (Lenis uses native touch on mobile).
-  // Opens at the top, or jumps to a section if the nav requested one.
+  // Reuse the journey-owned Lenis; reduced-motion visitors keep native scroll.
   useEffect(() => {
-    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+    const lenis = scrollBridge?.lenis ?? null;
     if (lenisRef) lenisRef.current = lenis;
-    let raf = 0;
-    const loop = (t: number) => {
-      lenis.raf(t);
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    if (initialSection) {
-      requestAnimationFrame(() => lenis.scrollTo('#' + initialSection, { immediate: true, offset: -64 }));
-    } else {
-      lenis.scrollTo(0, { immediate: true });
-    }
+    scrollBridge?.start();
+    const frame = requestAnimationFrame(() => {
+      if (lenis) {
+        lenis.scrollTo(initialSection ? '#' + initialSection : 0, {
+          immediate: true,
+          ...(initialSection ? { offset: -64 } : {}),
+        });
+      } else if (initialSection) {
+        document.getElementById(initialSection)?.scrollIntoView();
+      } else {
+        window.scrollTo(0, 0);
+      }
+    });
     return () => {
-      cancelAnimationFrame(raf);
-      lenis.destroy();
+      cancelAnimationFrame(frame);
       if (lenisRef) lenisRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initialSection, lenisRef, scrollBridge]);
 
   // Lightbox: close on Escape, lock background scroll while open.
   useEffect(() => {
