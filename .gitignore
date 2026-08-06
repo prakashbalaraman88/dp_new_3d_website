@@ -40,3 +40,4 @@ next-env.d.ts
 # DO NOT ignore media files
 !/public/assets/images/
 !/public/assets/videos/
+.tagteam/
