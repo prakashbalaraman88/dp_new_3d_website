@@ -62,33 +62,64 @@ export default function ContactSection({
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <p className="text-center text-secondary tracking-[0.25em] uppercase text-[11px] sm:text-xs mb-2">Here’s what we learned about you</p>
-      <h2 className="text-center font-serif font-light text-2xl sm:text-4xl md:text-5xl text-white mb-2">
+    <div className="mx-auto w-full max-w-4xl">
+      <p className="mb-2 text-center text-[11px] uppercase tracking-[0.25em] text-secondary sm:text-xs">Your style profile</p>
+      <h2 className="mb-2 text-center font-serif text-3xl font-light text-white sm:text-5xl md:text-6xl">
         <KineticText text={report.label} trigger="inView" stagger={0.05} />
       </h2>
-      {report.tagline && <p className="text-center text-white/70 text-sm sm:text-base mb-6 sm:mb-7 px-2">{report.tagline}</p>}
+      {report.tagline && <p className="mx-auto mb-5 max-w-2xl px-2 text-center text-sm leading-relaxed text-white/70 sm:text-base">{report.tagline}</p>}
 
-      {report.picks.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
-          {report.picks.map((p) => (
-            <div key={p.room} className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-center sm:text-left">
-              <p className="text-accent text-[10px] sm:text-[11px] tracking-[0.2em] uppercase mb-1">{p.room}</p>
-              <p className="font-serif text-white text-lg">{p.philosophy}</p>
-              <p className="text-white/55 text-xs mt-1">{p.title}</p>
+      <div className="mb-4 flex items-center justify-center gap-2" aria-label={`${report.primaryStyle.label} palette`}>
+        {report.primaryStyle.palette.map((color) => (
+          <span
+            key={color}
+            title={color}
+            className="h-7 w-12 rounded-full border border-white/15 shadow-sm sm:h-8 sm:w-16"
+            style={{ backgroundColor: color }}
+          />
+        ))}
+      </div>
+
+      {report.primaryStyle.montage.length > 0 && (
+        <div className="mb-5 grid grid-cols-3 gap-1.5 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-1.5 sm:gap-2 sm:p-2">
+          {report.primaryStyle.montage.slice(0, 6).map((image, imageIndex) => (
+            <div key={`${image}-${imageIndex}`} className="aspect-[4/3] overflow-hidden rounded-lg bg-white/5 sm:aspect-[3/2]">
+              <img
+                src={image}
+                alt={`${report.primaryStyle.label} interior ${imageIndex + 1}`}
+                loading={imageIndex < 3 ? 'eager' : 'lazy'}
+                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+              />
             </div>
           ))}
         </div>
       )}
 
-      {report.materials.length > 0 && (
-        <p className="text-center text-white/55 text-xs sm:text-sm mb-6 max-w-md mx-auto">
-          Based on your picks, your designer will lean into {report.materials.slice(0, 4).join(' · ')}.
-        </p>
-      )}
+      <div className="mb-5 grid gap-3 sm:grid-cols-[0.8fr_1.2fr]">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <p className="mb-1 text-[10px] uppercase tracking-[0.2em] text-accent">Secondary signal</p>
+          <p className="font-serif text-xl text-white">{report.secondaryStyle.label}</p>
+          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/50">{report.secondaryStyle.essence}</p>
+          <div className="mt-3 flex gap-1.5" aria-label={`${report.secondaryStyle.label} palette`}>
+            {report.secondaryStyle.palette.slice(0, 5).map((color) => (
+              <span key={color} title={color} className="h-4 flex-1 rounded-full border border-white/10" style={{ backgroundColor: color }} />
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-secondary/15 bg-secondary/[0.035] p-4">
+          <p className="mb-1 text-[10px] uppercase tracking-[0.2em] text-secondary">Your material language</p>
+          <p className="text-xs leading-relaxed text-white/60 sm:text-sm">
+            {report.materials.length > 0
+              ? `Your picks repeatedly returned to ${report.materials.slice(0, 4).join(', ')}.`
+              : 'Your designer will refine the material story with you.'}
+            {report.motifs.length > 0 ? ` Look for ${report.motifs.slice(0, 3).join(', ')} in the concept.` : ''}
+          </p>
+        </div>
+      </div>
 
       {report.details.length > 0 && (
-        <div className="flex flex-wrap justify-center gap-2 mb-7 sm:mb-8">
+        <div className="mb-6 flex flex-wrap justify-center gap-2">
           {report.details.map((d) => (
             <span key={d.label} className="rounded-full border border-white/15 bg-white/[0.03] px-3 py-1.5 text-xs text-white/75">
               <span className="text-white/40">{d.label}:</span> {d.value}

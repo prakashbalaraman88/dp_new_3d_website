@@ -1,7 +1,10 @@
-import { STEPS } from './data';
+import { ROUNDS, STYLE_ORDER, STYLE_PROFILES, type ImageOption } from './data';
 import { sendEmail } from '../utils/emailjs';
 
-export type Answers = Record<string, string>; // stepId -> optionId
+export type BoardDecision = 'keep' | 'toss';
+export type BoardDecisions = Record<string, BoardDecision>;
+export type Answer = string | BoardDecisions;
+export type Answers = Record<string, Answer | undefined>;
 
 export interface Contact {
   name: string;
@@ -10,89 +13,168 @@ export interface Contact {
   notes?: string;
 }
 
-export interface RoomPick {
-  room: string;
-  philosophy: string;
-  title: string;
-  traits: string[];
-}
-
 export interface Detail {
   label: string;
   value: string;
 }
 
+export interface SelectedImage {
+  id: string;
+  room: string;
+  style: string;
+  styleLabel: string;
+}
+
+export interface StyleResult {
+  id: string;
+  label: string;
+  score: number;
+  essence: string;
+  palette: string[];
+  montage: string[];
+}
+
 export interface DesignReport {
   label: string;
   tagline: string;
-  picks: RoomPick[];
+  primaryStyle: StyleResult;
+  secondaryStyle: StyleResult;
+  styles: StyleResult[];
+  picks: SelectedImage[];
   details: Detail[];
   philosophies: string[];
   materials: string[];
+  motifs: string[];
   emailText: string;
 }
 
+function isBoardDecisions(answer: Answer | undefined): answer is BoardDecisions {
+  return Boolean(answer && typeof answer === 'object' && !Array.isArray(answer));
+}
+
+function addCount(counts: Map<string, number>, values: string[]) {
+  for (const value of values) counts.set(value, (counts.get(value) || 0) + 1);
+}
+
+function rankedCounts(counts: Map<string, number>): string[] {
+  return [...counts.entries()]
+    .sort(([aLabel, aCount], [bLabel, bCount]) => bCount - aCount || aLabel.localeCompare(bLabel))
+    .map(([label]) => label);
+}
+
+function styleResult(id: string, score: number): StyleResult {
+  const profile = STYLE_PROFILES[id];
+  return {
+    id,
+    label: profile?.label || id.replaceAll('-', ' '),
+    score,
+    essence: profile?.essence || '',
+    palette: profile?.palette || [],
+    montage: profile?.montage || [],
+  };
+}
+
+function positivePick(image: ImageOption, picks: SelectedImage[], materialCounts: Map<string, number>, motifCounts: Map<string, number>) {
+  picks.push({
+    id: image.id,
+    room: image.room,
+    style: image.style,
+    styleLabel: STYLE_PROFILES[image.style]?.label || image.style.replaceAll('-', ' '),
+  });
+  addCount(materialCounts, image.materials);
+  addCount(motifCounts, image.motifs);
+}
+
 export function buildReport(answers: Answers, contact?: Partial<Contact>, floorPlanNote?: string): DesignReport {
-  const picks: RoomPick[] = [];
+  const scores = new Map(STYLE_ORDER.map((style) => [style, 0]));
   const details: Detail[] = [];
-  const philosophyCount: Record<string, number> = {};
-  const materials = new Set<string>();
+  const picks: SelectedImage[] = [];
+  const materialCounts = new Map<string, number>();
+  const motifCounts = new Map<string, number>();
 
-  for (const step of STEPS) {
-    const ansId = answers[step.id];
-    if (!ansId) continue;
-    if (step.kind === 'visual') {
-      const opt = step.options.find((o) => o.id === ansId);
-      if (opt) {
-        picks.push({ room: step.room, philosophy: opt.philosophy, title: opt.title, traits: opt.traits });
-        philosophyCount[opt.philosophy] = (philosophyCount[opt.philosophy] || 0) + 1;
-        opt.traits.forEach((t) => materials.add(t));
-      }
-    } else {
-      const opt = step.options.find((o) => o.id === ansId);
-      if (opt) details.push({ label: step.kicker, value: opt.label });
+  const addScore = (style: string, weight: number) => {
+    scores.set(style, (scores.get(style) || 0) + weight);
+  };
+
+  for (const round of ROUNDS) {
+    const answer = answers[round.id];
+    if (!answer) continue;
+
+    if (round.kind === 'choice') {
+      if (typeof answer !== 'string') continue;
+      const option = round.options.find((candidate) => candidate.id === answer);
+      if (option) details.push({ label: round.kicker, value: option.label });
+      continue;
     }
+
+    if (round.kind === 'board') {
+      if (!isBoardDecisions(answer)) continue;
+      for (const image of round.images) {
+        const decision = answer[image.id];
+        if (decision === 'keep') {
+          addScore(image.style, 1);
+          positivePick(image, picks, materialCounts, motifCounts);
+        } else if (decision === 'toss') {
+          addScore(image.style, -0.5);
+        }
+      }
+      continue;
+    }
+
+    if (typeof answer !== 'string') continue;
+    const image = round.options.find((candidate) => candidate.id === answer);
+    if (!image) continue;
+    addScore(image.style, round.kind === 'quad' ? 2 : 1);
+    positivePick(image, picks, materialCounts, motifCounts);
   }
 
-  const ranked = Object.entries(philosophyCount).sort((a, b) => b[1] - a[1]);
-  const philosophies = ranked.map(([p]) => p);
+  // Stable sort plus the manifest's style order makes ties deterministic.
+  const styles = STYLE_ORDER
+    .map((style, order) => ({ id: style, score: scores.get(style) || 0, order }))
+    .sort((a, b) => b.score - a.score || a.order - b.order)
+    .map((style) => styleResult(style.id, style.score));
+  const primaryStyle = styles[0] || styleResult('art-deco', 0);
+  const secondaryStyle = styles[1] || primaryStyle;
+  const materials = rankedCounts(materialCounts);
+  const motifs = rankedCounts(motifCounts);
+  const philosophies = styles.filter((style) => style.score > 0).map((style) => style.label);
 
-  let label = 'Your Design DNA';
-  let tagline = '';
-  if (ranked.length === 1) {
-    label = ranked[0][0];
-    tagline = `A clear, consistent love for ${ranked[0][0].toLowerCase()} design.`;
-  } else if (ranked.length >= 2 && ranked[0][1] > 1) {
-    label = `${ranked[0][0]} with ${ranked[1][0]} accents`;
-    tagline = `Grounded in ${ranked[0][0].toLowerCase()}, with a taste for ${ranked[1][0].toLowerCase()}.`;
-  } else if (ranked.length >= 2) {
-    label = 'An Eclectic Blend';
-    tagline = `A curated mix of ${philosophies.slice(0, 3).join(', ')}.`;
-  }
-
-  const lines: string[] = [];
-  lines.push('--- DESIGN DISCOVERY BRIEF ---', '');
-  lines.push(`Design DNA: ${label}`);
-  if (tagline) lines.push(tagline);
+  const lines: string[] = ['--- DESIGN DISCOVERY BRIEF ---', ''];
+  lines.push(`Primary style: ${primaryStyle.label} (${primaryStyle.score.toFixed(1)} points)`);
+  lines.push(`Secondary style: ${secondaryStyle.label} (${secondaryStyle.score.toFixed(1)} points)`);
+  if (primaryStyle.essence) lines.push(primaryStyle.essence);
   lines.push('');
   if (details.length) {
     lines.push('Project details:');
-    details.forEach((d) => lines.push(`  - ${d.label}: ${d.value}`));
+    details.forEach((detail) => lines.push(`  - ${detail.label}: ${detail.value}`));
     lines.push('');
   }
   if (picks.length) {
-    lines.push('Style preferences:');
-    picks.forEach((p) => lines.push(`  - ${p.room}: ${p.philosophy} (${p.title}) - ${p.traits.join(', ')}`));
+    lines.push('Positive image choices:');
+    picks.forEach((pick) => lines.push(`  - ${pick.room}: ${pick.styleLabel} [${pick.id}]`));
     lines.push('');
   }
-  if (materials.size) lines.push(`Materials & cues: ${Array.from(materials).join(', ')}`, '');
+  if (materials.length) lines.push(`Material signals: ${materials.slice(0, 8).join(', ')}`, '');
+  if (motifs.length) lines.push(`Motif signals: ${motifs.slice(0, 8).join(', ')}`, '');
   if (floorPlanNote) lines.push(`Floor plan: ${floorPlanNote}`, '');
   if (contact?.notes) lines.push(`Client note: ${contact.notes}`, '');
   if (contact?.name || contact?.email || contact?.phone) {
     lines.push('Client:', `  ${contact?.name || ''} | ${contact?.email || ''} | ${contact?.phone || ''}`);
   }
 
-  return { label, tagline, picks, details, philosophies, materials: Array.from(materials), emailText: lines.join('\n') };
+  return {
+    label: primaryStyle.label,
+    tagline: primaryStyle.essence,
+    primaryStyle,
+    secondaryStyle,
+    styles,
+    picks,
+    details,
+    philosophies: philosophies.length > 0 ? philosophies : [primaryStyle.label],
+    materials,
+    motifs,
+    emailText: lines.join('\n'),
+  };
 }
 
 // Cloudinary delivery of the actual floor-plan file. Set an UNSIGNED upload

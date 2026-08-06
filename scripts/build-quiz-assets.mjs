@@ -1,0 +1,343 @@
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { basename, dirname, join, relative, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
+
+const SEED = 'dezignpool-journey-v1';
+const TARGET_IMAGE_COUNT = 200;
+const MAX_IMAGE_BYTES = 200 * 1024;
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const samplesFile = join(repoRoot, '.tagteam', 'library-samples.md');
+const outputRoot = join(repoRoot, 'public', 'images', 'discover');
+const manifestFile = join(repoRoot, 'src', 'discover', 'quizAssets.json');
+
+const ROUND_BLUEPRINTS = [
+  { kind: 'quad', id: 'living-instinct', kicker: 'Living room', question: 'Which room feels most like your kind of welcome?', rooms: ['living-room', 'living-room', 'living-room', 'living-room'] },
+  { kind: 'duel', id: 'kitchen-duel', kicker: 'Kitchen', question: 'Which kitchen would make everyday rituals feel better?', rooms: ['kitchen', 'kitchen'] },
+  { kind: 'quad', id: 'bedroom-mood', kicker: 'Master bedroom', question: 'Where would you exhale at the end of the day?', rooms: ['master-bedroom', 'master-bedroom', 'master-bedroom', 'master-bedroom'] },
+  { kind: 'board', id: 'detail-board', kicker: 'The details', question: 'Keep what speaks to you. Toss what does not.', rooms: ['wall-panel', 'false-ceiling', 'tv-unit', 'pooja-unit', 'bar-unit', 'crockery-unit'] },
+  { kind: 'quad', id: 'first-impression', kicker: 'Foyer', question: 'How should your home introduce itself?', rooms: ['foyer', 'foyer', 'foyer', 'foyer'] },
+  { kind: 'duel', id: 'wardrobe-duel', kicker: 'Wardrobe', question: 'Which wardrobe language would you live with?', rooms: ['wardrobe', 'wardrobe'] },
+  { kind: 'quad', id: 'dining-gathering', kicker: 'Dining', question: 'Which setting makes you want to gather longer?', rooms: ['dining', 'dining', 'dining', 'dining'] },
+  { kind: 'duel', id: 'bathroom-duel', kicker: 'Bathroom', question: 'Which retreat belongs in your morning?', rooms: ['bathroom-vanity', 'bathroom-vanity'] },
+  { kind: 'board', id: 'life-board', kicker: 'Rooms for real life', question: 'Keep the spaces you would bring into your own home.', rooms: ['study-office', 'kids-bedroom', 'shoe-rack', 'kitchen', 'living-room', 'master-bedroom'] },
+  { kind: 'quad', id: 'material-instinct', kicker: 'Material mood', question: 'Which composition has the texture you are drawn to?', rooms: ['wall-panel', 'wall-panel', 'wall-panel', 'wall-panel'] },
+  { kind: 'duel', id: 'pooja-duel', kicker: 'Quiet corner', question: 'Which sacred space feels more personal?', rooms: ['pooja-unit', 'pooja-unit'] },
+  { kind: 'quad', id: 'final-instinct', kicker: 'One last instinct', question: 'No overthinking. Which space is simply you?', rooms: ['living-room', 'kitchen', 'master-bedroom', 'dining'] },
+];
+
+function fail(message) {
+  console.error(`build-quiz-assets: ${message}`);
+  process.exit(1);
+}
+
+function readLibraryRoot() {
+  const root = resolve(process.env.STYLE_LIBRARY_ROOT || 'D:/dezignpool/style-library');
+  if (!existsSync(root)) fail(`Style library not found at ${root} — set STYLE_LIBRARY_ROOT to override.`);
+  return root;
+}
+
+function hash(text) {
+  let value = 2166136261;
+  for (let index = 0; index < text.length; index += 1) {
+    value ^= text.charCodeAt(index);
+    value = Math.imul(value, 16777619);
+  }
+  return value >>> 0;
+}
+
+function seededOrder(items, salt) {
+  return items
+    .map((item, index) => ({ item, index, rank: hash(`${SEED}|${salt}|${index}`) }))
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    .map(({ item }) => item);
+}
+
+function uniqueStrings(value) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.filter((item) => typeof item === 'string').map((item) => item.trim()).filter(Boolean))];
+}
+
+function completeCaption(record) {
+  const caption = record?.caption;
+  return Boolean(
+    record
+      && typeof record.image === 'string'
+      && caption
+      && Array.isArray(caption.palette)
+      && Array.isArray(caption.materials)
+      && Array.isArray(caption.furniture_forms)
+      && Array.isArray(caption.props)
+      && typeof caption.lighting === 'string'
+      && Array.isArray(caption.textiles)
+      && Array.isArray(caption.motifs),
+  );
+}
+
+function captionKey(style, room, image) {
+  return `${style}/${room}/${basename(image)}`.toLowerCase();
+}
+
+function loadCaptions(libraryRoot) {
+  const captionsRoot = join(libraryRoot, 'distill', 'captions');
+  if (!existsSync(captionsRoot)) fail(`Caption directory is missing: ${captionsRoot}`);
+  const captions = new Map();
+
+  for (const file of readdirSync(captionsRoot).filter((name) => name.endsWith('.jsonl')).sort()) {
+    const stem = basename(file, '.jsonl');
+    const separator = stem.indexOf('__');
+    if (separator < 1) continue;
+    const style = stem.slice(0, separator);
+    const room = stem.slice(separator + 2);
+    const lines = readFileSync(join(captionsRoot, file), 'utf8').replace(/^\uFEFF/, '').split(/\r?\n/);
+
+    for (const [lineIndex, line] of lines.entries()) {
+      if (!line.trim()) continue;
+      let record;
+      try {
+        record = JSON.parse(line);
+      } catch (error) {
+        fail(`${file}:${lineIndex + 1} is invalid JSON (${error.message}).`);
+      }
+      if (!completeCaption(record)) continue;
+      captions.set(captionKey(style, room, record.image), record.caption);
+    }
+  }
+
+  return captions;
+}
+
+function orderedSheetValues(index) {
+  return Object.entries(index)
+    .sort(([a], [b]) => {
+      const an = Number(a);
+      const bn = Number(b);
+      return Number.isFinite(an) && Number.isFinite(bn) ? an - bn : a.localeCompare(b);
+    })
+    .map(([, value]) => value)
+    .filter((value) => typeof value === 'string');
+}
+
+function loadCandidates(libraryRoot, styleOrder, captions) {
+  const sheetsRoot = join(libraryRoot, 'sheets');
+  const libraryImagesRoot = join(libraryRoot, 'library');
+  if (!existsSync(sheetsRoot)) fail(`Sheets directory is missing: ${sheetsRoot}`);
+  const candidates = [];
+
+  for (const sheetFile of readdirSync(sheetsRoot).filter((name) => name.endsWith('.json')).sort()) {
+    const style = styleOrder.find((slug) => sheetFile.startsWith(`${slug}__`));
+    if (!style) continue;
+    const room = basename(sheetFile, '.json').slice(style.length + 2);
+    let sheet;
+    try {
+      sheet = JSON.parse(readFileSync(join(sheetsRoot, sheetFile), 'utf8').replace(/^\uFEFF/, ''));
+    } catch (error) {
+      fail(`${sheetFile} is invalid JSON (${error.message}).`);
+    }
+
+    for (const [sheetIndex, filename] of orderedSheetValues(sheet).entries()) {
+      const caption = captions.get(captionKey(style, room, filename));
+      if (!caption) continue;
+      const source = join(libraryImagesRoot, style, room, filename);
+      if (!existsSync(source) || !statSync(source).isFile()) continue;
+      candidates.push({
+        key: `${style}/${room}/${basename(filename)}`.toLowerCase(),
+        style,
+        room,
+        filename,
+        source,
+        sheetFile,
+        sheetIndex,
+        materials: uniqueStrings(caption.materials),
+        motifs: uniqueStrings(caption.motifs),
+      });
+    }
+  }
+
+  if (candidates.length < TARGET_IMAGE_COUNT) {
+    fail(`Only ${candidates.length} indexed images have complete captions; at least ${TARGET_IMAGE_COUNT} are required.`);
+  }
+  return candidates;
+}
+
+function displayName(slug) {
+  return slug
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function makeSelector(candidates) {
+  const used = new Set();
+  const cache = new Map();
+
+  function pool(style, room) {
+    const key = `${style}|${room || '*'}`;
+    if (!cache.has(key)) {
+      const matching = candidates.filter((candidate) => candidate.style === style && (!room || candidate.room === room));
+      cache.set(key, seededOrder(matching, key));
+    }
+    return cache.get(key);
+  }
+
+  function claim(style, preferredRoom) {
+    const candidate = pool(style, preferredRoom).find((item) => !used.has(item.key))
+      || pool(style).find((item) => !used.has(item.key));
+    if (!candidate) fail(`Not enough captioned images to select another asset for ${style}/${preferredRoom || '*'}.`);
+    used.add(candidate.key);
+    return candidate;
+  }
+
+  return { claim };
+}
+
+function selectAssets(candidates, styleOrder) {
+  const selector = makeSelector(candidates);
+  const styleOffset = hash(`${SEED}|style-offset`) % styleOrder.length;
+  const styleStride = 7;
+  let styleSlot = 0;
+  const rounds = ROUND_BLUEPRINTS.map((blueprint) => ({
+    ...blueprint,
+    candidates: blueprint.rooms.map((room) => {
+      const style = styleOrder[(styleOffset + styleSlot * styleStride) % styleOrder.length];
+      styleSlot += 1;
+      return selector.claim(style, room);
+    }),
+  }));
+
+  const montages = {};
+  for (const style of styleOrder) {
+    const availableRooms = [...new Set(candidates.filter((candidate) => candidate.style === style).map((candidate) => candidate.room))];
+    const rooms = seededOrder(availableRooms, `montage-rooms|${style}`);
+    montages[style] = [];
+    for (const room of rooms) {
+      if (montages[style].length === 6) break;
+      montages[style].push(selector.claim(style, room));
+    }
+    while (montages[style].length < 6) montages[style].push(selector.claim(style));
+  }
+
+  const selected = [
+    ...rounds.flatMap((round) => round.candidates),
+    ...styleOrder.flatMap((style) => montages[style]),
+  ];
+  let fillerSlot = 0;
+  while (selected.length < TARGET_IMAGE_COUNT) {
+    const style = styleOrder[(styleOffset + fillerSlot * styleStride) % styleOrder.length];
+    selected.push(selector.claim(style));
+    fillerSlot += 1;
+  }
+
+  return { rounds, montages, selected };
+}
+
+function outputPathFor(style, ordinal) {
+  const filename = `${style}-${String(ordinal).padStart(3, '0')}.webp`;
+  return {
+    absolute: join(outputRoot, style, filename),
+    public: `/images/discover/${style}/${filename}`,
+  };
+}
+
+async function encodeImage(source, output) {
+  const sizes = [800, 720, 640, 560];
+  const qualities = [75, 68, 60, 52, 45];
+  for (const size of sizes) {
+    for (const quality of qualities) {
+      const buffer = await sharp(source)
+        .rotate()
+        .resize({ width: size, height: size, fit: 'inside', withoutEnlargement: true })
+        .webp({ quality, effort: 4 })
+        .toBuffer();
+      if (buffer.length <= MAX_IMAGE_BYTES) {
+        writeFileSync(output, buffer);
+        return buffer.length;
+      }
+    }
+  }
+  fail(`${source} could not be encoded below 200KB.`);
+}
+
+const libraryRoot = readLibraryRoot();
+const styleSpecsFile = join(libraryRoot, 'distill', 'style_specs.json');
+if (!existsSync(styleSpecsFile)) fail(`Style specs are missing: ${styleSpecsFile}`);
+
+let styleSpecs;
+try {
+  styleSpecs = JSON.parse(readFileSync(styleSpecsFile, 'utf8').replace(/^\uFEFF/, ''));
+} catch (error) {
+  fail(`style_specs.json is invalid JSON (${error.message}).`);
+}
+
+const styleOrder = Object.keys(styleSpecs);
+if (styleOrder.length !== 15) fail(`Expected 15 styles in style_specs.json, found ${styleOrder.length}.`);
+
+const captions = loadCaptions(libraryRoot);
+const candidates = loadCandidates(libraryRoot, styleOrder, captions);
+const selection = selectAssets(candidates, styleOrder);
+
+const expectedOutput = resolve(repoRoot, 'public', 'images', 'discover');
+if (resolve(outputRoot) !== expectedOutput) fail(`Refusing to clean unexpected output directory: ${outputRoot}`);
+rmSync(outputRoot, { recursive: true, force: true });
+mkdirSync(outputRoot, { recursive: true });
+
+const styleOrdinals = new Map();
+const assetByCandidate = new Map();
+const images = {};
+let totalBytes = 0;
+
+for (const candidate of selection.selected) {
+  const ordinal = (styleOrdinals.get(candidate.style) || 0) + 1;
+  styleOrdinals.set(candidate.style, ordinal);
+  const output = outputPathFor(candidate.style, ordinal);
+  mkdirSync(dirname(output.absolute), { recursive: true });
+  const bytes = await encodeImage(candidate.source, output.absolute);
+  totalBytes += bytes;
+  const id = `${candidate.style}-${String(ordinal).padStart(3, '0')}`;
+  const asset = {
+    id,
+    path: output.public,
+    style: candidate.style,
+    room: candidate.room,
+    materials: candidate.materials,
+    motifs: candidate.motifs,
+  };
+  assetByCandidate.set(candidate.key, asset);
+  images[id] = asset;
+}
+
+const styles = {};
+for (const style of styleOrder) {
+  const overall = styleSpecs[style]?.overall;
+  const palette = uniqueStrings(overall?.palette);
+  if (!overall || typeof overall.essence !== 'string' || palette.length === 0) {
+    fail(`Style ${style} is missing overall.essence or overall.palette in style_specs.json.`);
+  }
+  styles[style] = {
+    label: displayName(style),
+    essence: overall.essence.trim(),
+    palette,
+    montage: selection.montages[style].map((candidate) => assetByCandidate.get(candidate.key).path),
+  };
+}
+
+const rounds = selection.rounds.map(({ rooms: _rooms, candidates: roundCandidates, ...round }) => ({
+  ...round,
+  imageIds: roundCandidates.map((candidate) => assetByCandidate.get(candidate.key).id),
+}));
+
+const manifest = {
+  version: 1,
+  seed: SEED,
+  styleOrder,
+  styles,
+  images,
+  rounds,
+};
+
+writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+
+const relativeOutput = relative(repoRoot, outputRoot).replaceAll('\\', '/');
+console.log(`Selected and encoded ${selection.selected.length} deterministic assets from sheets index order.`);
+console.log(`Wrote ${rounds.length} image rounds and ${styleOrder.length} style montages to ${relative(repoRoot, manifestFile)}.`);
+console.log(`${relativeOutput}: ${(totalBytes / 1024 / 1024).toFixed(2)}MB total.`);

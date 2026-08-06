@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import KineticText from '../components/KineticText';
-import type { ChoiceStep } from './data';
+import type { ChoiceRound } from './data';
 
 export default function ChoiceSection({
   step,
@@ -9,7 +9,7 @@ export default function ChoiceSection({
   selected,
   onSelect,
 }: {
-  step: ChoiceStep;
+  step: ChoiceRound;
   index: number;
   total: number;
   selected?: string;

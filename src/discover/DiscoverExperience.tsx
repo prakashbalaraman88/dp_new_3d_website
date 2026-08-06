@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { STEPS } from './data';
-import type { Answers } from './report';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { ROUNDS } from './data';
+import type { Answer, Answers, BoardDecisions } from './report';
 import AmbientBackground from '../components/AmbientBackground';
 import DraftingAccents from './DraftingAccents';
 import IntroSection from './IntroSection';
-import QuizSection from './QuizSection';
+import { BoardSection, DuelSection, QuadSection } from './QuizSection';
 import ChoiceSection from './ChoiceSection';
 import FloorPlanSection from './FloorPlanSection';
 import ContactSection from './ContactSection';
@@ -14,23 +14,31 @@ type Item =
   | { kind: 'intro'; key: string }
   | { kind: 'floorplan'; key: string }
   | { kind: 'contact'; key: string }
-  | { kind: 'visual' | 'choice'; key: string; stepIndex: number };
+  | { kind: 'round'; key: string; roundIndex: number };
 
 const slide = {
-  enter: (d: number) => ({ y: d >= 0 ? '100%' : '-100%', opacity: 0 }),
+  enter: (direction: number) => ({ y: direction >= 0 ? '100%' : '-100%', opacity: 0 }),
   center: { y: '0%', opacity: 1 },
-  exit: (d: number) => ({ y: d >= 0 ? '-100%' : '100%', opacity: 0 }),
+  exit: (direction: number) => ({ y: direction >= 0 ? '-100%' : '100%', opacity: 0 }),
 };
 
 function variantFor(item: Item): string {
   if (item.kind === 'intro') return 'kitchen';
   if (item.kind === 'floorplan') return 'plan';
   if (item.kind === 'contact') return 'wall';
-  const step = STEPS[item.stepIndex];
-  if (step.id === 'kitchen') return 'kitchen';
-  if (step.id === 'wardrobe') return 'wardrobe';
-  if (step.id === 'living') return 'wall';
+  const round = ROUNDS[item.roundIndex];
+  if (round.kind === 'duel') return 'kitchen';
+  if (round.kind === 'board') return 'wall';
+  if (round.kind === 'quad') return 'wardrobe';
   return 'plan';
+}
+
+function selectedId(answer: Answer | undefined): string | undefined {
+  return typeof answer === 'string' ? answer : undefined;
+}
+
+function boardDecisions(answer: Answer | undefined): BoardDecisions {
+  return answer && typeof answer === 'object' && !Array.isArray(answer) ? answer : {};
 }
 
 export default function DiscoverExperience({
@@ -40,11 +48,12 @@ export default function DiscoverExperience({
 }: {
   onFinish?: (answers: Answers) => void;
   onReturnToHero?: () => void;
-  onProgress?: (p: number) => void;
+  onProgress?: (progress: number) => void;
 }) {
+  const reduceMotion = useReducedMotion();
   const items = useMemo<Item[]>(() => {
     const list: Item[] = [{ kind: 'intro', key: 'intro' }];
-    STEPS.forEach((s, si) => list.push({ kind: s.kind, key: s.id, stepIndex: si }));
+    ROUNDS.forEach((round, roundIndex) => list.push({ kind: 'round', key: round.id, roundIndex }));
     list.push({ kind: 'floorplan', key: 'floorplan' });
     list.push({ kind: 'contact', key: 'contact' });
     return list;
@@ -52,7 +61,7 @@ export default function DiscoverExperience({
   const last = items.length - 1;
 
   const [index, setIndex] = useState(0);
-  const [dir, setDir] = useState(1);
+  const [direction, setDirection] = useState(1);
   const [answers, setAnswers] = useState<Answers>({});
   const [floorPlan, setFloorPlan] = useState<File | null>(null);
   const [notes, setNotes] = useState('');
@@ -65,53 +74,46 @@ export default function DiscoverExperience({
   const go = useCallback(
     (delta: number) => {
       if (lockRef.current) return;
-      const cur = indexRef.current;
-      const ni = Math.min(last, Math.max(0, cur + delta));
-      if (ni === cur) return;
+      const current = indexRef.current;
+      const next = Math.min(last, Math.max(0, current + delta));
+      if (next === current) return;
       lockRef.current = true;
-      indexRef.current = ni;
-      setDir(delta >= 0 ? 1 : -1);
-      setIndex(ni);
+      indexRef.current = next;
+      setDirection(delta >= 0 ? 1 : -1);
+      setIndex(next);
       window.setTimeout(() => {
         lockRef.current = false;
-      }, 720);
+      }, reduceMotion ? 80 : 720);
     },
-    [last],
+    [last, reduceMotion],
   );
 
-  // Lock the page; the deck is driven entirely by gestures.
   useEffect(() => {
-    const prev = document.body.style.overflow;
+    const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = prev;
+      document.body.style.overflow = previous;
     };
   }, []);
 
-  // Ignore leftover scroll momentum right after mount (e.g. carried over from the
-  // hero) so the first screen isn't skipped.
+  // Ignore momentum carried over from the walkthrough so the intro remains visible.
   useEffect(() => {
     lockRef.current = true;
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       lockRef.current = false;
-    }, 800);
-    return () => window.clearTimeout(t);
-  }, []);
+    }, reduceMotion ? 100 : 800);
+    return () => window.clearTimeout(timer);
+  }, [reduceMotion]);
 
-  // Report quiz progress to the sticky nav.
   useEffect(() => {
     onProgress?.(last > 0 ? index / last : 0);
   }, [index, last, onProgress]);
 
-  // Gesture navigation. Intro + floor-plan advance on a scroll/swipe; question
-  // screens advance only on selection. Up-gesture always goes back. The contact
-  // screen scrolls internally, so gestures are off there.
   useEffect(() => {
-    const cur = () => items[indexRef.current];
-    const active = () => cur().kind !== 'contact';
-    const canAdvance = () => cur().kind === 'intro' || cur().kind === 'floorplan';
+    const current = () => items[indexRef.current];
+    const active = () => current().kind !== 'contact';
+    const canAdvance = () => current().kind === 'intro' || current().kind === 'floorplan';
     const goBack = () => {
-      // From the very first screen, an up-gesture returns to the hero.
       if (indexRef.current === 0) {
         if (!lockRef.current) returnHeroRef.current?.();
       } else {
@@ -119,76 +121,112 @@ export default function DiscoverExperience({
       }
     };
 
-    const onWheel = (e: WheelEvent) => {
+    const onWheel = (event: WheelEvent) => {
       if (!active()) return;
-      if (e.deltaY > 24) {
+      if (event.deltaY > 24) {
         if (canAdvance()) go(1);
-      } else if (e.deltaY < -24) {
+      } else if (event.deltaY < -24) {
         goBack();
       }
     };
-    let sy = 0;
-    const onTS = (e: TouchEvent) => {
-      sy = e.touches[0].clientY;
+    let touchStartY = 0;
+    const onTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0].clientY;
     };
-    const onTE = (e: TouchEvent) => {
+    const onTouchEnd = (event: TouchEvent) => {
       if (!active()) return;
-      const dy = sy - e.changedTouches[0].clientY;
-      if (dy > 55) {
+      const deltaY = touchStartY - event.changedTouches[0].clientY;
+      if (deltaY > 55) {
         if (canAdvance()) go(1);
-      } else if (dy < -55) {
+      } else if (deltaY < -55) {
         goBack();
       }
     };
-    const onKey = (e: KeyboardEvent) => {
+    const onKey = (event: KeyboardEvent) => {
       if (!active()) return;
-      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+      if (event.key === 'ArrowDown' || event.key === 'PageDown' || event.key === ' ') {
         if (canAdvance()) go(1);
-      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+      } else if (event.key === 'ArrowUp' || event.key === 'PageUp') {
         goBack();
       }
     };
 
     window.addEventListener('wheel', onWheel, { passive: true });
-    window.addEventListener('touchstart', onTS, { passive: true });
-    window.addEventListener('touchend', onTE, { passive: true });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('wheel', onWheel);
-      window.removeEventListener('touchstart', onTS);
-      window.removeEventListener('touchend', onTE);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('keydown', onKey);
     };
   }, [go, items]);
 
-  const select = (stepId: string, optId: string) => {
-    setAnswers((a) => ({ ...a, [stepId]: optId }));
-    window.setTimeout(() => go(1), 400);
+  const select = (roundId: string, imageOrOptionId: string) => {
+    setAnswers((current) => ({ ...current, [roundId]: imageOrOptionId }));
+    window.setTimeout(() => go(1), reduceMotion ? 100 : 360);
+  };
+
+  const decideBoard = (roundId: string, imageId: string, decision: 'keep' | 'toss') => {
+    setAnswers((current) => {
+      const previous = boardDecisions(current[roundId]);
+      return { ...current, [roundId]: { ...previous, [imageId]: decision } };
+    });
   };
 
   const renderItem = (item: Item) => {
     if (item.kind === 'intro') return <IntroSection />;
-    if (item.kind === 'floorplan') return <FloorPlanSection onChange={(f, n) => { setFloorPlan(f); setNotes(n); }} />;
-    if (item.kind === 'contact') return <ContactSection answers={answers} floorPlan={floorPlan} notes={notes} onExplore={() => onFinish?.(answers)} />;
-    const step = STEPS[item.stepIndex];
-    if (step.kind === 'visual') {
+    if (item.kind === 'floorplan') {
+      return <FloorPlanSection onChange={(file, nextNotes) => { setFloorPlan(file); setNotes(nextNotes); }} />;
+    }
+    if (item.kind === 'contact') {
+      return <ContactSection answers={answers} floorPlan={floorPlan} notes={notes} onExplore={() => onFinish?.(answers)} />;
+    }
+
+    const round = ROUNDS[item.roundIndex];
+    const answer = answers[round.id];
+    if (round.kind === 'quad') {
       return (
-        <QuizSection
-          step={step}
-          index={item.stepIndex}
-          total={STEPS.length}
-          selected={answers[step.id]}
-          onSelect={(id) => select(step.id, id)}
+        <QuadSection
+          round={round}
+          index={item.roundIndex}
+          total={ROUNDS.length}
+          selected={selectedId(answer)}
+          onSelect={(imageId) => select(round.id, imageId)}
+        />
+      );
+    }
+    if (round.kind === 'duel') {
+      return (
+        <DuelSection
+          round={round}
+          index={item.roundIndex}
+          total={ROUNDS.length}
+          selected={selectedId(answer)}
+          onSelect={(imageId) => select(round.id, imageId)}
+        />
+      );
+    }
+    if (round.kind === 'board') {
+      return (
+        <BoardSection
+          round={round}
+          index={item.roundIndex}
+          total={ROUNDS.length}
+          decisions={boardDecisions(answer)}
+          onDecide={(imageId, decision) => decideBoard(round.id, imageId, decision)}
+          onDone={() => go(1)}
         />
       );
     }
     return (
       <ChoiceSection
-        step={step}
-        index={item.stepIndex}
-        total={STEPS.length}
-        selected={answers[step.id]}
-        onSelect={(id) => select(step.id, id)}
+        step={round}
+        index={item.roundIndex}
+        total={ROUNDS.length}
+        selected={selectedId(answer)}
+        onSelect={(optionId) => select(round.id, optionId)}
       />
     );
   };
@@ -196,33 +234,34 @@ export default function DiscoverExperience({
   const current = items[index];
 
   return (
-    <div className="dp-discover relative h-svh overflow-hidden text-white font-sans">
+    <div className="dp-discover relative h-svh overflow-hidden font-sans text-white">
       <AmbientBackground variant="plaster" />
 
       {index > 0 && (
         <button
+          type="button"
           onClick={() => go(-1)}
           aria-label="Go back to the previous step"
-          className="fixed bottom-6 left-4 z-[60] inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-main/70 px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-white/65 transition-colors hover:text-secondary hover:border-secondary/40 active:scale-95"
+          className="fixed bottom-6 left-4 z-[60] inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-main/70 px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-white/65 transition-colors hover:border-secondary/40 hover:text-secondary active:scale-95"
         >
-          <span className="text-sm leading-none">&uarr;</span> Back
+          <span className="text-sm leading-none">↑</span> Back
         </button>
       )}
       <div className="relative z-10 h-full">
-        <AnimatePresence custom={dir} initial={false}>
+        <AnimatePresence custom={direction} initial={false}>
           <motion.div
             key={current.key}
-            custom={dir}
+            custom={direction}
             variants={slide}
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.6, ease: [0.7, 0, 0.2, 1] }}
+            transition={{ duration: reduceMotion ? 0 : 0.6, ease: [0.7, 0, 0.2, 1] }}
             className="absolute inset-0 overflow-y-auto overscroll-contain"
           >
             <DraftingAccents variant={variantFor(current)} />
-            <div className="relative min-h-full flex flex-col">
-              <div className="m-auto w-full px-5 sm:px-6 pb-16 pt-24">{renderItem(current)}</div>
+            <div className="relative flex min-h-full flex-col">
+              <div className="m-auto w-full px-5 pb-20 pt-24 sm:px-6">{renderItem(current)}</div>
             </div>
           </motion.div>
         </AnimatePresence>

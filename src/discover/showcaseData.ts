@@ -7,17 +7,17 @@ export interface ShowcaseProject {
   description: string;
   image: string;
   video?: string;
-  styles: string[]; // quiz philosophies this project represents (for personalization)
+  styles: string[]; // canonical style slugs from style_specs.json
 }
 
-// Reuses the existing project assets; `styles` map each project to quiz philosophies.
+// Reuses the existing project assets; `styles` map each project to canonical quiz styles.
 export const PROJECTS: ShowcaseProject[] = [
-  { id: 'phoenix-kessaku', title: 'Phoenix Kessaku', category: 'Luxury 3BHK · Japandi', description: 'Japanese-minimalist calm — warm woods, soft light, clean lines.', image: '/assets/images/project-1.png', video: '/assets/videos/project-1.mp4', styles: ['Scandinavian', 'Scandinavian Calm', 'Handleless Minimal'] },
-  { id: 'brigade-exotica', title: 'Brigade Exotica', category: 'Modern 3BHK', description: 'Sophisticated handleless minimalism with panoramic light.', image: '/assets/images/project-2.png', video: '/assets/videos/project-2.mp4', styles: ['Modern Contemporary', 'Handleless Minimal'] },
-  { id: 'prestige-golf-view', title: 'Prestige Golf View', category: '4BHK Villa', description: 'Eco-conscious luxury — premium stone, brass and warm timber.', image: '/assets/images/project-3.png', video: '/assets/videos/project-3.mp4', styles: ['Luxe Italian', 'Modern Contemporary', 'Warm Wood'] },
-  { id: 'urban-oasis', title: 'Urban Oasis', category: 'Contemporary Home', description: 'Seamless indoor-outdoor flow in a warm contemporary palette.', image: '/assets/images/project-4.png', video: '/assets/videos/project-4.mp4', styles: ['Modern Contemporary', 'Indian Contemporary'] },
-  { id: 'skyline-retreat', title: 'Skyline Retreat', category: 'Penthouse', description: 'Urban luxury — glass, metal and statement lighting.', image: '/assets/images/project-5.png', video: '/assets/videos/project-5.mp4', styles: ['Luxe Italian', 'Luxe Glass', 'Modern Contemporary', 'Italian Modular'] },
-  { id: 'serenity-haven', title: 'Serenity Haven', category: 'Classic Villa', description: 'Timeless elegance — paneling, warm woods and heirloom detail.', image: '/assets/images/project-6.png', video: '/assets/videos/project-6.mp4', styles: ['Classic European', 'Indian Contemporary', 'Warm Wood'] },
+  { id: 'phoenix-kessaku', title: 'Phoenix Kessaku', category: 'Luxury 3BHK · Japandi', description: 'Japanese-minimalist calm — warm woods, soft light, clean lines.', image: '/assets/images/project-1.png', video: '/assets/videos/project-1.mp4', styles: ['japandi', 'scandinavian', 'warm-minimalism'] },
+  { id: 'brigade-exotica', title: 'Brigade Exotica', category: 'Modern 3BHK', description: 'Sophisticated handleless minimalism with panoramic light.', image: '/assets/images/project-2.png', video: '/assets/videos/project-2.mp4', styles: ['modern-contemporary', 'warm-minimalism'] },
+  { id: 'prestige-golf-view', title: 'Prestige Golf View', category: '4BHK Villa', description: 'Eco-conscious luxury — premium stone, brass and warm timber.', image: '/assets/images/project-3.png', video: '/assets/videos/project-3.mp4', styles: ['quiet-luxury', 'modern-contemporary'] },
+  { id: 'urban-oasis', title: 'Urban Oasis', category: 'Contemporary Home', description: 'Seamless indoor-outdoor flow in a warm contemporary palette.', image: '/assets/images/project-4.png', video: '/assets/videos/project-4.mp4', styles: ['modern-contemporary', 'indo-contemporary', 'biophilic'] },
+  { id: 'skyline-retreat', title: 'Skyline Retreat', category: 'Penthouse', description: 'Urban luxury — glass, metal and statement lighting.', image: '/assets/images/project-5.png', video: '/assets/videos/project-5.mp4', styles: ['art-deco', 'quiet-luxury', 'modern-contemporary'] },
+  { id: 'serenity-haven', title: 'Serenity Haven', category: 'Classic Villa', description: 'Timeless elegance — paneling, warm woods and heirloom detail.', image: '/assets/images/project-6.png', video: '/assets/videos/project-6.mp4', styles: ['neoclassical', 'traditional-south-indian', 'indo-contemporary'] },
 ];
 
 export interface ShowcaseTestimonial {
@@ -41,7 +41,8 @@ export const STUDIO_EMAIL = 'info@dezignpool.com';
 export const STUDIO_INSTAGRAM = 'https://www.instagram.com/dezignpool';
 
 export function rankProjects(answers: Answers): { matched: ShowcaseProject[]; rest: ShowcaseProject[] } {
-  const set = new Set(buildReport(answers).philosophies);
+  const report = buildReport(answers);
+  const set = new Set([report.primaryStyle.id, report.secondaryStyle.id]);
   const scored = PROJECTS.map((p) => ({ p, score: p.styles.filter((s) => set.has(s)).length }));
   const matched = scored.filter((x) => x.score > 0).sort((a, b) => b.score - a.score).map((x) => x.p);
   const rest = scored.filter((x) => x.score === 0).map((x) => x.p);

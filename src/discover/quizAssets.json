@@ -1,0 +1,3978 @@
+{
+  "version": 1,
+  "seed": "dezignpool-journey-v1",
+  "styleOrder": [
+    "quiet-luxury",
+    "bohemian",
+    "mid-century-modern",
+    "art-deco",
+    "warm-minimalism",
+    "indo-contemporary",
+    "modern-contemporary",
+    "japandi",
+    "scandinavian",
+    "biophilic",
+    "coastal",
+    "wabi-sabi",
+    "industrial",
+    "neoclassical",
+    "traditional-south-indian"
+  ],
+  "styles": {
+    "quiet-luxury": {
+      "label": "Quiet Luxury",
+      "essence": "A serene, quiet-luxury whole style characterized by organic curves, architectural fluting, natural stone veining, and warm layered ambient illumination.",
+      "palette": [
+        "#F5F2EB",
+        "#D8D2C9",
+        "#4A392C",
+        "#8E7B6C",
+        "#2B2523"
+      ],
+      "montage": [
+        "/images/discover/quiet-luxury/quiet-luxury-003.webp",
+        "/images/discover/quiet-luxury/quiet-luxury-004.webp",
+        "/images/discover/quiet-luxury/quiet-luxury-005.webp",
+        "/images/discover/quiet-luxury/quiet-luxury-006.webp",
+        "/images/discover/quiet-luxury/quiet-luxury-007.webp",
+        "/images/discover/quiet-luxury/quiet-luxury-008.webp"
+      ]
+    },
+    "bohemian": {
+      "label": "Bohemian",
+      "essence": "A warm, earthy bohemian sanctuary featuring rich timber, lush botanical greenery, handcrafted artisanal ceramics, woven rattan textures, and layered global textiles.",
+      "palette": [
+        "#D8A87B",
+        "#412D21",
+        "#E4D2BF",
+        "#7C6753",
+        "#2B2725"
+      ],
+      "montage": [
+        "/images/discover/bohemian/bohemian-004.webp",
+        "/images/discover/bohemian/bohemian-005.webp",
+        "/images/discover/bohemian/bohemian-006.webp",
+        "/images/discover/bohemian/bohemian-007.webp",
+        "/images/discover/bohemian/bohemian-008.webp",
+        "/images/discover/bohemian/bohemian-009.webp"
+      ]
+    },
+    "mid-century-modern": {
+      "label": "Mid Century Modern",
+      "essence": "Warm, sophisticated mid-century modern aesthetic blending rich wood veneers, organic curves, fluted paneling, and ambient layered lighting.",
+      "palette": [
+        "#8B5A2B",
+        "#3D2817",
+        "#F5F0E6",
+        "#D1B897",
+        "#C89D42"
+      ],
+      "montage": [
+        "/images/discover/mid-century-modern/mid-century-modern-004.webp",
+        "/images/discover/mid-century-modern/mid-century-modern-005.webp",
+        "/images/discover/mid-century-modern/mid-century-modern-006.webp",
+        "/images/discover/mid-century-modern/mid-century-modern-007.webp",
+        "/images/discover/mid-century-modern/mid-century-modern-008.webp",
+        "/images/discover/mid-century-modern/mid-century-modern-009.webp"
+      ]
+    },
+    "art-deco": {
+      "label": "Art Deco",
+      "essence": "Opulent art-deco interior characterized by sophisticated dark woods, polished brass accents, fluted joinery, arched architectural geometry, and warm ambient illumination.",
+      "palette": [
+        "#B89758",
+        "#112317",
+        "#222222",
+        "#F5F5F5",
+        "#C5A059"
+      ],
+      "montage": [
+        "/images/discover/art-deco/art-deco-004.webp",
+        "/images/discover/art-deco/art-deco-005.webp",
+        "/images/discover/art-deco/art-deco-006.webp",
+        "/images/discover/art-deco/art-deco-007.webp",
+        "/images/discover/art-deco/art-deco-008.webp",
+        "/images/discover/art-deco/art-deco-009.webp"
+      ]
+    },
+    "warm-minimalism": {
+      "label": "Warm Minimalism",
+      "essence": "A serene, warm-minimalist whole style featuring organic curves, refined natural woods, earthy tones, and soft diffused lighting.",
+      "palette": [
+        "#F5F2EB",
+        "#D8CCA9",
+        "#8C7A6B",
+        "#3A2C22",
+        "#C4B59F"
+      ],
+      "montage": [
+        "/images/discover/warm-minimalism/warm-minimalism-004.webp",
+        "/images/discover/warm-minimalism/warm-minimalism-005.webp",
+        "/images/discover/warm-minimalism/warm-minimalism-006.webp",
+        "/images/discover/warm-minimalism/warm-minimalism-007.webp",
+        "/images/discover/warm-minimalism/warm-minimalism-008.webp",
+        "/images/discover/warm-minimalism/warm-minimalism-009.webp"
+      ]
+    },
+    "indo-contemporary": {
+      "label": "Indo Contemporary",
+      "essence": "An Indo-contemporary sanctuary fusing clean modern architecture, rich natural wood, woven cane, brass accents, and traditional Indian motifs under warm layered lighting.",
+      "palette": [
+        "#F5F0EB",
+        "#8B5A2B",
+        "#3B2B24",
+        "#D8BC9B",
+        "#D4AF37"
+      ],
+      "montage": [
+        "/images/discover/indo-contemporary/indo-contemporary-004.webp",
+        "/images/discover/indo-contemporary/indo-contemporary-005.webp",
+        "/images/discover/indo-contemporary/indo-contemporary-006.webp",
+        "/images/discover/indo-contemporary/indo-contemporary-007.webp",
+        "/images/discover/indo-contemporary/indo-contemporary-008.webp",
+        "/images/discover/indo-contemporary/indo-contemporary-009.webp"
+      ]
+    },
+    "modern-contemporary": {
+      "label": "Modern Contemporary",
+      "essence": "Sophisticated modern-contemporary space featuring warm integrated LED illumination, clean architectural lines, natural wood elements, and serene neutral earth tones.",
+      "palette": [
+        "#F5F0EB",
+        "#3D3430",
+        "#8C7860",
+        "#D8D5CD",
+        "#222222"
+      ],
+      "montage": [
+        "/images/discover/modern-contemporary/modern-contemporary-004.webp",
+        "/images/discover/modern-contemporary/modern-contemporary-005.webp",
+        "/images/discover/modern-contemporary/modern-contemporary-006.webp",
+        "/images/discover/modern-contemporary/modern-contemporary-007.webp",
+        "/images/discover/modern-contemporary/modern-contemporary-008.webp",
+        "/images/discover/modern-contemporary/modern-contemporary-009.webp"
+      ]
+    },
+    "japandi": {
+      "label": "Japandi",
+      "essence": "A serene Japandi whole-home specification blending Scandinavian minimalism with Japanese wabi-sabi through natural wood textures, organic curves, and warm illumination.",
+      "palette": [
+        "#F5F0EB",
+        "#D8CCA6",
+        "#8C6D53",
+        "#3D352E",
+        "#82634D"
+      ],
+      "montage": [
+        "/images/discover/japandi/japandi-004.webp",
+        "/images/discover/japandi/japandi-005.webp",
+        "/images/discover/japandi/japandi-006.webp",
+        "/images/discover/japandi/japandi-007.webp",
+        "/images/discover/japandi/japandi-008.webp",
+        "/images/discover/japandi/japandi-009.webp"
+      ]
+    },
+    "scandinavian": {
+      "label": "Scandinavian",
+      "essence": "Serene Scandinavian design featuring light wood, natural textures, clean lines, integrated warm illumination, and organic botanical elements.",
+      "palette": [
+        "#F5F5F3",
+        "#3C3733",
+        "#D2B48C",
+        "#E8E4DF",
+        "#8B5A2B"
+      ],
+      "montage": [
+        "/images/discover/scandinavian/scandinavian-004.webp",
+        "/images/discover/scandinavian/scandinavian-005.webp",
+        "/images/discover/scandinavian/scandinavian-006.webp",
+        "/images/discover/scandinavian/scandinavian-007.webp",
+        "/images/discover/scandinavian/scandinavian-008.webp",
+        "/images/discover/scandinavian/scandinavian-009.webp"
+      ]
+    },
+    "biophilic": {
+      "label": "Biophilic",
+      "essence": "An immersive biophilic sanctuary featuring lush indoor foliage, organic wood textures, natural stone, and warm layered illumination.",
+      "palette": [
+        "#4E6040",
+        "#D1B18B",
+        "#2B211A",
+        "#6B4B35",
+        "#EAE2D0"
+      ],
+      "montage": [
+        "/images/discover/biophilic/biophilic-004.webp",
+        "/images/discover/biophilic/biophilic-005.webp",
+        "/images/discover/biophilic/biophilic-006.webp",
+        "/images/discover/biophilic/biophilic-007.webp",
+        "/images/discover/biophilic/biophilic-008.webp",
+        "/images/discover/biophilic/biophilic-009.webp"
+      ]
+    },
+    "coastal": {
+      "label": "Coastal",
+      "essence": "A serene, sunlit coastal home featuring warm natural woods, woven rattan and cane, serene oceanic blues, soft brass details, and organic botanical motifs.",
+      "palette": [
+        "#D5BC9B",
+        "#F4F1EA",
+        "#84A7BC",
+        "#554236",
+        "#8996A6"
+      ],
+      "montage": [
+        "/images/discover/coastal/coastal-004.webp",
+        "/images/discover/coastal/coastal-005.webp",
+        "/images/discover/coastal/coastal-006.webp",
+        "/images/discover/coastal/coastal-007.webp",
+        "/images/discover/coastal/coastal-008.webp",
+        "/images/discover/coastal/coastal-009.webp"
+      ]
+    },
+    "wabi-sabi": {
+      "label": "Wabi Sabi",
+      "essence": "A serene, contemplative wabi-sabi sanctuary fusing organic weathered wood, tactile handmade ceramics, matte plaster, and warm diffuse illumination for grounded living.",
+      "palette": [
+        "#D5C3AA",
+        "#3B3635",
+        "#D8D2CB",
+        "#2B2825",
+        "#7D5B43"
+      ],
+      "montage": [
+        "/images/discover/wabi-sabi/wabi-sabi-004.webp",
+        "/images/discover/wabi-sabi/wabi-sabi-005.webp",
+        "/images/discover/wabi-sabi/wabi-sabi-006.webp",
+        "/images/discover/wabi-sabi/wabi-sabi-007.webp",
+        "/images/discover/wabi-sabi/wabi-sabi-008.webp",
+        "/images/discover/wabi-sabi/wabi-sabi-009.webp"
+      ]
+    },
+    "industrial": {
+      "label": "Industrial",
+      "essence": "Moody industrial whole-home design featuring exposed brick, raw concrete, dark stained wood, and black metal framing under warm, integrated linear lighting.",
+      "palette": [
+        "#2B2B2B",
+        "#2B211A",
+        "#D5B485",
+        "#C87232",
+        "#121212"
+      ],
+      "montage": [
+        "/images/discover/industrial/industrial-004.webp",
+        "/images/discover/industrial/industrial-005.webp",
+        "/images/discover/industrial/industrial-006.webp",
+        "/images/discover/industrial/industrial-007.webp",
+        "/images/discover/industrial/industrial-008.webp",
+        "/images/discover/industrial/industrial-009.webp"
+      ]
+    },
+    "neoclassical": {
+      "label": "Neoclassical",
+      "essence": "Sophisticated neoclassical interior featuring classical architectural wall moldings, vertical fluted millwork, arched cabinetry, polished marble surfaces, warm layered illumination, and luxurious velvet upholstery.",
+      "palette": [
+        "#D8D2CB",
+        "#322A27",
+        "#BDAE9C",
+        "#2B2727",
+        "#CAA465"
+      ],
+      "montage": [
+        "/images/discover/neoclassical/neoclassical-004.webp",
+        "/images/discover/neoclassical/neoclassical-005.webp",
+        "/images/discover/neoclassical/neoclassical-006.webp",
+        "/images/discover/neoclassical/neoclassical-007.webp",
+        "/images/discover/neoclassical/neoclassical-008.webp",
+        "/images/discover/neoclassical/neoclassical-009.webp"
+      ]
+    },
+    "traditional-south-indian": {
+      "label": "Traditional South Indian",
+      "essence": "A warm, rich traditional South Indian style featuring dark carved woods, woven cane, polished brass, and serene cultural artifacts.",
+      "palette": [
+        "#432010",
+        "#7C4A2A",
+        "#D8B05E",
+        "#DCD2C4",
+        "#383431"
+      ],
+      "montage": [
+        "/images/discover/traditional-south-indian/traditional-south-indian-004.webp",
+        "/images/discover/traditional-south-indian/traditional-south-indian-005.webp",
+        "/images/discover/traditional-south-indian/traditional-south-indian-006.webp",
+        "/images/discover/traditional-south-indian/traditional-south-indian-007.webp",
+        "/images/discover/traditional-south-indian/traditional-south-indian-008.webp",
+        "/images/discover/traditional-south-indian/traditional-south-indian-009.webp"
+      ]
+    }
+  },
+  "images": {
+    "japandi-001": {
+      "id": "japandi-001",
+      "path": "/images/discover/japandi/japandi-001.webp",
+      "style": "japandi",
+      "room": "living-room",
+      "materials": [
+        "light wood panels",
+        "slated vertical wood wall",
+        "dark metal media console frame",
+        "woven area rug",
+        "ceramic plant pot",
+        "potted plant",
+        "framed wall art"
+      ],
+      "motifs": [
+        "blooming cherry blossom tree wall mural",
+        "vertical wooden slats",
+        "botanical scrolls"
+      ]
+    },
+    "traditional-south-indian-001": {
+      "id": "traditional-south-indian-001",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-001.webp",
+      "style": "traditional-south-indian",
+      "room": "living-room",
+      "materials": [
+        "dark wood",
+        "polished teak",
+        "ceramic",
+        "glass",
+        "textile",
+        "brass"
+      ],
+      "motifs": [
+        "carved floral pillar base",
+        "geometric rug patterns",
+        "abstract profile art"
+      ]
+    },
+    "modern-contemporary-001": {
+      "id": "modern-contemporary-001",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-001.webp",
+      "style": "modern-contemporary",
+      "room": "living-room",
+      "materials": [
+        "white marble",
+        "light wood",
+        "textured fabric",
+        "matte paint",
+        "glass"
+      ],
+      "motifs": [
+        "vertical fluting",
+        "chevron wood flooring",
+        "marble veining"
+      ]
+    },
+    "neoclassical-001": {
+      "id": "neoclassical-001",
+      "path": "/images/discover/neoclassical/neoclassical-001.webp",
+      "style": "neoclassical",
+      "room": "living-room",
+      "materials": [
+        "plaster walls",
+        "carved wood furniture",
+        "upholstered velvet",
+        "marble tabletop",
+        "metal sconces"
+      ],
+      "motifs": [
+        "damask wall panels",
+        "classical wall molding",
+        "fluted pilasters",
+        "green marble slab"
+      ]
+    },
+    "indo-contemporary-001": {
+      "id": "indo-contemporary-001",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-001.webp",
+      "style": "indo-contemporary",
+      "room": "kitchen",
+      "materials": [
+        "matte green cabinetry",
+        "light wood veneer",
+        "black metal",
+        "glass",
+        "wood flooring"
+      ],
+      "motifs": [
+        "vertical wood grain pattern",
+        "clean minimalist handleless cabinetry lines"
+      ]
+    },
+    "industrial-001": {
+      "id": "industrial-001",
+      "path": "/images/discover/industrial/industrial-001.webp",
+      "style": "industrial",
+      "room": "kitchen",
+      "materials": [
+        "stainless steel",
+        "polished metal",
+        "ceramic tile",
+        "dark metal framing",
+        "brown tile flooring"
+      ],
+      "motifs": [
+        "subway tile backsplash",
+        "exposed industrial ductwork",
+        "exposed ceiling grid"
+      ]
+    },
+    "warm-minimalism-001": {
+      "id": "warm-minimalism-001",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-001.webp",
+      "style": "warm-minimalism",
+      "room": "master-bedroom",
+      "materials": [
+        "hardwood flooring",
+        "white marble",
+        "upholstered fabric",
+        "dark wood veneer",
+        "sheer cotton",
+        "heavy drapery"
+      ],
+      "motifs": [
+        "vertical slat wall paneling",
+        "abstract horizon line painting"
+      ]
+    },
+    "wabi-sabi-001": {
+      "id": "wabi-sabi-001",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-001.webp",
+      "style": "wabi-sabi",
+      "room": "master-bedroom",
+      "materials": [
+        "smooth plaster wall",
+        "textured stone headboard",
+        "grid-patterned wall panels",
+        "light wood platform bed",
+        "light wood floating nightstand",
+        "woven patterned rug",
+        "smooth white ceramic pendant lamps",
+        "textured cotton bedding"
+      ],
+      "motifs": [
+        "geometric grid paneling",
+        "natural stone veining",
+        "concentric semi-circular rug pattern"
+      ]
+    },
+    "art-deco-001": {
+      "id": "art-deco-001",
+      "path": "/images/discover/art-deco/art-deco-001.webp",
+      "style": "art-deco",
+      "room": "master-bedroom",
+      "materials": [
+        "brass metal",
+        "lacquered wood",
+        "glass",
+        "velvet",
+        "cotton"
+      ],
+      "motifs": [
+        "vertical metallic lines",
+        "geometric arches",
+        "stepped geometry"
+      ]
+    },
+    "coastal-001": {
+      "id": "coastal-001",
+      "path": "/images/discover/coastal/coastal-001.webp",
+      "style": "coastal",
+      "room": "master-bedroom",
+      "materials": [
+        "wood slab",
+        "stacked stone",
+        "glass",
+        "metal rods",
+        "pebble resin floor"
+      ],
+      "motifs": [
+        "water and pebble shore floor",
+        "forest view",
+        "stone wall"
+      ]
+    },
+    "mid-century-modern-001": {
+      "id": "mid-century-modern-001",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-001.webp",
+      "style": "mid-century-modern",
+      "room": "wall-panel",
+      "materials": [
+        "dark wood veneer",
+        "white fluted paneling",
+        "white marble with grey veining",
+        "smoked glass",
+        "bronze metal"
+      ],
+      "motifs": [
+        "vertical fluting",
+        "organic pebble shapes",
+        "marble veining"
+      ]
+    },
+    "biophilic-001": {
+      "id": "biophilic-001",
+      "path": "/images/discover/biophilic/biophilic-001.webp",
+      "style": "biophilic",
+      "room": "false-ceiling",
+      "materials": [
+        "textured stone tile",
+        "backlit luminous panel",
+        "wood-print ceiling graphic"
+      ],
+      "motifs": [
+        "canopy tree leaves and branches graphic"
+      ]
+    },
+    "bohemian-001": {
+      "id": "bohemian-001",
+      "path": "/images/discover/bohemian/bohemian-001.webp",
+      "style": "bohemian",
+      "room": "tv-unit",
+      "materials": [
+        "reclaimed wood",
+        "woven rattan",
+        "plaster",
+        "ceramic",
+        "textile"
+      ],
+      "motifs": [
+        "organic natural wood grain",
+        "woven texture patterns",
+        "botanical greenery"
+      ]
+    },
+    "scandinavian-001": {
+      "id": "scandinavian-001",
+      "path": "/images/discover/scandinavian/scandinavian-001.webp",
+      "style": "scandinavian",
+      "room": "pooja-unit",
+      "materials": [
+        "white marble",
+        "light wood",
+        "brass",
+        "textured laminate",
+        "matte green cabinet finish"
+      ],
+      "motifs": [
+        "vertical slats",
+        "arch",
+        "fan-shaped halo"
+      ]
+    },
+    "quiet-luxury-001": {
+      "id": "quiet-luxury-001",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-001.webp",
+      "style": "quiet-luxury",
+      "room": "bar-unit",
+      "materials": [
+        "light wood cabinetry",
+        "white marble countertop",
+        "textured stone backsplash",
+        "glass shelves",
+        "brass hardware",
+        "upholstered bar stools"
+      ],
+      "motifs": [
+        "arch design"
+      ]
+    },
+    "japandi-002": {
+      "id": "japandi-002",
+      "path": "/images/discover/japandi/japandi-002.webp",
+      "style": "japandi",
+      "room": "crockery-unit",
+      "materials": [
+        "matte white laminate",
+        "glass",
+        "brushed metal",
+        "stone-look ceramic tile",
+        "wood veneer"
+      ],
+      "motifs": [
+        "minimalist clean lines",
+        "rounded corners"
+      ]
+    },
+    "traditional-south-indian-002": {
+      "id": "traditional-south-indian-002",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-002.webp",
+      "style": "traditional-south-indian",
+      "room": "foyer",
+      "materials": [
+        "white plastered wall",
+        "terracotta roof tiles",
+        "dark wood beams",
+        "concrete steps",
+        "glass lanterns"
+      ],
+      "motifs": [
+        "curved parapet wall",
+        "sloped tile roof overhang"
+      ]
+    },
+    "modern-contemporary-002": {
+      "id": "modern-contemporary-002",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-002.webp",
+      "style": "modern-contemporary",
+      "room": "foyer",
+      "materials": [
+        "white marble with grey veining",
+        "polished black lacquer",
+        "brushed brass metal",
+        "clear glass",
+        "plaster molding"
+      ],
+      "motifs": [
+        "panel molding on walls",
+        "marbled floor veining"
+      ]
+    },
+    "neoclassical-002": {
+      "id": "neoclassical-002",
+      "path": "/images/discover/neoclassical/neoclassical-002.webp",
+      "style": "neoclassical",
+      "room": "foyer",
+      "materials": [
+        "marble",
+        "polished stone",
+        "glass",
+        "metal",
+        "upholstered fabric",
+        "wood"
+      ],
+      "motifs": [
+        "geometric floor inlay pattern",
+        "vertical wall panel moldings",
+        "arched transom window frames"
+      ]
+    },
+    "indo-contemporary-002": {
+      "id": "indo-contemporary-002",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-002.webp",
+      "style": "indo-contemporary",
+      "room": "foyer",
+      "materials": [
+        "wood",
+        "fluted glass",
+        "metal",
+        "plaster",
+        "ceramic",
+        "textile"
+      ],
+      "motifs": [
+        "floral",
+        "abstract metal grill",
+        "herringbone floor"
+      ]
+    },
+    "industrial-002": {
+      "id": "industrial-002",
+      "path": "/images/discover/industrial/industrial-002.webp",
+      "style": "industrial",
+      "room": "wardrobe",
+      "materials": [
+        "matte dark gray panels",
+        "glossy black center sliding panel",
+        "metal framing",
+        "light wood flooring",
+        "smooth white walls"
+      ],
+      "motifs": [
+        "minimalist grid divisions",
+        "monochrome contrast"
+      ]
+    },
+    "warm-minimalism-002": {
+      "id": "warm-minimalism-002",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-002.webp",
+      "style": "warm-minimalism",
+      "room": "wardrobe",
+      "materials": [
+        "dark wood laminate",
+        "brass metal",
+        "cotton fabric",
+        "ceramic planter",
+        "glass pendant light"
+      ],
+      "motifs": [
+        "vertical fluted panels",
+        "floral print",
+        "photo collage"
+      ]
+    },
+    "wabi-sabi-002": {
+      "id": "wabi-sabi-002",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-002.webp",
+      "style": "wabi-sabi",
+      "room": "dining",
+      "materials": [
+        "microcement",
+        "stone",
+        "dark wood",
+        "terrazzo",
+        "textured fabric",
+        "glass",
+        "ceramic"
+      ],
+      "motifs": [
+        "botanical leaf wall relief",
+        "line art face illustration",
+        "herringbone pattern"
+      ]
+    },
+    "art-deco-002": {
+      "id": "art-deco-002",
+      "path": "/images/discover/art-deco/art-deco-002.webp",
+      "style": "art-deco",
+      "room": "dining",
+      "materials": [
+        "stained wood",
+        "woven cane",
+        "upholstered fabric",
+        "brass",
+        "ceramic",
+        "glass"
+      ],
+      "motifs": [
+        "diagonal lattice",
+        "geometric paneling"
+      ]
+    },
+    "coastal-002": {
+      "id": "coastal-002",
+      "path": "/images/discover/coastal/coastal-002.webp",
+      "style": "coastal",
+      "room": "dining",
+      "materials": [
+        "light wood",
+        "woven rattan",
+        "textured fabric",
+        "ceramic",
+        "glass"
+      ],
+      "motifs": [
+        "natural organic botanicals",
+        "muted earth-toned pottery"
+      ]
+    },
+    "mid-century-modern-002": {
+      "id": "mid-century-modern-002",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-002.webp",
+      "style": "mid-century-modern",
+      "room": "dining",
+      "materials": [
+        "light wood",
+        "brass",
+        "white glass",
+        "fabric upholstery",
+        "ceramic",
+        "dry grass"
+      ],
+      "motifs": [
+        "fluted columns",
+        "arched door panels",
+        "abstract painting"
+      ]
+    },
+    "biophilic-002": {
+      "id": "biophilic-002",
+      "path": "/images/discover/biophilic/biophilic-002.webp",
+      "style": "biophilic",
+      "room": "bathroom-vanity",
+      "materials": [
+        "textured stone tile",
+        "distressed wood",
+        "woven wicker",
+        "ceramic",
+        "cotton"
+      ],
+      "motifs": [
+        "botanical trailing foliage",
+        "geometric tile floor pattern"
+      ]
+    },
+    "bohemian-002": {
+      "id": "bohemian-002",
+      "path": "/images/discover/bohemian/bohemian-002.webp",
+      "style": "bohemian",
+      "room": "bathroom-vanity",
+      "materials": [
+        "wicker",
+        "rattan",
+        "ceramic",
+        "brass",
+        "cotton",
+        "stone",
+        "tile"
+      ],
+      "motifs": [
+        "geometric floor tile pattern",
+        "sunburst wall accents",
+        "arched window-style mirror frame"
+      ]
+    },
+    "scandinavian-002": {
+      "id": "scandinavian-002",
+      "path": "/images/discover/scandinavian/scandinavian-002.webp",
+      "style": "scandinavian",
+      "room": "study-office",
+      "materials": [
+        "wood",
+        "leather",
+        "marble tile",
+        "stone",
+        "glass",
+        "brass"
+      ],
+      "motifs": [
+        "natural wood grain",
+        "marble veining",
+        "botanical greenery"
+      ]
+    },
+    "quiet-luxury-002": {
+      "id": "quiet-luxury-002",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-002.webp",
+      "style": "quiet-luxury",
+      "room": "kids-bedroom",
+      "materials": [
+        "light wood",
+        "boucle fabric",
+        "linen",
+        "ceramic",
+        "paper"
+      ],
+      "motifs": [
+        "arches",
+        "organic shapes",
+        "minimalist geometry"
+      ]
+    },
+    "japandi-003": {
+      "id": "japandi-003",
+      "path": "/images/discover/japandi/japandi-003.webp",
+      "style": "japandi",
+      "room": "shoe-rack",
+      "materials": [
+        "light oak wood",
+        "woven rattan",
+        "fabric",
+        "wicker",
+        "ceramic",
+        "paper"
+      ],
+      "motifs": [
+        "natural wood grain",
+        "woven grid pattern"
+      ]
+    },
+    "traditional-south-indian-003": {
+      "id": "traditional-south-indian-003",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-003.webp",
+      "style": "traditional-south-indian",
+      "room": "kitchen",
+      "materials": [
+        "glossy acrylic cabinets",
+        "brown stone countertop",
+        "polished ceramic floor tiles",
+        "woven baskets",
+        "glass door inserts",
+        "ceramic tile backsplash"
+      ],
+      "motifs": [
+        "geometric tile patterns on floor mats"
+      ]
+    },
+    "modern-contemporary-003": {
+      "id": "modern-contemporary-003",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-003.webp",
+      "style": "modern-contemporary",
+      "room": "living-room",
+      "materials": [
+        "boucle fabric",
+        "dark wood paneling",
+        "beige stone",
+        "ceramic",
+        "glass"
+      ],
+      "motifs": [
+        "classical architectural wall mural",
+        "vertical wood panel lines",
+        "coffered ceiling perimeter"
+      ]
+    },
+    "neoclassical-003": {
+      "id": "neoclassical-003",
+      "path": "/images/discover/neoclassical/neoclassical-003.webp",
+      "style": "neoclassical",
+      "room": "master-bedroom",
+      "materials": [
+        "wood flooring",
+        "plaster walls",
+        "upholstered fabric",
+        "glass windows",
+        "marble tabletop",
+        "metal frames"
+      ],
+      "motifs": [
+        "vertical wall paneling moldings",
+        "arched architectural window frame"
+      ]
+    },
+    "indo-contemporary-003": {
+      "id": "indo-contemporary-003",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-003.webp",
+      "style": "indo-contemporary",
+      "room": "wall-panel",
+      "materials": [
+        "limewash plaster",
+        "light wood",
+        "woven jute",
+        "textured fabric"
+      ],
+      "motifs": [
+        "mughal arches",
+        "geometric fretwork",
+        "repeating frieze borders",
+        "dot patterns"
+      ]
+    },
+    "industrial-003": {
+      "id": "industrial-003",
+      "path": "/images/discover/industrial/industrial-003.webp",
+      "style": "industrial",
+      "room": "wall-panel",
+      "materials": [
+        "exposed brick",
+        "steel beams",
+        "leather",
+        "wood",
+        "concrete",
+        "ceramic"
+      ],
+      "motifs": [
+        "industrial loft structural elements",
+        "grid-framed windows"
+      ]
+    },
+    "warm-minimalism-003": {
+      "id": "warm-minimalism-003",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-003.webp",
+      "style": "warm-minimalism",
+      "room": "wall-panel",
+      "materials": [
+        "light wood slats",
+        "stucco wall finish",
+        "woven jute rug",
+        "ceramic planters",
+        "textured fabric upholstery",
+        "glass windows"
+      ],
+      "motifs": [
+        "vertical wood slats",
+        "monochromatic neutral layering",
+        "organic botanical greenery"
+      ]
+    },
+    "wabi-sabi-003": {
+      "id": "wabi-sabi-003",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-003.webp",
+      "style": "wabi-sabi",
+      "room": "wall-panel",
+      "materials": [
+        "upholstered fabric bed frame",
+        "light wood nightstands",
+        "plaster textured wall",
+        "smooth cotton bedding",
+        "glass vase"
+      ],
+      "motifs": [
+        "large scale muted tree mural on wall"
+      ]
+    },
+    "art-deco-003": {
+      "id": "art-deco-003",
+      "path": "/images/discover/art-deco/art-deco-003.webp",
+      "style": "art-deco",
+      "room": "pooja-unit",
+      "materials": [
+        "white marble",
+        "brushed brass",
+        "ceramic tiles",
+        "wood paneling"
+      ],
+      "motifs": [
+        "octagonal star geometric frieze",
+        "grid wainscoting"
+      ]
+    },
+    "coastal-003": {
+      "id": "coastal-003",
+      "path": "/images/discover/coastal/coastal-003.webp",
+      "style": "coastal",
+      "room": "pooja-unit",
+      "materials": [
+        "light wood panels",
+        "stone floor tiles",
+        "pebbles",
+        "brass fixtures",
+        "white laminate storage units"
+      ],
+      "motifs": [
+        "peacock feathers",
+        "deity figures"
+      ]
+    },
+    "mid-century-modern-003": {
+      "id": "mid-century-modern-003",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-003.webp",
+      "style": "mid-century-modern",
+      "room": "living-room",
+      "materials": [
+        "wood",
+        "boucle fabric",
+        "leather",
+        "ceramic",
+        "glass",
+        "textured plaster"
+      ],
+      "motifs": [
+        "abstract organic shapes in art",
+        "organic curved furniture silhouettes"
+      ]
+    },
+    "biophilic-003": {
+      "id": "biophilic-003",
+      "path": "/images/discover/biophilic/biophilic-003.webp",
+      "style": "biophilic",
+      "room": "kitchen",
+      "materials": [
+        "wood cabinets",
+        "dark stone countertop",
+        "metal wire frame",
+        "woven wicker",
+        "patterned ceramic tile"
+      ],
+      "motifs": [
+        "botanical plants",
+        "geometric floor tiles"
+      ]
+    },
+    "bohemian-003": {
+      "id": "bohemian-003",
+      "path": "/images/discover/bohemian/bohemian-003.webp",
+      "style": "bohemian",
+      "room": "master-bedroom",
+      "materials": [
+        "wood wall panels",
+        "fluted wood wainscoting",
+        "chanel tufted burgundy velvet headboard",
+        "textured wallpaper",
+        "beige linen bedding",
+        "fringed throw blanket",
+        "cream velvet upholstery",
+        "brass metal hardware",
+        "frosted glass pendants"
+      ],
+      "motifs": [
+        "botanical bird and floral artwork",
+        "damask or floral rug pattern",
+        "vertical fluted wainscoting channels",
+        "scalloped or arched headboard profile"
+      ]
+    },
+    "scandinavian-003": {
+      "id": "scandinavian-003",
+      "path": "/images/discover/scandinavian/scandinavian-003.webp",
+      "style": "scandinavian",
+      "room": "dining",
+      "materials": [
+        "light oak wood",
+        "woven wool rug",
+        "ceramic",
+        "glass",
+        "cotton fabric",
+        "metal"
+      ],
+      "motifs": [
+        "minimalist botanical dried grass",
+        "clean architectural wall paneling"
+      ]
+    },
+    "quiet-luxury-003": {
+      "id": "quiet-luxury-003",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-003.webp",
+      "style": "quiet-luxury",
+      "room": "study-office",
+      "materials": [
+        "wood paneling",
+        "black leather",
+        "glass",
+        "metal framing",
+        "stone floor tiles"
+      ],
+      "motifs": [
+        "clean architectural lines",
+        "vertical wood grain"
+      ]
+    },
+    "quiet-luxury-004": {
+      "id": "quiet-luxury-004",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-004.webp",
+      "style": "quiet-luxury",
+      "room": "tv-unit",
+      "materials": [
+        "light wood veneer",
+        "textured fabric",
+        "travertine stone",
+        "matte painted wall panels",
+        "glass",
+        "ceramic"
+      ],
+      "motifs": [
+        "vertical slat paneling",
+        "fluted wall details",
+        "organic curved silhouettes"
+      ]
+    },
+    "quiet-luxury-005": {
+      "id": "quiet-luxury-005",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-005.webp",
+      "style": "quiet-luxury",
+      "room": "pooja-unit",
+      "materials": [
+        "stucco",
+        "plaster",
+        "stone"
+      ],
+      "motifs": [
+        "vaulted arches"
+      ]
+    },
+    "quiet-luxury-006": {
+      "id": "quiet-luxury-006",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-006.webp",
+      "style": "quiet-luxury",
+      "room": "shoe-rack",
+      "materials": [
+        "wood",
+        "glass",
+        "metal",
+        "fabric",
+        "stone"
+      ],
+      "motifs": [
+        "arches",
+        "clean geometric lines",
+        "concentric rug pattern"
+      ]
+    },
+    "quiet-luxury-007": {
+      "id": "quiet-luxury-007",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-007.webp",
+      "style": "quiet-luxury",
+      "room": "kitchen",
+      "materials": [
+        "dark wood veneer",
+        "matte cream laminate",
+        "grey textured stone",
+        "stainless steel",
+        "glass"
+      ],
+      "motifs": [
+        "linear wood grain",
+        "stone marbling"
+      ]
+    },
+    "quiet-luxury-008": {
+      "id": "quiet-luxury-008",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-008.webp",
+      "style": "quiet-luxury",
+      "room": "kids-bedroom",
+      "materials": [
+        "light oak wood",
+        "painted white plastic",
+        "chunky knit wool",
+        "cotton fabric",
+        "plywood"
+      ],
+      "motifs": [
+        "clouds",
+        "mountains",
+        "minimalist moon halo"
+      ]
+    },
+    "bohemian-004": {
+      "id": "bohemian-004",
+      "path": "/images/discover/bohemian/bohemian-004.webp",
+      "style": "bohemian",
+      "room": "living-room",
+      "materials": [
+        "rattan",
+        "wicker",
+        "wood",
+        "leather",
+        "cotton",
+        "jute",
+        "ceramic"
+      ],
+      "motifs": [
+        "tribal geometric rug pattern",
+        "palm tree photography",
+        "macrame fringe"
+      ]
+    },
+    "bohemian-005": {
+      "id": "bohemian-005",
+      "path": "/images/discover/bohemian/bohemian-005.webp",
+      "style": "bohemian",
+      "room": "master-bedroom",
+      "materials": [
+        "wood",
+        "woven rattan",
+        "linen",
+        "ceramic",
+        "woven wool"
+      ],
+      "motifs": [
+        "geometric wood carving",
+        "woven sunburst pattern",
+        "arched architectural niches"
+      ]
+    },
+    "bohemian-006": {
+      "id": "bohemian-006",
+      "path": "/images/discover/bohemian/bohemian-006.webp",
+      "style": "bohemian",
+      "room": "kids-bedroom",
+      "materials": [
+        "wicker",
+        "rattan",
+        "wood",
+        "woven jute",
+        "ceramic",
+        "macrame cotton",
+        "linen"
+      ],
+      "motifs": [
+        "desert landscape",
+        "cactus",
+        "fan circles",
+        "stripes"
+      ]
+    },
+    "bohemian-007": {
+      "id": "bohemian-007",
+      "path": "/images/discover/bohemian/bohemian-007.webp",
+      "style": "bohemian",
+      "room": "kitchen",
+      "materials": [
+        "wood butcher block countertops",
+        "woven wicker pendant shades",
+        "ceramic terracotta wall tiles",
+        "painted wooden cabinets",
+        "woven baskets",
+        "ceramic bowls and plates"
+      ],
+      "motifs": [
+        "square tile grid",
+        "woven texture",
+        "natural wood grain"
+      ]
+    },
+    "bohemian-008": {
+      "id": "bohemian-008",
+      "path": "/images/discover/bohemian/bohemian-008.webp",
+      "style": "bohemian",
+      "room": "false-ceiling",
+      "materials": [
+        "wood",
+        "plaster",
+        "fabric",
+        "glass"
+      ],
+      "motifs": [
+        "organic layered topographical ceiling contours",
+        "flowing abstract waves"
+      ]
+    },
+    "bohemian-009": {
+      "id": "bohemian-009",
+      "path": "/images/discover/bohemian/bohemian-009.webp",
+      "style": "bohemian",
+      "room": "foyer",
+      "materials": [
+        "wood",
+        "ceramic",
+        "woven grasscloth",
+        "fabric"
+      ],
+      "motifs": [
+        "concentric circles",
+        "botanical",
+        "carved patterns"
+      ]
+    },
+    "mid-century-modern-004": {
+      "id": "mid-century-modern-004",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-004.webp",
+      "style": "mid-century-modern",
+      "room": "dining",
+      "materials": [
+        "wood",
+        "woven rush",
+        "ceramic",
+        "paper",
+        "metal",
+        "wool"
+      ],
+      "motifs": [
+        "minimalist gallery wall",
+        "organic wood grain"
+      ]
+    },
+    "mid-century-modern-005": {
+      "id": "mid-century-modern-005",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-005.webp",
+      "style": "mid-century-modern",
+      "room": "bar-unit",
+      "materials": [
+        "dark wood veneer",
+        "grey textured stone",
+        "black metal",
+        "leather",
+        "glass"
+      ],
+      "motifs": [
+        "vertical wood paneling",
+        "stone veining"
+      ]
+    },
+    "mid-century-modern-006": {
+      "id": "mid-century-modern-006",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-006.webp",
+      "style": "mid-century-modern",
+      "room": "bathroom-vanity",
+      "materials": [
+        "glossy ceramic tile",
+        "walnut wood veneer",
+        "white solid surface countertop",
+        "clear glass",
+        "matte black metal",
+        "porcelain"
+      ],
+      "motifs": [
+        "vertical stack bond tile pattern",
+        "geometric tribal rug print",
+        "horizontal wood grain"
+      ]
+    },
+    "mid-century-modern-007": {
+      "id": "mid-century-modern-007",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-007.webp",
+      "style": "mid-century-modern",
+      "room": "kids-bedroom",
+      "materials": [
+        "painted wood",
+        "cane webbing",
+        "upholstered velvet",
+        "cotton",
+        "felt storage bins"
+      ],
+      "motifs": [
+        "vertical stripes",
+        "perforated dots",
+        "stylized animal illustrations"
+      ]
+    },
+    "mid-century-modern-008": {
+      "id": "mid-century-modern-008",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-008.webp",
+      "style": "mid-century-modern",
+      "room": "kitchen",
+      "materials": [
+        "glossy acrylic cabinetry",
+        "dark wood veneer",
+        "white stone countertop",
+        "wood flooring",
+        "black metal hardware",
+        "glass shelves"
+      ],
+      "motifs": [
+        "vertical wood grain",
+        "linear cabinetry panels"
+      ]
+    },
+    "mid-century-modern-009": {
+      "id": "mid-century-modern-009",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-009.webp",
+      "style": "mid-century-modern",
+      "room": "false-ceiling",
+      "materials": [
+        "wood",
+        "marble",
+        "plaster",
+        "metal",
+        "upholstery"
+      ],
+      "motifs": [
+        "coffered ceiling grid",
+        "marble veining"
+      ]
+    },
+    "art-deco-004": {
+      "id": "art-deco-004",
+      "path": "/images/discover/art-deco/art-deco-004.webp",
+      "style": "art-deco",
+      "room": "shoe-rack",
+      "materials": [
+        "wood",
+        "cane webbing",
+        "leather",
+        "wicker"
+      ],
+      "motifs": [
+        "grid pattern",
+        "herringbone floor"
+      ]
+    },
+    "art-deco-005": {
+      "id": "art-deco-005",
+      "path": "/images/discover/art-deco/art-deco-005.webp",
+      "style": "art-deco",
+      "room": "pooja-unit",
+      "materials": [
+        "painted wood",
+        "white marble",
+        "brass metal"
+      ],
+      "motifs": [
+        "lotus flowers",
+        "elephants",
+        "om symbol"
+      ]
+    },
+    "art-deco-006": {
+      "id": "art-deco-006",
+      "path": "/images/discover/art-deco/art-deco-006.webp",
+      "style": "art-deco",
+      "room": "tv-unit",
+      "materials": [
+        "wood",
+        "fluted glass",
+        "paper",
+        "plastic",
+        "metal"
+      ],
+      "motifs": [
+        "circular porthole glass doors",
+        "herringbone wood floor pattern"
+      ]
+    },
+    "art-deco-007": {
+      "id": "art-deco-007",
+      "path": "/images/discover/art-deco/art-deco-007.webp",
+      "style": "art-deco",
+      "room": "study-office",
+      "materials": [
+        "dark green velvet",
+        "black marble",
+        "polished brass",
+        "dark wood",
+        "glass"
+      ],
+      "motifs": [
+        "geometric wall panels",
+        "stepped ceiling molding",
+        "herringbone pattern wallpaper"
+      ]
+    },
+    "art-deco-008": {
+      "id": "art-deco-008",
+      "path": "/images/discover/art-deco/art-deco-008.webp",
+      "style": "art-deco",
+      "room": "wardrobe",
+      "materials": [
+        "painted wood",
+        "brass metal",
+        "glass mirror",
+        "velvet fabric"
+      ],
+      "motifs": [
+        "vertical fluting",
+        "curved parallel lines"
+      ]
+    },
+    "art-deco-009": {
+      "id": "art-deco-009",
+      "path": "/images/discover/art-deco/art-deco-009.webp",
+      "style": "art-deco",
+      "room": "wall-panel",
+      "materials": [
+        "white marble",
+        "textured plaster",
+        "brown leather",
+        "dark wood",
+        "polished stone"
+      ],
+      "motifs": [
+        "large relief lotus flowers",
+        "floral stems and leaves"
+      ]
+    },
+    "warm-minimalism-004": {
+      "id": "warm-minimalism-004",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-004.webp",
+      "style": "warm-minimalism",
+      "room": "pooja-unit",
+      "materials": [
+        "wood",
+        "white painted wood",
+        "brass",
+        "ceramic"
+      ],
+      "motifs": [
+        "om symbol",
+        "geometric jali pattern",
+        "star lattice"
+      ]
+    },
+    "warm-minimalism-005": {
+      "id": "warm-minimalism-005",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-005.webp",
+      "style": "warm-minimalism",
+      "room": "shoe-rack",
+      "materials": [
+        "vertical wood wall paneling",
+        "matte beige cabinet doors",
+        "light wood cabinetry",
+        "upholstered cushion fabric",
+        "ceramic vase",
+        "stacked books"
+      ],
+      "motifs": [
+        "vertical wood grain lines",
+        "clean geometric grid panels",
+        "natural blossoming branch arrangement"
+      ]
+    },
+    "warm-minimalism-006": {
+      "id": "warm-minimalism-006",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-006.webp",
+      "style": "warm-minimalism",
+      "room": "study-office",
+      "materials": [
+        "light wood laminate",
+        "white painted wood",
+        "mesh fabric",
+        "ceramic",
+        "glass"
+      ],
+      "motifs": [
+        "vertical slats",
+        "typographic wall quote",
+        "trailing botanical greenery"
+      ]
+    },
+    "warm-minimalism-007": {
+      "id": "warm-minimalism-007",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-007.webp",
+      "style": "warm-minimalism",
+      "room": "tv-unit",
+      "materials": [
+        "dark wood",
+        "brass",
+        "glass",
+        "ceramic",
+        "woven fabric"
+      ],
+      "motifs": [
+        "organic curves",
+        "vertical fluting"
+      ]
+    },
+    "warm-minimalism-008": {
+      "id": "warm-minimalism-008",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-008.webp",
+      "style": "warm-minimalism",
+      "room": "wall-panel",
+      "materials": [
+        "wood",
+        "fabric",
+        "ceramic",
+        "flokati wool"
+      ],
+      "motifs": [
+        "neutral solid wall panel block",
+        "minimalist abstract art"
+      ]
+    },
+    "warm-minimalism-009": {
+      "id": "warm-minimalism-009",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-009.webp",
+      "style": "warm-minimalism",
+      "room": "wardrobe",
+      "materials": [
+        "light wood",
+        "white plaster",
+        "cotton fabric",
+        "ceramic",
+        "matte black metal"
+      ],
+      "motifs": [
+        "wood grain"
+      ]
+    },
+    "indo-contemporary-004": {
+      "id": "indo-contemporary-004",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-004.webp",
+      "style": "indo-contemporary",
+      "room": "wall-panel",
+      "materials": [
+        "wood",
+        "stone",
+        "cane",
+        "fabric",
+        "metal",
+        "jute"
+      ],
+      "motifs": [
+        "vertical fluted wall paneling",
+        "botanical tree painting"
+      ]
+    },
+    "indo-contemporary-005": {
+      "id": "indo-contemporary-005",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-005.webp",
+      "style": "indo-contemporary",
+      "room": "wardrobe",
+      "materials": [
+        "white painted wood",
+        "glass mirror",
+        "metallic bronze handles",
+        "fabric storage boxes"
+      ],
+      "motifs": [
+        "floral print",
+        "grid pattern"
+      ]
+    },
+    "indo-contemporary-006": {
+      "id": "indo-contemporary-006",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-006.webp",
+      "style": "indo-contemporary",
+      "room": "pooja-unit",
+      "materials": [
+        "dark carved wood",
+        "cream marble",
+        "beige textured stone tile",
+        "polished brass",
+        "ceramic"
+      ],
+      "motifs": [
+        "om symbol framed by lotus petal relief",
+        "floral and foliage fretwork",
+        "diamond rug pattern"
+      ]
+    },
+    "indo-contemporary-007": {
+      "id": "indo-contemporary-007",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-007.webp",
+      "style": "indo-contemporary",
+      "room": "shoe-rack",
+      "materials": [
+        "wood",
+        "cane webbing",
+        "leather",
+        "canvas",
+        "ceramic"
+      ],
+      "motifs": [
+        "cane weave pattern"
+      ]
+    },
+    "indo-contemporary-008": {
+      "id": "indo-contemporary-008",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-008.webp",
+      "style": "indo-contemporary",
+      "room": "study-office",
+      "materials": [
+        "polished wood",
+        "slat wood paneling",
+        "frosted glass",
+        "ceramic tiles",
+        "mesh fabric",
+        "faux leather"
+      ],
+      "motifs": [
+        "vertical slats",
+        "grid pattern"
+      ]
+    },
+    "indo-contemporary-009": {
+      "id": "indo-contemporary-009",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-009.webp",
+      "style": "indo-contemporary",
+      "room": "tv-unit",
+      "materials": [
+        "dark wood",
+        "textured plaster",
+        "polished marble tile"
+      ],
+      "motifs": [
+        "painted floral stems on wall",
+        "carved floral medallions on cabinet doors"
+      ]
+    },
+    "modern-contemporary-004": {
+      "id": "modern-contemporary-004",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-004.webp",
+      "style": "modern-contemporary",
+      "room": "living-room",
+      "materials": [
+        "white upholstery fabric",
+        "travertine stone",
+        "light wood",
+        "ceramic",
+        "sheer linen"
+      ],
+      "motifs": [
+        "solid neutral blocks",
+        "natural botanical greenery"
+      ]
+    },
+    "modern-contemporary-005": {
+      "id": "modern-contemporary-005",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-005.webp",
+      "style": "modern-contemporary",
+      "room": "master-bedroom",
+      "materials": [
+        "fabric upholstery",
+        "painted drywall",
+        "wood flooring",
+        "textured wood",
+        "glass"
+      ],
+      "motifs": [
+        "architectural wall molding arches",
+        "vertical fluting"
+      ]
+    },
+    "modern-contemporary-006": {
+      "id": "modern-contemporary-006",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-006.webp",
+      "style": "modern-contemporary",
+      "room": "bar-unit",
+      "materials": [
+        "walnut wood",
+        "dark navy lacquer",
+        "glass",
+        "brass hardware"
+      ],
+      "motifs": [
+        "chevron wood grain",
+        "vertical slat backing"
+      ]
+    },
+    "modern-contemporary-007": {
+      "id": "modern-contemporary-007",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-007.webp",
+      "style": "modern-contemporary",
+      "room": "bathroom-vanity",
+      "materials": [
+        "fluted wood paneling",
+        "marble countertop",
+        "brushed brass metal",
+        "white ceramic",
+        "glass",
+        "textured stone wall tile"
+      ],
+      "motifs": [
+        "vertical fluting",
+        "organic botanical branches"
+      ]
+    },
+    "modern-contemporary-008": {
+      "id": "modern-contemporary-008",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-008.webp",
+      "style": "modern-contemporary",
+      "room": "crockery-unit",
+      "materials": [
+        "dark wood or laminate",
+        "clear glass",
+        "matte grey lacquer",
+        "ceramic",
+        "metal hardware"
+      ],
+      "motifs": [
+        "clean geometric lines",
+        "grid pattern display"
+      ]
+    },
+    "modern-contemporary-009": {
+      "id": "modern-contemporary-009",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-009.webp",
+      "style": "modern-contemporary",
+      "room": "dining",
+      "materials": [
+        "dark stained wood",
+        "light wood",
+        "textured plaster",
+        "fabric",
+        "ceramic",
+        "glass"
+      ],
+      "motifs": [
+        "organic botanical branches",
+        "smooth rounded table edges"
+      ]
+    },
+    "japandi-004": {
+      "id": "japandi-004",
+      "path": "/images/discover/japandi/japandi-004.webp",
+      "style": "japandi",
+      "room": "shoe-rack",
+      "materials": [
+        "light oak wood",
+        "woven rattan",
+        "leather pulls",
+        "fabric cushion",
+        "ceramic pot",
+        "metal hardware"
+      ],
+      "motifs": [
+        "minimalist grid",
+        "caning texture",
+        "abstract architectural print"
+      ]
+    },
+    "japandi-005": {
+      "id": "japandi-005",
+      "path": "/images/discover/japandi/japandi-005.webp",
+      "style": "japandi",
+      "room": "pooja-unit",
+      "materials": [
+        "wood",
+        "cane webbing",
+        "metal",
+        "ceramic",
+        "brass"
+      ],
+      "motifs": [
+        "lotus flower",
+        "birds",
+        "stripes",
+        "botanical"
+      ]
+    },
+    "japandi-006": {
+      "id": "japandi-006",
+      "path": "/images/discover/japandi/japandi-006.webp",
+      "style": "japandi",
+      "room": "tv-unit",
+      "materials": [
+        "dark wood",
+        "canvas",
+        "ceramic",
+        "metal",
+        "textured fabric"
+      ],
+      "motifs": [
+        "abstract organic waves",
+        "minimalist linear"
+      ]
+    },
+    "japandi-007": {
+      "id": "japandi-007",
+      "path": "/images/discover/japandi/japandi-007.webp",
+      "style": "japandi",
+      "room": "study-office",
+      "materials": [
+        "light oak wood",
+        "linen upholstery",
+        "metal hardware",
+        "glass windows",
+        "paper books"
+      ],
+      "motifs": [
+        "linear wooden slats",
+        "grid bookshelf pattern",
+        "foliage shadow pattern"
+      ]
+    },
+    "japandi-008": {
+      "id": "japandi-008",
+      "path": "/images/discover/japandi/japandi-008.webp",
+      "style": "japandi",
+      "room": "wardrobe",
+      "materials": [
+        "wood veneer",
+        "glass",
+        "metal",
+        "upholstery fabric",
+        "ceramic"
+      ],
+      "motifs": [
+        "vertical wood grain",
+        "chevron flooring pattern"
+      ]
+    },
+    "japandi-009": {
+      "id": "japandi-009",
+      "path": "/images/discover/japandi/japandi-009.webp",
+      "style": "japandi",
+      "room": "wall-panel",
+      "materials": [
+        "textured boucle fabric",
+        "dark stained wood",
+        "light wood",
+        "clear glass",
+        "matte ceramic",
+        "woven fiber"
+      ],
+      "motifs": [
+        "large arched wall panel moldings"
+      ]
+    },
+    "scandinavian-004": {
+      "id": "scandinavian-004",
+      "path": "/images/discover/scandinavian/scandinavian-004.webp",
+      "style": "scandinavian",
+      "room": "crockery-unit",
+      "materials": [
+        "teak wood",
+        "glass",
+        "ceramic"
+      ],
+      "motifs": [
+        "wood grain"
+      ]
+    },
+    "scandinavian-005": {
+      "id": "scandinavian-005",
+      "path": "/images/discover/scandinavian/scandinavian-005.webp",
+      "style": "scandinavian",
+      "room": "dining",
+      "materials": [
+        "light oak wood",
+        "linen fabric",
+        "clear glass",
+        "matte white ceramic",
+        "brass metal"
+      ],
+      "motifs": [
+        "minimalist vertical window panels",
+        "clean linear lighting fixture"
+      ]
+    },
+    "scandinavian-006": {
+      "id": "scandinavian-006",
+      "path": "/images/discover/scandinavian/scandinavian-006.webp",
+      "style": "scandinavian",
+      "room": "bar-unit",
+      "materials": [
+        "wood",
+        "glass",
+        "mirrored glass",
+        "metal",
+        "fabric"
+      ],
+      "motifs": [
+        "wood grain",
+        "vertical wall panels"
+      ]
+    },
+    "scandinavian-007": {
+      "id": "scandinavian-007",
+      "path": "/images/discover/scandinavian/scandinavian-007.webp",
+      "style": "scandinavian",
+      "room": "bathroom-vanity",
+      "materials": [
+        "white square mosaic tile",
+        "green square mosaic tile",
+        "natural wood",
+        "matte gray ceramic",
+        "terrazzo",
+        "metal",
+        "cotton"
+      ],
+      "motifs": [
+        "small grid tile pattern",
+        "striped towel pattern"
+      ]
+    },
+    "scandinavian-008": {
+      "id": "scandinavian-008",
+      "path": "/images/discover/scandinavian/scandinavian-008.webp",
+      "style": "scandinavian",
+      "room": "kids-bedroom",
+      "materials": [
+        "light wood",
+        "cotton fabric",
+        "sheer linen",
+        "glass",
+        "plush"
+      ],
+      "motifs": [
+        "panda illustration",
+        "wavy wall contour",
+        "tiny cross pattern"
+      ]
+    },
+    "scandinavian-009": {
+      "id": "scandinavian-009",
+      "path": "/images/discover/scandinavian/scandinavian-009.webp",
+      "style": "scandinavian",
+      "room": "kitchen",
+      "materials": [
+        "painted wood",
+        "light wood veneer",
+        "marble slab",
+        "ceramic",
+        "matte black metal"
+      ],
+      "motifs": [
+        "natural wood grain",
+        "subtle marble veining"
+      ]
+    },
+    "biophilic-004": {
+      "id": "biophilic-004",
+      "path": "/images/discover/biophilic/biophilic-004.webp",
+      "style": "biophilic",
+      "room": "wardrobe",
+      "materials": [
+        "wood veneer",
+        "matte black metal hardware",
+        "printed botanical panels",
+        "smooth solid panels"
+      ],
+      "motifs": [
+        "botanical flower and leaf prints",
+        "wood grain pattern"
+      ]
+    },
+    "biophilic-005": {
+      "id": "biophilic-005",
+      "path": "/images/discover/biophilic/biophilic-005.webp",
+      "style": "biophilic",
+      "room": "wall-panel",
+      "materials": [
+        "smooth concrete panels",
+        "polished wood flooring",
+        "vertical green foliage",
+        "slatted wood framing"
+      ],
+      "motifs": [
+        "botanical vertical garden",
+        "leaf shadow projection"
+      ]
+    },
+    "biophilic-006": {
+      "id": "biophilic-006",
+      "path": "/images/discover/biophilic/biophilic-006.webp",
+      "style": "biophilic",
+      "room": "shoe-rack",
+      "materials": [
+        "light wood veneer",
+        "oak",
+        "leather",
+        "knit fabric",
+        "canvas"
+      ],
+      "motifs": [
+        "natural wood grain",
+        "circular hardware"
+      ]
+    },
+    "biophilic-007": {
+      "id": "biophilic-007",
+      "path": "/images/discover/biophilic/biophilic-007.webp",
+      "style": "biophilic",
+      "room": "pooja-unit",
+      "materials": [
+        "wood slats",
+        "natural stone wall tiles",
+        "dark slate floor tiles",
+        "brass metal",
+        "translucent backlit onyx",
+        "ceramic planters"
+      ],
+      "motifs": [
+        "sacred om symbol on wooden arch backdrop"
+      ]
+    },
+    "biophilic-008": {
+      "id": "biophilic-008",
+      "path": "/images/discover/biophilic/biophilic-008.webp",
+      "style": "biophilic",
+      "room": "tv-unit",
+      "materials": [
+        "concrete wall",
+        "live-edge wood",
+        "dark wood",
+        "light wood flooring"
+      ],
+      "motifs": [
+        "organic live-edge grain",
+        "curved structural wall",
+        "exposed ceiling beams"
+      ]
+    },
+    "biophilic-009": {
+      "id": "biophilic-009",
+      "path": "/images/discover/biophilic/biophilic-009.webp",
+      "style": "biophilic",
+      "room": "study-office",
+      "materials": [
+        "wood",
+        "ceramic",
+        "wicker",
+        "glass",
+        "textile"
+      ],
+      "motifs": [
+        "botanical",
+        "plant life"
+      ]
+    },
+    "coastal-004": {
+      "id": "coastal-004",
+      "path": "/images/discover/coastal/coastal-004.webp",
+      "style": "coastal",
+      "room": "living-room",
+      "materials": [
+        "whitewashed wood",
+        "glass",
+        "ceramic",
+        "fabric",
+        "dried botanicals",
+        "seashells"
+      ],
+      "motifs": [
+        "coastal",
+        "botanical",
+        "nautical"
+      ]
+    },
+    "coastal-005": {
+      "id": "coastal-005",
+      "path": "/images/discover/coastal/coastal-005.webp",
+      "style": "coastal",
+      "room": "master-bedroom",
+      "materials": [
+        "wood bed frame",
+        "woven rattan trunk",
+        "woven wicker pendant light",
+        "fabric bedding",
+        "woven rug",
+        "metal curtain rod",
+        "ceramic lamp base",
+        "canvas art print"
+      ],
+      "motifs": [
+        "ocean waves",
+        "natural woven textures"
+      ]
+    },
+    "coastal-006": {
+      "id": "coastal-006",
+      "path": "/images/discover/coastal/coastal-006.webp",
+      "style": "coastal",
+      "room": "crockery-unit",
+      "materials": [
+        "whitewashed wood",
+        "glass",
+        "ceramic",
+        "terracotta",
+        "metal wire"
+      ],
+      "motifs": [
+        "arched glass panels",
+        "fluted drawer fronts"
+      ]
+    },
+    "coastal-007": {
+      "id": "coastal-007",
+      "path": "/images/discover/coastal/coastal-007.webp",
+      "style": "coastal",
+      "room": "dining",
+      "materials": [
+        "light oak wood",
+        "woven rattan",
+        "linen fabric",
+        "ceramic",
+        "pampas grass"
+      ],
+      "motifs": [
+        "nature landscape",
+        "botanical plants",
+        "earthy textures"
+      ]
+    },
+    "coastal-008": {
+      "id": "coastal-008",
+      "path": "/images/discover/coastal/coastal-008.webp",
+      "style": "coastal",
+      "room": "bar-unit",
+      "materials": [
+        "light wood veneer",
+        "slatted wood",
+        "mirrored back",
+        "glass shelf",
+        "metal frame"
+      ],
+      "motifs": [
+        "vertical fluting",
+        "curved edges"
+      ]
+    },
+    "coastal-009": {
+      "id": "coastal-009",
+      "path": "/images/discover/coastal/coastal-009.webp",
+      "style": "coastal",
+      "room": "bathroom-vanity",
+      "materials": [
+        "painted wood",
+        "ceramic tile",
+        "marble countertop",
+        "brass hardware",
+        "glass"
+      ],
+      "motifs": [
+        "vertical fluting",
+        "vertical tiling"
+      ]
+    },
+    "wabi-sabi-004": {
+      "id": "wabi-sabi-004",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-004.webp",
+      "style": "wabi-sabi",
+      "room": "wall-panel",
+      "materials": [
+        "wood beams",
+        "textured stucco wall",
+        "fabric upholstered chair",
+        "ceramic vase",
+        "terracotta jar",
+        "stone wall panel"
+      ],
+      "motifs": [
+        "striped frieze band",
+        "organic striped art print",
+        "wooden ceiling beams"
+      ]
+    },
+    "wabi-sabi-005": {
+      "id": "wabi-sabi-005",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-005.webp",
+      "style": "wabi-sabi",
+      "room": "tv-unit",
+      "materials": [
+        "plaster",
+        "wood",
+        "woven rattan",
+        "fabric",
+        "ceramic"
+      ],
+      "motifs": [
+        "curved architectural forms",
+        "grid paneling"
+      ]
+    },
+    "wabi-sabi-006": {
+      "id": "wabi-sabi-006",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-006.webp",
+      "style": "wabi-sabi",
+      "room": "study-office",
+      "materials": [
+        "dark wood",
+        "leather",
+        "fabric wall paneling",
+        "woven textile"
+      ],
+      "motifs": [
+        "herringbone pattern",
+        "horizontal wood grain"
+      ]
+    },
+    "wabi-sabi-007": {
+      "id": "wabi-sabi-007",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-007.webp",
+      "style": "wabi-sabi",
+      "room": "shoe-rack",
+      "materials": [
+        "wood",
+        "rattan mesh",
+        "leather shoes",
+        "woven basket",
+        "ceramic pot"
+      ],
+      "motifs": [
+        "woven cane grid",
+        "herringbone wood floor"
+      ]
+    },
+    "wabi-sabi-008": {
+      "id": "wabi-sabi-008",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-008.webp",
+      "style": "wabi-sabi",
+      "room": "wardrobe",
+      "materials": [
+        "dark wood",
+        "woven rattan",
+        "textured fabric"
+      ],
+      "motifs": [
+        "woven grid pattern"
+      ]
+    },
+    "wabi-sabi-009": {
+      "id": "wabi-sabi-009",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-009.webp",
+      "style": "wabi-sabi",
+      "room": "bar-unit",
+      "materials": [
+        "smooth matte plaster",
+        "dark wood cabinetry",
+        "metal or dark timber shelves",
+        "ceramic or earthenware objects",
+        "glass shelf"
+      ],
+      "motifs": [
+        "vertical fluted wall panels",
+        "clean geometric lines"
+      ]
+    },
+    "industrial-004": {
+      "id": "industrial-004",
+      "path": "/images/discover/industrial/industrial-004.webp",
+      "style": "industrial",
+      "room": "false-ceiling",
+      "materials": [
+        "wood laminate flooring",
+        "light wood coffered ceiling",
+        "plaster walls",
+        "leather lounge chair upholstery",
+        "textured sofa upholstery",
+        "dark stone pedestal"
+      ],
+      "motifs": [
+        "coffered ceiling grid",
+        "abstract geometric wall art"
+      ]
+    },
+    "industrial-005": {
+      "id": "industrial-005",
+      "path": "/images/discover/industrial/industrial-005.webp",
+      "style": "industrial",
+      "room": "foyer",
+      "materials": [
+        "distressed brick",
+        "weathered plaster",
+        "stained wood",
+        "metal",
+        "concrete"
+      ],
+      "motifs": [
+        "exposed structural brick",
+        "distressed multi-layered wall texture"
+      ]
+    },
+    "industrial-006": {
+      "id": "industrial-006",
+      "path": "/images/discover/industrial/industrial-006.webp",
+      "style": "industrial",
+      "room": "kids-bedroom",
+      "materials": [
+        "red brick",
+        "wood",
+        "metal",
+        "concrete",
+        "wicker",
+        "woven fabric"
+      ],
+      "motifs": [
+        "solar system",
+        "geometric patterns",
+        "toys",
+        "tools"
+      ]
+    },
+    "industrial-007": {
+      "id": "industrial-007",
+      "path": "/images/discover/industrial/industrial-007.webp",
+      "style": "industrial",
+      "room": "kitchen",
+      "materials": [
+        "stainless steel",
+        "ceramic tile",
+        "porcelain"
+      ],
+      "motifs": [
+        "commercial kitchen layout",
+        "top-down architectural perspective"
+      ]
+    },
+    "industrial-008": {
+      "id": "industrial-008",
+      "path": "/images/discover/industrial/industrial-008.webp",
+      "style": "industrial",
+      "room": "bar-unit",
+      "materials": [
+        "dark painted wood",
+        "brass hardware",
+        "woven cane webbing",
+        "glass",
+        "dark wood veneer"
+      ],
+      "motifs": [
+        "urn art print",
+        "woven cane pattern"
+      ]
+    },
+    "industrial-009": {
+      "id": "industrial-009",
+      "path": "/images/discover/industrial/industrial-009.webp",
+      "style": "industrial",
+      "room": "bathroom-vanity",
+      "materials": [
+        "exposed red brick",
+        "textured concrete",
+        "dark metal pipes",
+        "aged mirror glass",
+        "brown amber glass bottles",
+        "woven textured towel fabric"
+      ],
+      "motifs": [
+        "exposed industrial utility pipes and fittings",
+        "weathered raw material surfaces"
+      ]
+    },
+    "neoclassical-004": {
+      "id": "neoclassical-004",
+      "path": "/images/discover/neoclassical/neoclassical-004.webp",
+      "style": "neoclassical",
+      "room": "living-room",
+      "materials": [
+        "dark wood flooring",
+        "plaster wall molding",
+        "crystal chandelier",
+        "velvet upholstery",
+        "glass tabletop",
+        "white wood cabinet"
+      ],
+      "motifs": [
+        "ceiling medallion",
+        "raised wall paneling",
+        "ornate floral arrangement"
+      ]
+    },
+    "neoclassical-005": {
+      "id": "neoclassical-005",
+      "path": "/images/discover/neoclassical/neoclassical-005.webp",
+      "style": "neoclassical",
+      "room": "master-bedroom",
+      "materials": [
+        "smooth plaster wall",
+        "hardwood herringbone flooring",
+        "upholstered fabric bed frame",
+        "metallic base on bench",
+        "glass or mirror accents in niches"
+      ],
+      "motifs": [
+        "classical wall panel molding with corner cartouches and rosettes"
+      ]
+    },
+    "neoclassical-006": {
+      "id": "neoclassical-006",
+      "path": "/images/discover/neoclassical/neoclassical-006.webp",
+      "style": "neoclassical",
+      "room": "bar-unit",
+      "materials": [
+        "black marble",
+        "fluted wall panels",
+        "polished wood",
+        "brass metal trim",
+        "glass shelving"
+      ],
+      "motifs": [
+        "landscape mural",
+        "vertical fluting"
+      ]
+    },
+    "neoclassical-007": {
+      "id": "neoclassical-007",
+      "path": "/images/discover/neoclassical/neoclassical-007.webp",
+      "style": "neoclassical",
+      "room": "bathroom-vanity",
+      "materials": [
+        "white marble",
+        "polished brass metal",
+        "glass",
+        "plaster wall molding",
+        "ceramic tile flooring",
+        "frosted glass pendants"
+      ],
+      "motifs": [
+        "floral botanical wallpaper",
+        "fluted pilasters",
+        "ornate ceiling crown molding",
+        "bird motifs on wallpaper"
+      ]
+    },
+    "neoclassical-008": {
+      "id": "neoclassical-008",
+      "path": "/images/discover/neoclassical/neoclassical-008.webp",
+      "style": "neoclassical",
+      "room": "crockery-unit",
+      "materials": [
+        "brass metal framework",
+        "glass shelves",
+        "white marble slab with gold veining",
+        "light neutral matte cabinetry",
+        "upholstered fabric chairs",
+        "wooden herringbone flooring"
+      ],
+      "motifs": [
+        "circular discs on pendant lamps",
+        "vertical fluted lines on cabinetry"
+      ]
+    },
+    "neoclassical-009": {
+      "id": "neoclassical-009",
+      "path": "/images/discover/neoclassical/neoclassical-009.webp",
+      "style": "neoclassical",
+      "room": "dining",
+      "materials": [
+        "marble",
+        "brass",
+        "glass",
+        "velvet",
+        "wood",
+        "ceramic"
+      ],
+      "motifs": [
+        "fluted elements on the table base, centerpiece bowl, and chandelier structure"
+      ]
+    },
+    "traditional-south-indian-004": {
+      "id": "traditional-south-indian-004",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-004.webp",
+      "style": "traditional-south-indian",
+      "room": "bar-unit",
+      "materials": [
+        "dark wood",
+        "wicker cane mesh",
+        "glass",
+        "brass",
+        "ceramic pot"
+      ],
+      "motifs": [
+        "vertical fluted columns",
+        "arched glass panels",
+        "wicker door inserts"
+      ]
+    },
+    "traditional-south-indian-005": {
+      "id": "traditional-south-indian-005",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-005.webp",
+      "style": "traditional-south-indian",
+      "room": "bathroom-vanity",
+      "materials": [
+        "carved wood",
+        "plaster wall",
+        "ceramic tiles",
+        "white porcelain basin",
+        "metal fixture"
+      ],
+      "motifs": [
+        "floral medallion tile pattern",
+        "carved scrollwork frame"
+      ]
+    },
+    "traditional-south-indian-006": {
+      "id": "traditional-south-indian-006",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-006.webp",
+      "style": "traditional-south-indian",
+      "room": "crockery-unit",
+      "materials": [
+        "wood",
+        "cane",
+        "fabric",
+        "brass",
+        "ceramic"
+      ],
+      "motifs": [
+        "floral botanical panel",
+        "geometric diamond pattern",
+        "traditional figural artwork"
+      ]
+    },
+    "traditional-south-indian-007": {
+      "id": "traditional-south-indian-007",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-007.webp",
+      "style": "traditional-south-indian",
+      "room": "dining",
+      "materials": [
+        "wood",
+        "glass",
+        "metal",
+        "cane",
+        "ceramic",
+        "fabric"
+      ],
+      "motifs": [
+        "carved wooden filigree arch over window"
+      ]
+    },
+    "traditional-south-indian-008": {
+      "id": "traditional-south-indian-008",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-008.webp",
+      "style": "traditional-south-indian",
+      "room": "false-ceiling",
+      "materials": [
+        "wood veneer",
+        "plaster ceiling",
+        "metal ceiling fan",
+        "glass light fixture"
+      ],
+      "motifs": [
+        "chevron wood grain pattern"
+      ]
+    },
+    "traditional-south-indian-009": {
+      "id": "traditional-south-indian-009",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-009.webp",
+      "style": "traditional-south-indian",
+      "room": "foyer",
+      "materials": [
+        "dark wood",
+        "painted white walls",
+        "ceramic tiles",
+        "metal"
+      ],
+      "motifs": [
+        "black and white diamond floor pattern",
+        "louvered slat patterns"
+      ]
+    },
+    "japandi-010": {
+      "id": "japandi-010",
+      "path": "/images/discover/japandi/japandi-010.webp",
+      "style": "japandi",
+      "room": "dining",
+      "materials": [
+        "dark stained wood",
+        "textured ceramic",
+        "woven textile",
+        "plaster ceiling"
+      ],
+      "motifs": [
+        "organic asymmetric curves",
+        "raw natural wood grain"
+      ]
+    },
+    "traditional-south-indian-010": {
+      "id": "traditional-south-indian-010",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-010.webp",
+      "style": "traditional-south-indian",
+      "room": "wall-panel",
+      "materials": [
+        "wood wall paneling",
+        "wooden table tops",
+        "light wood chair frames",
+        "green upholstered seat cushions",
+        "concrete floor tiles",
+        "white marble counter top"
+      ],
+      "motifs": [
+        "nested arch wall panels"
+      ]
+    },
+    "modern-contemporary-010": {
+      "id": "modern-contemporary-010",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-010.webp",
+      "style": "modern-contemporary",
+      "room": "kids-bedroom",
+      "materials": [
+        "wood",
+        "fabric",
+        "painted panels",
+        "glass"
+      ],
+      "motifs": [
+        "safari animals",
+        "elephant",
+        "lion",
+        "giraffe",
+        "hippopotamus",
+        "birds",
+        "tall grass"
+      ]
+    },
+    "neoclassical-010": {
+      "id": "neoclassical-010",
+      "path": "/images/discover/neoclassical/neoclassical-010.webp",
+      "style": "neoclassical",
+      "room": "wardrobe",
+      "materials": [
+        "wood",
+        "glass",
+        "metal",
+        "fabric"
+      ],
+      "motifs": [
+        "arch profiles",
+        "fluted wood panels",
+        "vine leaf motifs"
+      ]
+    },
+    "indo-contemporary-010": {
+      "id": "indo-contemporary-010",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-010.webp",
+      "style": "indo-contemporary",
+      "room": "crockery-unit",
+      "materials": [
+        "matte laminate",
+        "wood veneer",
+        "glass",
+        "ceramic",
+        "metal hardware"
+      ],
+      "motifs": []
+    },
+    "industrial-010": {
+      "id": "industrial-010",
+      "path": "/images/discover/industrial/industrial-010.webp",
+      "style": "industrial",
+      "room": "dining",
+      "materials": [
+        "distressed wood",
+        "faux leather",
+        "metal",
+        "exposed brick",
+        "glass"
+      ],
+      "motifs": [
+        "honeycomb pattern",
+        "abstract landscape"
+      ]
+    },
+    "warm-minimalism-010": {
+      "id": "warm-minimalism-010",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-010.webp",
+      "style": "warm-minimalism",
+      "room": "foyer",
+      "materials": [
+        "wood",
+        "ceramic",
+        "leather",
+        "jute",
+        "plaster"
+      ],
+      "motifs": [
+        "geometric pattern",
+        "organic branches"
+      ]
+    },
+    "wabi-sabi-010": {
+      "id": "wabi-sabi-010",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-010.webp",
+      "style": "wabi-sabi",
+      "room": "living-room",
+      "materials": [
+        "smooth plaster walls",
+        "textured stone tile",
+        "wood veneer paneling",
+        "textured beige fabric upholstery",
+        "natural stone coffee table",
+        "rough earthenware ceramic"
+      ],
+      "motifs": [
+        "leafy branch shadows on floors and furniture",
+        "organic natural textures"
+      ]
+    },
+    "art-deco-010": {
+      "id": "art-deco-010",
+      "path": "/images/discover/art-deco/art-deco-010.webp",
+      "style": "art-deco",
+      "room": "living-room",
+      "materials": [
+        "black metal",
+        "wood",
+        "woven rattan",
+        "ceramic",
+        "woven fabric"
+      ],
+      "motifs": [
+        "botanical leaves",
+        "geometric rug patterns",
+        "macrame fringe"
+      ]
+    },
+    "coastal-010": {
+      "id": "coastal-010",
+      "path": "/images/discover/coastal/coastal-010.webp",
+      "style": "coastal",
+      "room": "wardrobe",
+      "materials": [
+        "wood",
+        "cane mesh",
+        "fabric",
+        "brass",
+        "glass"
+      ],
+      "motifs": [
+        "arched cane panels",
+        "vertical fluting"
+      ]
+    },
+    "mid-century-modern-010": {
+      "id": "mid-century-modern-010",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-010.webp",
+      "style": "mid-century-modern",
+      "room": "kitchen",
+      "materials": [
+        "wood cabinetry",
+        "white stone countertops",
+        "terrazzo floor tiles",
+        "brass fixtures",
+        "woven wicker placemats",
+        "ceramic bowls"
+      ],
+      "motifs": [
+        "desert landscape view",
+        "linear wood grain"
+      ]
+    },
+    "biophilic-010": {
+      "id": "biophilic-010",
+      "path": "/images/discover/biophilic/biophilic-010.webp",
+      "style": "biophilic",
+      "room": "bar-unit",
+      "materials": [
+        "carved textured plaster",
+        "dark wood grain panels",
+        "woven rattan",
+        "polished stone countertop"
+      ],
+      "motifs": [
+        "swirling organic wood patterns",
+        "cavernous rock formations",
+        "asymmetrical undulating curves"
+      ]
+    },
+    "bohemian-010": {
+      "id": "bohemian-010",
+      "path": "/images/discover/bohemian/bohemian-010.webp",
+      "style": "bohemian",
+      "room": "kids-bedroom",
+      "materials": [
+        "wood",
+        "wicker",
+        "fabric",
+        "textile",
+        "plastic"
+      ],
+      "motifs": [
+        "daisies",
+        "clouds",
+        "teddy bears",
+        "text quote"
+      ]
+    },
+    "scandinavian-010": {
+      "id": "scandinavian-010",
+      "path": "/images/discover/scandinavian/scandinavian-010.webp",
+      "style": "scandinavian",
+      "room": "bathroom-vanity",
+      "materials": [
+        "stone tile",
+        "wood slats",
+        "ceramic",
+        "brass metal",
+        "woven natural fiber"
+      ],
+      "motifs": [
+        "vertical wood slat paneling",
+        "vertical fluted wall relief"
+      ]
+    },
+    "quiet-luxury-009": {
+      "id": "quiet-luxury-009",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-009.webp",
+      "style": "quiet-luxury",
+      "room": "tv-unit",
+      "materials": [
+        "textured plaster",
+        "light wood",
+        "matte white laminate",
+        "ceramic",
+        "woven wool"
+      ],
+      "motifs": [
+        "horizontal sand wave wall texture",
+        "vertical wood slat paneling"
+      ]
+    },
+    "japandi-011": {
+      "id": "japandi-011",
+      "path": "/images/discover/japandi/japandi-011.webp",
+      "style": "japandi",
+      "room": "crockery-unit",
+      "materials": [
+        "oak wood",
+        "glass",
+        "brass hardware",
+        "ceramic",
+        "plastic plant pot"
+      ],
+      "motifs": [
+        "wood grain",
+        "botanical leaves"
+      ]
+    },
+    "traditional-south-indian-011": {
+      "id": "traditional-south-indian-011",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-011.webp",
+      "style": "traditional-south-indian",
+      "room": "wall-panel",
+      "materials": [
+        "textured stucco wall",
+        "dark wood",
+        "woven rattan",
+        "glass",
+        "metal",
+        "paper"
+      ],
+      "motifs": [
+        "vertical wood wall paneling strips",
+        "arched door panels",
+        "traditional Indian figurative art"
+      ]
+    },
+    "modern-contemporary-011": {
+      "id": "modern-contemporary-011",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-011.webp",
+      "style": "modern-contemporary",
+      "room": "kids-bedroom",
+      "materials": [
+        "light wood",
+        "white lacquer",
+        "green upholstered fabric",
+        "woven rug"
+      ],
+      "motifs": [
+        "moon and stars",
+        "teddy bears",
+        "clouds"
+      ]
+    },
+    "neoclassical-011": {
+      "id": "neoclassical-011",
+      "path": "/images/discover/neoclassical/neoclassical-011.webp",
+      "style": "neoclassical",
+      "room": "wardrobe",
+      "materials": [
+        "wood veneer with sunburst grain pattern",
+        "brushed metal trim and handles",
+        "white marble with gold-toned inlay floor tiles",
+        "glass chandelier elements",
+        "painted drywall"
+      ],
+      "motifs": [
+        "sunburst radial wood grain pattern",
+        "geometric angular floor inlay"
+      ]
+    },
+    "indo-contemporary-011": {
+      "id": "indo-contemporary-011",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-011.webp",
+      "style": "indo-contemporary",
+      "room": "master-bedroom",
+      "materials": [
+        "wood",
+        "cane webbing",
+        "marble",
+        "brass",
+        "woven cotton"
+      ],
+      "motifs": [
+        "floral block-print",
+        "traditional Indian wood carvings"
+      ]
+    },
+    "industrial-011": {
+      "id": "industrial-011",
+      "path": "/images/discover/industrial/industrial-011.webp",
+      "style": "industrial",
+      "room": "dining",
+      "materials": [
+        "exposed red brick",
+        "distressed wood planks",
+        "black molded plastic",
+        "metal wire",
+        "ceramic pottery",
+        "woven jute",
+        "dried pampas grass",
+        "white wax"
+      ],
+      "motifs": [
+        "exposed structural ceiling beams",
+        "rustic brick bond wall pattern"
+      ]
+    },
+    "warm-minimalism-011": {
+      "id": "warm-minimalism-011",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-011.webp",
+      "style": "warm-minimalism",
+      "room": "shoe-rack",
+      "materials": [
+        "light oak wood",
+        "woven wicker",
+        "white cushioned fabric",
+        "ceramic lamp base",
+        "pleated fabric shade"
+      ],
+      "motifs": [
+        "vertical slats",
+        "geometric color-blocked rug arches"
+      ]
+    },
+    "wabi-sabi-011": {
+      "id": "wabi-sabi-011",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-011.webp",
+      "style": "wabi-sabi",
+      "room": "living-room",
+      "materials": [
+        "travertine stone",
+        "wood slats",
+        "smooth timber planks",
+        "textured fabric",
+        "pebbles",
+        "boulders"
+      ],
+      "motifs": [
+        "natural stone walls",
+        "slat wood panels",
+        "indoor zen garden landscape"
+      ]
+    },
+    "art-deco-011": {
+      "id": "art-deco-011",
+      "path": "/images/discover/art-deco/art-deco-011.webp",
+      "style": "art-deco",
+      "room": "living-room",
+      "materials": [
+        "velvet",
+        "brass",
+        "glass",
+        "wood",
+        "ceramic",
+        "plant leaves"
+      ],
+      "motifs": [
+        "botanical flowers",
+        "nature landscapes",
+        "vintage clocks"
+      ]
+    },
+    "coastal-011": {
+      "id": "coastal-011",
+      "path": "/images/discover/coastal/coastal-011.webp",
+      "style": "coastal",
+      "room": "bathroom-vanity",
+      "materials": [
+        "terrazzo",
+        "fluted wood",
+        "brass hardware",
+        "glass",
+        "ceramic",
+        "marble",
+        "woven jute"
+      ],
+      "motifs": [
+        "coastal landscape",
+        "palm tree art",
+        "organic shapes"
+      ]
+    },
+    "mid-century-modern-011": {
+      "id": "mid-century-modern-011",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-011.webp",
+      "style": "mid-century-modern",
+      "room": "kids-bedroom",
+      "materials": [
+        "wood",
+        "cane webbing",
+        "linen",
+        "chunky knit wool",
+        "brass",
+        "glass"
+      ],
+      "motifs": [
+        "horizontal color-blocked wall division",
+        "caning grid pattern"
+      ]
+    },
+    "biophilic-011": {
+      "id": "biophilic-011",
+      "path": "/images/discover/biophilic/biophilic-011.webp",
+      "style": "biophilic",
+      "room": "bar-unit",
+      "materials": [
+        "wood cabinetry",
+        "fluted glass",
+        "brass hardware",
+        "glassware",
+        "ceramic cups"
+      ],
+      "motifs": [
+        "vertical fluting",
+        "arch geometry"
+      ]
+    },
+    "bohemian-011": {
+      "id": "bohemian-011",
+      "path": "/images/discover/bohemian/bohemian-011.webp",
+      "style": "bohemian",
+      "room": "living-room",
+      "materials": [
+        "wood",
+        "fabric",
+        "woven textile",
+        "metal"
+      ],
+      "motifs": [
+        "botanical illustrations",
+        "geometric patterns",
+        "abstract artwork"
+      ]
+    },
+    "scandinavian-011": {
+      "id": "scandinavian-011",
+      "path": "/images/discover/scandinavian/scandinavian-011.webp",
+      "style": "scandinavian",
+      "room": "bar-unit",
+      "materials": [
+        "dark wood veneer",
+        "textured concrete",
+        "brushed brass",
+        "frosted glass",
+        "gray tile flooring"
+      ],
+      "motifs": [
+        "archway",
+        "grid shelving",
+        "curve"
+      ]
+    },
+    "quiet-luxury-010": {
+      "id": "quiet-luxury-010",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-010.webp",
+      "style": "quiet-luxury",
+      "room": "wall-panel",
+      "materials": [
+        "wood slat panels",
+        "beige stone or tile wall panels",
+        "upholstered fabric sofa",
+        "dark metal frames",
+        "wood veneer tabletops",
+        "woven textured rug"
+      ],
+      "motifs": [
+        "vertical wood slats",
+        "large rectangular wall panel grid",
+        "linear track lighting"
+      ]
+    },
+    "japandi-012": {
+      "id": "japandi-012",
+      "path": "/images/discover/japandi/japandi-012.webp",
+      "style": "japandi",
+      "room": "shoe-rack",
+      "materials": [
+        "dark wood",
+        "woven rattan",
+        "clear glass",
+        "paper",
+        "ceramic"
+      ],
+      "motifs": [
+        "arched cane mesh panels",
+        "rounded corners"
+      ]
+    },
+    "traditional-south-indian-012": {
+      "id": "traditional-south-indian-012",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-012.webp",
+      "style": "traditional-south-indian",
+      "room": "kids-bedroom",
+      "materials": [
+        "wood pegboard",
+        "light wood shelving",
+        "matte beige laminate cabinetry",
+        "upholstered bed headboard",
+        "grey knit throw blanket"
+      ],
+      "motifs": [
+        "space astronaut wall decal",
+        "planets and stars wallpaper",
+        "pegged wall pattern"
+      ]
+    },
+    "modern-contemporary-012": {
+      "id": "modern-contemporary-012",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-012.webp",
+      "style": "modern-contemporary",
+      "room": "kids-bedroom",
+      "materials": [
+        "painted wood",
+        "laminate",
+        "fabric upholstery",
+        "plush fabric",
+        "light wood flooring"
+      ],
+      "motifs": [
+        "stars",
+        "clouds",
+        "half-moon headboard"
+      ]
+    },
+    "neoclassical-012": {
+      "id": "neoclassical-012",
+      "path": "/images/discover/neoclassical/neoclassical-012.webp",
+      "style": "neoclassical",
+      "room": "wall-panel",
+      "materials": [
+        "plaster wall panels",
+        "smooth upholstery fabric",
+        "matte painted wood coffee table",
+        "glossy ceramic vase",
+        "glass mirror"
+      ],
+      "motifs": [
+        "geometric ribbed arches",
+        "stylized leaf branches",
+        "concentric half-circles",
+        "circular shapes"
+      ]
+    },
+    "indo-contemporary-012": {
+      "id": "indo-contemporary-012",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-012.webp",
+      "style": "indo-contemporary",
+      "room": "study-office",
+      "materials": [
+        "dark wood",
+        "cane webbing",
+        "fabric",
+        "brass",
+        "glass",
+        "ceramic"
+      ],
+      "motifs": [
+        "botanical floral wallpaper"
+      ]
+    },
+    "industrial-012": {
+      "id": "industrial-012",
+      "path": "/images/discover/industrial/industrial-012.webp",
+      "style": "industrial",
+      "room": "study-office",
+      "materials": [
+        "glass",
+        "black metal framing",
+        "light wood laminate",
+        "concrete wall",
+        "black leatherette"
+      ],
+      "motifs": [
+        "industrial glass partition",
+        "grid shelving unit"
+      ]
+    },
+    "warm-minimalism-012": {
+      "id": "warm-minimalism-012",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-012.webp",
+      "style": "warm-minimalism",
+      "room": "foyer",
+      "materials": [
+        "light wood",
+        "textured plaster",
+        "woven seagrass",
+        "ceramic",
+        "glass"
+      ],
+      "motifs": [
+        "botanical leaves",
+        "abstract sun",
+        "mountain landscape",
+        "concentric woven circles"
+      ]
+    },
+    "wabi-sabi-012": {
+      "id": "wabi-sabi-012",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-012.webp",
+      "style": "wabi-sabi",
+      "room": "kitchen",
+      "materials": [
+        "glossy taupe lacquer cabinets",
+        "stone composite countertops",
+        "ribbed wood island base",
+        "black metal pendant lights",
+        "upholstered bar stools",
+        "tile flooring",
+        "glass shelves"
+      ],
+      "motifs": [
+        "vertical fluting on island base",
+        "recessed linear ceiling cove"
+      ]
+    },
+    "art-deco-012": {
+      "id": "art-deco-012",
+      "path": "/images/discover/art-deco/art-deco-012.webp",
+      "style": "art-deco",
+      "room": "master-bedroom",
+      "materials": [
+        "painted wood",
+        "slat paneling",
+        "glass",
+        "fabric",
+        "marble tile"
+      ],
+      "motifs": [
+        "vertical slats",
+        "leaf patterns on wallpaper",
+        "abstract painting"
+      ]
+    },
+    "coastal-012": {
+      "id": "coastal-012",
+      "path": "/images/discover/coastal/coastal-012.webp",
+      "style": "coastal",
+      "room": "bathroom-vanity",
+      "materials": [
+        "ceramic tile",
+        "pebble stone",
+        "wood veneer",
+        "marble countertop",
+        "brass hardware",
+        "glass"
+      ],
+      "motifs": [
+        "vertical stacked tile",
+        "pebble mosaic floor"
+      ]
+    },
+    "mid-century-modern-012": {
+      "id": "mid-century-modern-012",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-012.webp",
+      "style": "mid-century-modern",
+      "room": "kids-bedroom",
+      "materials": [
+        "wood",
+        "white painted wood",
+        "wire",
+        "plastic",
+        "cork"
+      ],
+      "motifs": [
+        "cherry print pillow",
+        "childrens artwork",
+        "paper decorations"
+      ]
+    },
+    "biophilic-012": {
+      "id": "biophilic-012",
+      "path": "/images/discover/biophilic/biophilic-012.webp",
+      "style": "biophilic",
+      "room": "bar-unit",
+      "materials": [
+        "smooth concrete wall finish",
+        "polished stone flooring",
+        "dark wood veneer",
+        "natural boulder stone",
+        "potted foliage plants"
+      ],
+      "motifs": [
+        "rounded arches",
+        "organic rock forms",
+        "curved planter beds"
+      ]
+    },
+    "bohemian-012": {
+      "id": "bohemian-012",
+      "path": "/images/discover/bohemian/bohemian-012.webp",
+      "style": "bohemian",
+      "room": "foyer",
+      "materials": [
+        "wood",
+        "wicker",
+        "woven rattan",
+        "ceramic",
+        "linen"
+      ],
+      "motifs": [
+        "botanical leaves",
+        "fluted wood slats",
+        "arched structural niches"
+      ]
+    },
+    "scandinavian-012": {
+      "id": "scandinavian-012",
+      "path": "/images/discover/scandinavian/scandinavian-012.webp",
+      "style": "scandinavian",
+      "room": "bar-unit",
+      "materials": [
+        "painted wood",
+        "slatted wood",
+        "brass metal",
+        "glass",
+        "ceramic"
+      ],
+      "motifs": [
+        "vertical slats",
+        "curved arch",
+        "herringbone floor"
+      ]
+    },
+    "quiet-luxury-011": {
+      "id": "quiet-luxury-011",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-011.webp",
+      "style": "quiet-luxury",
+      "room": "tv-unit",
+      "materials": [
+        "light wood paneling",
+        "white vertical slat wood",
+        "blue painted metal shelving",
+        "textured boucle upholstery",
+        "beige marble",
+        "white plaster wall"
+      ],
+      "motifs": [
+        "vertical slats",
+        "curves and rounded corners"
+      ]
+    },
+    "japandi-013": {
+      "id": "japandi-013",
+      "path": "/images/discover/japandi/japandi-013.webp",
+      "style": "japandi",
+      "room": "shoe-rack",
+      "materials": [
+        "painted wood",
+        "natural wood",
+        "ceramic tile",
+        "fabric cushion",
+        "glass mirror"
+      ],
+      "motifs": [
+        "vertical fluting",
+        "geometric green floor tile pattern"
+      ]
+    },
+    "traditional-south-indian-013": {
+      "id": "traditional-south-indian-013",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-013.webp",
+      "style": "traditional-south-indian",
+      "room": "study-office",
+      "materials": [
+        "dark wood",
+        "rattan mesh",
+        "cotton fabric",
+        "metal",
+        "stone floor"
+      ],
+      "motifs": [
+        "geometric rug pattern",
+        "figurative wall art frames"
+      ]
+    },
+    "modern-contemporary-013": {
+      "id": "modern-contemporary-013",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-013.webp",
+      "style": "modern-contemporary",
+      "room": "dining",
+      "materials": [
+        "dark wood",
+        "upholstered fabric",
+        "clear glass",
+        "metal",
+        "carpet"
+      ],
+      "motifs": [
+        "spherical glass globes",
+        "organic greenery"
+      ]
+    },
+    "neoclassical-013": {
+      "id": "neoclassical-013",
+      "path": "/images/discover/neoclassical/neoclassical-013.webp",
+      "style": "neoclassical",
+      "room": "wall-panel",
+      "materials": [
+        "wood veneer",
+        "brushed brass",
+        "white marble",
+        "plaster",
+        "glass",
+        "ceramic"
+      ],
+      "motifs": [
+        "starburst wood veneer pattern",
+        "rectilinear wall molding panels",
+        "coffered ceiling molding"
+      ]
+    },
+    "indo-contemporary-013": {
+      "id": "indo-contemporary-013",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-013.webp",
+      "style": "indo-contemporary",
+      "room": "crockery-unit",
+      "materials": [
+        "wood",
+        "red granite",
+        "glass",
+        "bamboo",
+        "fabric"
+      ],
+      "motifs": [
+        "grid pattern",
+        "slatted fluting",
+        "abstract stone veining"
+      ]
+    },
+    "industrial-013": {
+      "id": "industrial-013",
+      "path": "/images/discover/industrial/industrial-013.webp",
+      "style": "industrial",
+      "room": "bathroom-vanity",
+      "materials": [
+        "light grey stone masonry",
+        "vertical slatted wood vanity",
+        "matte white ceramic washbasin",
+        "grey ceramic vase with greenery",
+        "off-white ceramic vase with broadleaf plant",
+        "white glass pendant lights",
+        "smooth ceramic floor tiles"
+      ],
+      "motifs": [
+        "vertical slatted paneling",
+        "asymmetrical globe cluster silhouettes",
+        "random-coursed stone masonry texture"
+      ]
+    },
+    "warm-minimalism-013": {
+      "id": "warm-minimalism-013",
+      "path": "/images/discover/warm-minimalism/warm-minimalism-013.webp",
+      "style": "warm-minimalism",
+      "room": "shoe-rack",
+      "materials": [
+        "light wood",
+        "leather",
+        "synthetic shoe materials"
+      ],
+      "motifs": [
+        "rounded shelf ends",
+        "vertical slat side"
+      ]
+    },
+    "wabi-sabi-013": {
+      "id": "wabi-sabi-013",
+      "path": "/images/discover/wabi-sabi/wabi-sabi-013.webp",
+      "style": "wabi-sabi",
+      "room": "living-room",
+      "materials": [
+        "textured plaster",
+        "wood beams",
+        "woven straw",
+        "stone tile floor",
+        "textured fabric"
+      ],
+      "motifs": [
+        "rounded arches",
+        "organic woven textures"
+      ]
+    },
+    "art-deco-013": {
+      "id": "art-deco-013",
+      "path": "/images/discover/art-deco/art-deco-013.webp",
+      "style": "art-deco",
+      "room": "living-room",
+      "materials": [
+        "velvet upholstery",
+        "hardwood flooring",
+        "ceramic vases",
+        "stacked glass chandelier",
+        "plaster molding"
+      ],
+      "motifs": [
+        "wall panel moldings",
+        "tiered concentric chandelier structure"
+      ]
+    },
+    "coastal-013": {
+      "id": "coastal-013",
+      "path": "/images/discover/coastal/coastal-013.webp",
+      "style": "coastal",
+      "room": "bathroom-vanity",
+      "materials": [
+        "painted wood vanity",
+        "marble countertop",
+        "ceramic tile flooring",
+        "glass pendant shade",
+        "brass hardware",
+        "woven rattan hamper"
+      ],
+      "motifs": [
+        "heron bird artwork",
+        "coastal water landscape",
+        "wainscoting wall paneling"
+      ]
+    },
+    "mid-century-modern-013": {
+      "id": "mid-century-modern-013",
+      "path": "/images/discover/mid-century-modern/mid-century-modern-013.webp",
+      "style": "mid-century-modern",
+      "room": "kids-bedroom",
+      "materials": [
+        "wood",
+        "boucle fabric",
+        "woven rattan",
+        "brass",
+        "white sheer fabric"
+      ],
+      "motifs": [
+        "animal wallpaper print with giraffes zebras and elephants",
+        "black and white abstract geometric rug pattern",
+        "arch motifs on wardrobe doors"
+      ]
+    },
+    "biophilic-013": {
+      "id": "biophilic-013",
+      "path": "/images/discover/biophilic/biophilic-013.webp",
+      "style": "biophilic",
+      "room": "bar-unit",
+      "materials": [
+        "wood",
+        "metal",
+        "glass",
+        "foliage"
+      ],
+      "motifs": [
+        "dense tropical botanical arrangement",
+        "botanical wall installation"
+      ]
+    },
+    "bohemian-013": {
+      "id": "bohemian-013",
+      "path": "/images/discover/bohemian/bohemian-013.webp",
+      "style": "bohemian",
+      "room": "living-room",
+      "materials": [
+        "leather",
+        "rattan",
+        "wood",
+        "woven jute",
+        "ceramic",
+        "sheepskin",
+        "linen",
+        "macrame"
+      ],
+      "motifs": [
+        "botanical illustrations",
+        "fringed textures",
+        "woven patterns"
+      ]
+    },
+    "scandinavian-013": {
+      "id": "scandinavian-013",
+      "path": "/images/discover/scandinavian/scandinavian-013.webp",
+      "style": "scandinavian",
+      "room": "bar-unit",
+      "materials": [
+        "light oak wood",
+        "glass",
+        "mirrored glass",
+        "metal",
+        "marble"
+      ],
+      "motifs": [
+        "clean geometric lines",
+        "natural wood grain"
+      ]
+    },
+    "quiet-luxury-012": {
+      "id": "quiet-luxury-012",
+      "path": "/images/discover/quiet-luxury/quiet-luxury-012.webp",
+      "style": "quiet-luxury",
+      "room": "wall-panel",
+      "materials": [
+        "stacked stone veneer",
+        "smooth beige plaster",
+        "dark vertical wood slats",
+        "polished stone flooring",
+        "upholstered fabric",
+        "woven jute rug"
+      ],
+      "motifs": [
+        "botanical leaf prints",
+        "linear vertical wood panels"
+      ]
+    },
+    "japandi-014": {
+      "id": "japandi-014",
+      "path": "/images/discover/japandi/japandi-014.webp",
+      "style": "japandi",
+      "room": "dining",
+      "materials": [
+        "light oak wood",
+        "woven rattan",
+        "textured linen",
+        "matte ceramic",
+        "plaster"
+      ],
+      "motifs": [
+        "vertical slats",
+        "organic curves",
+        "natural botanicals"
+      ]
+    },
+    "traditional-south-indian-014": {
+      "id": "traditional-south-indian-014",
+      "path": "/images/discover/traditional-south-indian/traditional-south-indian-014.webp",
+      "style": "traditional-south-indian",
+      "room": "kids-bedroom",
+      "materials": [
+        "wood",
+        "terracotta tiles",
+        "glass vase",
+        "ceramic vase",
+        "fabric"
+      ],
+      "motifs": [
+        "traditional figurative miniature paintings",
+        "floral cushion embroidery",
+        "terracotta ceiling tile geometric patterns"
+      ]
+    },
+    "modern-contemporary-014": {
+      "id": "modern-contemporary-014",
+      "path": "/images/discover/modern-contemporary/modern-contemporary-014.webp",
+      "style": "modern-contemporary",
+      "room": "kitchen",
+      "materials": [
+        "matte green cabinetry",
+        "cream lacquer cabinets",
+        "marble slab backsplash",
+        "marble waterfall island countertop",
+        "polished metal pendant lights",
+        "upholstered bar stools",
+        "concrete look floor tiles",
+        "wood shelving"
+      ],
+      "motifs": [
+        "natural marble veining",
+        "clean geometric horizontal lines"
+      ]
+    },
+    "neoclassical-014": {
+      "id": "neoclassical-014",
+      "path": "/images/discover/neoclassical/neoclassical-014.webp",
+      "style": "neoclassical",
+      "room": "living-room",
+      "materials": [
+        "velvet",
+        "stone",
+        "glass",
+        "metal",
+        "fabric"
+      ],
+      "motifs": [
+        "vertical wall paneling and mirrors",
+        "calligraphy art"
+      ]
+    },
+    "indo-contemporary-014": {
+      "id": "indo-contemporary-014",
+      "path": "/images/discover/indo-contemporary/indo-contemporary-014.webp",
+      "style": "indo-contemporary",
+      "room": "master-bedroom",
+      "materials": [
+        "wood",
+        "linen",
+        "cotton",
+        "glass",
+        "metal"
+      ],
+      "motifs": [
+        "botanical tree illustration",
+        "traditional rug border pattern"
+      ]
+    },
+    "industrial-014": {
+      "id": "industrial-014",
+      "path": "/images/discover/industrial/industrial-014.webp",
+      "style": "industrial",
+      "room": "study-office",
+      "materials": [
+        "dark wood veneer",
+        "black matte laminate",
+        "mesh fabric",
+        "ceramic",
+        "metal"
+      ],
+      "motifs": [
+        "minimalist horizontal lines",
+        "warm interior illumination against dark cabinetry"
+      ]
+    }
+  },
+  "rounds": [
+    {
+      "kind": "quad",
+      "id": "living-instinct",
+      "kicker": "Living room",
+      "question": "Which room feels most like your kind of welcome?",
+      "imageIds": [
+        "japandi-001",
+        "traditional-south-indian-001",
+        "modern-contemporary-001",
+        "neoclassical-001"
+      ]
+    },
+    {
+      "kind": "duel",
+      "id": "kitchen-duel",
+      "kicker": "Kitchen",
+      "question": "Which kitchen would make everyday rituals feel better?",
+      "imageIds": [
+        "indo-contemporary-001",
+        "industrial-001"
+      ]
+    },
+    {
+      "kind": "quad",
+      "id": "bedroom-mood",
+      "kicker": "Master bedroom",
+      "question": "Where would you exhale at the end of the day?",
+      "imageIds": [
+        "warm-minimalism-001",
+        "wabi-sabi-001",
+        "art-deco-001",
+        "coastal-001"
+      ]
+    },
+    {
+      "kind": "board",
+      "id": "detail-board",
+      "kicker": "The details",
+      "question": "Keep what speaks to you. Toss what does not.",
+      "imageIds": [
+        "mid-century-modern-001",
+        "biophilic-001",
+        "bohemian-001",
+        "scandinavian-001",
+        "quiet-luxury-001",
+        "japandi-002"
+      ]
+    },
+    {
+      "kind": "quad",
+      "id": "first-impression",
+      "kicker": "Foyer",
+      "question": "How should your home introduce itself?",
+      "imageIds": [
+        "traditional-south-indian-002",
+        "modern-contemporary-002",
+        "neoclassical-002",
+        "indo-contemporary-002"
+      ]
+    },
+    {
+      "kind": "duel",
+      "id": "wardrobe-duel",
+      "kicker": "Wardrobe",
+      "question": "Which wardrobe language would you live with?",
+      "imageIds": [
+        "industrial-002",
+        "warm-minimalism-002"
+      ]
+    },
+    {
+      "kind": "quad",
+      "id": "dining-gathering",
+      "kicker": "Dining",
+      "question": "Which setting makes you want to gather longer?",
+      "imageIds": [
+        "wabi-sabi-002",
+        "art-deco-002",
+        "coastal-002",
+        "mid-century-modern-002"
+      ]
+    },
+    {
+      "kind": "duel",
+      "id": "bathroom-duel",
+      "kicker": "Bathroom",
+      "question": "Which retreat belongs in your morning?",
+      "imageIds": [
+        "biophilic-002",
+        "bohemian-002"
+      ]
+    },
+    {
+      "kind": "board",
+      "id": "life-board",
+      "kicker": "Rooms for real life",
+      "question": "Keep the spaces you would bring into your own home.",
+      "imageIds": [
+        "scandinavian-002",
+        "quiet-luxury-002",
+        "japandi-003",
+        "traditional-south-indian-003",
+        "modern-contemporary-003",
+        "neoclassical-003"
+      ]
+    },
+    {
+      "kind": "quad",
+      "id": "material-instinct",
+      "kicker": "Material mood",
+      "question": "Which composition has the texture you are drawn to?",
+      "imageIds": [
+        "indo-contemporary-003",
+        "industrial-003",
+        "warm-minimalism-003",
+        "wabi-sabi-003"
+      ]
+    },
+    {
+      "kind": "duel",
+      "id": "pooja-duel",
+      "kicker": "Quiet corner",
+      "question": "Which sacred space feels more personal?",
+      "imageIds": [
+        "art-deco-003",
+        "coastal-003"
+      ]
+    },
+    {
+      "kind": "quad",
+      "id": "final-instinct",
+      "kicker": "One last instinct",
+      "question": "No overthinking. Which space is simply you?",
+      "imageIds": [
+        "mid-century-modern-003",
+        "biophilic-003",
+        "bohemian-003",
+        "scandinavian-003"
+      ]
+    }
+  ]
+}
