@@ -4,13 +4,23 @@ import { fileURLToPath } from 'node:url';
 
 const DESKTOP_VIDEO_LIMIT = 20 * 1024 * 1024;
 const MOBILE_VIDEO_LIMIT = 8 * 1024 * 1024;
+const DESKTOP_FRAMES_LIMIT = 16 * 1024 * 1024;
+const MOBILE_FRAMES_LIMIT = 8 * 1024 * 1024;
+const FRAMES_LIMIT = 24 * 1024 * 1024;
 const DISCOVER_LIMIT = 60 * 1024 * 1024;
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const publicRoot = join(repoRoot, 'public');
 const walkthroughFile = join(repoRoot, 'src', 'experience', 'walkthrough.ts');
+const framesManifestFile = join(repoRoot, 'src', 'experience', 'frames.json');
 const quizAssetsFile = join(repoRoot, 'src', 'discover', 'quizAssets.json');
+const framesRoot = join(publicRoot, 'videos', 'frames');
 const discoverRoot = join(publicRoot, 'images', 'discover');
 const errors = [];
+const frameCounts = { desktop: 0, mobile: 0 };
+const frameVariants = {
+  desktop: { width: 1600, height: 900, limit: DESKTOP_FRAMES_LIMIT },
+  mobile: { width: 648, height: 1152, limit: MOBILE_FRAMES_LIMIT },
+};
 
 function issue(message) {
   errors.push(message);
@@ -105,6 +115,81 @@ for (const segment of segments) {
   }
 }
 
+const framesManifest = existsSync(framesManifestFile)
+  ? readJson(framesManifestFile, 'frames.json')
+  : null;
+if (!existsSync(framesManifestFile)) issue('src/experience/frames.json is missing.');
+if (!existsSync(framesRoot)) {
+  issue('public/videos/frames is missing. Run node scripts/extract-frames.mjs.');
+}
+
+if (framesManifest) {
+  for (const [variant, expected] of Object.entries(frameVariants)) {
+    const manifest = framesManifest[variant];
+    if (!manifest || typeof manifest !== 'object') {
+      issue(`frames.json has no ${variant} manifest.`);
+      continue;
+    }
+
+    const { count, width, height } = manifest;
+    if (!Number.isInteger(count) || count <= 0) {
+      issue(`frames.json ${variant}.count must be a positive integer. Run node scripts/extract-frames.mjs.`);
+      continue;
+    }
+    frameCounts[variant] = count;
+    if (width !== expected.width || height !== expected.height) {
+      issue(
+        `frames.json ${variant} dimensions are ${width}x${height}; expected ${expected.width}x${expected.height}.`,
+      );
+    }
+
+    const variantRoot = join(framesRoot, variant);
+    if (!existsSync(variantRoot) || !statSync(variantRoot).isDirectory()) {
+      issue(`Frame directory is missing: public/videos/frames/${variant}`);
+      continue;
+    }
+
+    const actualFrames = readdirSync(variantRoot)
+      .filter((name) => /^f_\d{4}\.webp$/i.test(name))
+      .sort((left, right) => left.localeCompare(right));
+    const expectedFrames = Array.from(
+      { length: count },
+      (_, index) => `f_${String(index + 1).padStart(4, '0')}.webp`,
+    );
+    const actualSet = new Set(actualFrames);
+    const expectedSet = new Set(expectedFrames);
+    const missingFrames = expectedFrames.filter((name) => !actualSet.has(name));
+    const unlistedFrames = actualFrames.filter((name) => !expectedSet.has(name));
+
+    if (actualFrames.length !== count) {
+      issue(
+        `${variant} frame manifest lists ${count} frames, but the directory contains ${actualFrames.length}.`,
+      );
+    }
+    if (missingFrames.length > 0) {
+      issue(
+        `${variant} is missing ${missingFrames.length} manifest frame(s); first missing: ${missingFrames[0]}.`,
+      );
+    }
+    if (unlistedFrames.length > 0) {
+      issue(
+        `${variant} contains ${unlistedFrames.length} frame(s) not listed by the manifest count; first extra: ${unlistedFrames[0]}.`,
+      );
+    }
+
+    const variantBytes = directoryBytes(variantRoot);
+    if (variantBytes > expected.limit) {
+      issue(
+        `${variant} frames total ${(variantBytes / 1024 / 1024).toFixed(2)}MB; limit is ${expected.limit / 1024 / 1024}MB.`,
+      );
+    }
+  }
+}
+
+const framesBytes = directoryBytes(framesRoot);
+if (framesBytes > FRAMES_LIMIT) {
+  issue(`public/videos/frames is ${(framesBytes / 1024 / 1024).toFixed(2)}MB; limit is 22MB.`);
+}
 
 const quizAssets = existsSync(quizAssetsFile) ? readJson(quizAssetsFile, 'quizAssets.json') : null;
 if (!existsSync(quizAssetsFile)) issue('src/discover/quizAssets.json is missing.');
@@ -195,5 +280,8 @@ if (errors.length > 0) {
 
 console.log('verify-journey: OK');
 console.log(`- ${segments.length} walkthrough segment${segments.length === 1 ? '' : 's'}`);
+console.log(
+  `- ${frameCounts.desktop} desktop frames, ${frameCounts.mobile} mobile frames (${(framesBytes / 1024 / 1024).toFixed(2)}MB)`,
+);
 console.log(`- ${quizAssets.rounds.length} image rounds, ${quizAssets.styleOrder.length} styles`);
 console.log(`- public/images/discover ${(discoverBytes / 1024 / 1024).toFixed(2)}MB`);

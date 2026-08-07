@@ -11,6 +11,7 @@ import {
   Trees,
 } from 'lucide-react';
 import type { ScrollBridge } from './scrollBridge';
+import framesManifestSource from './frames.json?raw';
 import {
   walkthroughSegments,
   type Act,
@@ -25,16 +26,152 @@ const clamp = (value: number, min: number, max: number) =>
 
 type StoryChapter = Act & {
   id: string;
-  segmentIndex: number;
 };
 
-const chapters: StoryChapter[] = walkthroughSegments.flatMap((segment, segmentIndex) =>
+const chapters: StoryChapter[] = walkthroughSegments.flatMap((segment) =>
   segment.acts.map((act, actIndex) => ({
     ...act,
     id: `${segment.id}-${actIndex}`,
-    segmentIndex,
   })),
 );
+
+type FrameVariantName = 'desktop' | 'mobile';
+
+type FrameVariantManifest = {
+  count: number;
+  width: number;
+  height: number;
+};
+
+type FramesManifest = Record<FrameVariantName, FrameVariantManifest>;
+
+const framesManifest = JSON.parse(framesManifestSource) as FramesManifest;
+
+class FrameEngine {
+  private readonly context: CanvasRenderingContext2D;
+  private readonly images: Array<HTMLImageElement | undefined>;
+  private readonly loadPromises = new Map<number, Promise<HTMLImageElement>>();
+  private readonly resizeObserver: ResizeObserver;
+  private lastDrawnIndex = -1;
+  private destroyed = false;
+
+  constructor(
+    private readonly canvas: HTMLCanvasElement,
+    private readonly variant: FrameVariantName,
+    private readonly manifest: FrameVariantManifest,
+  ) {
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Canvas 2D rendering is unavailable.');
+    this.context = context;
+    this.images = new Array(manifest.count);
+    this.resizeObserver = new ResizeObserver(() => this.resize());
+    this.resizeObserver.observe(canvas);
+    this.resize();
+  }
+
+  loadFrame(index: number) {
+    const frameIndex = clamp(Math.round(index), 0, this.manifest.count - 1);
+    const loaded = this.images[frameIndex];
+    if (loaded) return Promise.resolve(loaded);
+
+    const pending = this.loadPromises.get(frameIndex);
+    if (pending) return pending;
+
+    const promise = new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.decoding = 'async';
+      image.onload = () => {
+        if (!this.destroyed) this.images[frameIndex] = image;
+        resolve(image);
+      };
+      image.onerror = () => {
+        this.loadPromises.delete(frameIndex);
+        reject(new Error(`Could not load walkthrough frame ${this.frameUrl(frameIndex)}.`));
+      };
+      image.src = this.frameUrl(frameIndex);
+    });
+    this.loadPromises.set(frameIndex, promise);
+    return promise;
+  }
+
+  async preloadRange(start: number, end: number, concurrency = 6) {
+    const first = clamp(Math.floor(start), 0, this.manifest.count - 1);
+    const last = clamp(Math.ceil(end), 0, this.manifest.count - 1);
+    if (last < first) return;
+
+    const queue = Array.from({ length: last - first + 1 }, (_, index) => first + index);
+    let cursor = 0;
+    const worker = async () => {
+      while (!this.destroyed) {
+        const queueIndex = cursor;
+        cursor += 1;
+        if (queueIndex >= queue.length) return;
+        await this.loadFrame(queue[queueIndex]);
+      }
+    };
+    await Promise.all(
+      Array.from({ length: Math.min(concurrency, queue.length) }, () => worker()),
+    );
+  }
+
+  draw(rawIndex: number) {
+    if (this.destroyed || this.manifest.count <= 0) return false;
+    const frameIndex = clamp(Math.round(rawIndex), 0, this.manifest.count - 1);
+    if (frameIndex === this.lastDrawnIndex) return true;
+
+    const image = this.images[frameIndex];
+    if (!image) return false;
+
+    const sourceWidth = image.naturalWidth || this.manifest.width;
+    const sourceHeight = image.naturalHeight || this.manifest.height;
+    const scale = Math.max(this.canvas.width / sourceWidth, this.canvas.height / sourceHeight);
+    const drawWidth = sourceWidth * scale;
+    const drawHeight = sourceHeight * scale;
+    const offsetX = (this.canvas.width - drawWidth) / 2;
+    const offsetY = (this.canvas.height - drawHeight) / 2;
+
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+    this.lastDrawnIndex = frameIndex;
+    return true;
+  }
+
+  destroy() {
+    this.destroyed = true;
+    this.resizeObserver.disconnect();
+    this.images.length = 0;
+    this.loadPromises.clear();
+  }
+
+  private frameUrl(index: number) {
+    const frameNumber = String(index + 1).padStart(4, '0');
+    return `/videos/frames/${this.variant}/f_${frameNumber}.webp`;
+  }
+
+  private resize() {
+    if (this.destroyed) return;
+    const bounds = this.canvas.getBoundingClientRect();
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    const physicalWidth = Math.max(1, bounds.width * pixelRatio);
+    const physicalHeight = Math.max(1, bounds.height * pixelRatio);
+    const sourceScale = Math.min(
+      1,
+      this.manifest.width / physicalWidth,
+      this.manifest.height / physicalHeight,
+    );
+    const width = Math.max(1, Math.round(physicalWidth * sourceScale));
+    const height = Math.max(1, Math.round(physicalHeight * sourceScale));
+    if (this.canvas.width === width && this.canvas.height === height) return;
+
+    const frameToRedraw = this.lastDrawnIndex;
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.context.imageSmoothingEnabled = true;
+    this.context.imageSmoothingQuality = 'high';
+    this.lastDrawnIndex = -1;
+    if (frameToRedraw >= 0) this.draw(frameToRedraw);
+  }
+}
 
 const CARD_ICONS = {
   trees: Trees,
@@ -144,7 +281,7 @@ export default function WalkthroughScrub({
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const actRefs = useRef<Array<HTMLDivElement | null>>([]);
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
   const doneRef = useRef(false);
@@ -162,7 +299,8 @@ export default function WalkthroughScrub({
 
     const root = rootRef.current;
     const stage = stageRef.current;
-    if (!root || !stage || chapters.length === 0) return;
+    const canvas = canvasRef.current;
+    if (!root || !stage || !canvas || chapters.length === 0) return;
 
     doneRef.current = false;
     currentIndexRef.current = 0;
@@ -177,14 +315,19 @@ export default function WalkthroughScrub({
       if (effectActive) bridge?.stop();
     });
 
-    const durations = walkthroughSegments.map(() => 0);
-    const offsets = walkthroughSegments.map(() => 0);
-    let stopTimes: number[] = [];
-    let totalDuration = 0;
-    let activeVideoIndex = 0;
+    const variant: FrameVariantName = isMobile ? 'mobile' : 'desktop';
+    const variantManifest = framesManifest[variant];
+    const hasFrames =
+      Number.isInteger(variantManifest.count) &&
+      variantManifest.count > 0 &&
+      variantManifest.width > 0 &&
+      variantManifest.height > 0;
+    const maxFrame = hasFrames ? variantManifest.count - 1 : 0;
+    const stopFrames = hasFrames
+      ? chapters.map((chapter) => clamp(chapter.at, 0, 1) * maxFrame)
+      : [];
     let travelling = false;
     let isReady = false;
-    let direction: -1 | 1 = 1;
     let frameId = 0;
     let wheelResetId = 0;
     let wheelDelta = 0;
@@ -192,8 +335,8 @@ export default function WalkthroughScrub({
     let touchStartY: number | null = null;
     let touchCurrentY: number | null = null;
     let travelTween: gsap.core.Tween | null = null;
-    const timeRef = { value: 0 };
-    let lastAppliedTime = 0;
+    const frameRef = { value: stopFrames[0] ?? 0 };
+    const frameEngine = hasFrames ? new FrameEngine(canvas, variant, variantManifest) : null;
 
     const luxuryEase = CustomEase.create('dp-walk-luxury', '0.625,0.05,0,1');
 
@@ -210,56 +353,8 @@ export default function WalkthroughScrub({
       return [...acts, ...lines, ...cards];
     };
 
-    const setActiveVideo = (index: number) => {
-      if (index === activeVideoIndex) return;
-      activeVideoIndex = index;
-      videoRefs.current.forEach((video, videoIndex) => {
-        if (!video) return;
-        const active = videoIndex === index;
-        video.style.opacity = active ? '1' : '0';
-        video.style.zIndex = active ? '1' : '0';
-        video.setAttribute('aria-hidden', active ? 'false' : 'true');
-      });
-    };
-
-    const applyVideoTime = (rawTime: number) => {
-      if (totalDuration <= 0) return;
-
-      const bounded = clamp(rawTime, 0, Math.max(0, totalDuration - 0.01));
-      const monotonicTime = travelling
-        ? direction > 0
-          ? Math.max(lastAppliedTime, bounded)
-          : Math.min(lastAppliedTime, bounded)
-        : bounded;
-      lastAppliedTime = monotonicTime;
-
-      let segmentIndex = durations.length - 1;
-      for (let index = 0; index < durations.length; index += 1) {
-        if (
-          monotonicTime < offsets[index] + durations[index] ||
-          index === durations.length - 1
-        ) {
-          segmentIndex = index;
-          break;
-        }
-      }
-
-      setActiveVideo(segmentIndex);
-      const video = videoRefs.current[segmentIndex];
-      if (!video || video.readyState < 1) return;
-
-      const localTime = clamp(
-        monotonicTime - offsets[segmentIndex],
-        0,
-        Math.max(0, durations[segmentIndex] - 0.01),
-      );
-      if (Math.abs(video.currentTime - localTime) > 0.001) {
-        video.currentTime = localTime;
-      }
-    };
-
     const renderFrame = () => {
-      applyVideoTime(timeRef.value);
+      frameEngine?.draw(frameRef.value);
       frameId = requestAnimationFrame(renderFrame);
     };
 
@@ -279,7 +374,7 @@ export default function WalkthroughScrub({
     const cancelAnimations = () => {
       travelTween?.kill();
       travelTween = null;
-      gsap.killTweensOf(timeRef);
+      gsap.killTweensOf(frameRef);
       gsap.killTweensOf(animatedElements());
       travelling = false;
     };
@@ -326,7 +421,7 @@ export default function WalkthroughScrub({
     };
 
     const requestStep = (nextDirection: -1 | 1) => {
-      if (!isReady || travelling || doneRef.current || stopTimes.length !== chapters.length) {
+      if (!isReady || travelling || doneRef.current || stopFrames.length !== chapters.length) {
         return;
       }
 
@@ -339,7 +434,6 @@ export default function WalkthroughScrub({
       }
 
       travelling = true;
-      direction = nextDirection;
       const currentAct = actRefs.current[fromIndex];
       const currentCard = cardRefs.current[fromIndex];
       const currentLines = Array.from(
@@ -361,17 +455,15 @@ export default function WalkthroughScrub({
         });
       }
 
-      timeRef.value = stopTimes[fromIndex];
-      lastAppliedTime = timeRef.value;
-      travelTween = gsap.to(timeRef, {
-        value: stopTimes[nextIndex],
+      frameRef.value = stopFrames[fromIndex];
+      travelTween = gsap.to(frameRef, {
+        value: stopFrames[nextIndex],
         duration: 1.6,
         ease: luxuryEase,
         overwrite: false,
         onComplete: () => {
-          timeRef.value = stopTimes[nextIndex];
-          lastAppliedTime = timeRef.value;
-          applyVideoTime(timeRef.value);
+          frameRef.value = stopFrames[nextIndex];
+          frameEngine?.draw(frameRef.value);
           currentAct?.setAttribute('aria-hidden', 'true');
           currentCard?.setAttribute('aria-hidden', 'true');
           if (currentAct) gsap.set(currentAct, { autoAlpha: 0 });
@@ -387,36 +479,25 @@ export default function WalkthroughScrub({
     };
     stepRef.current = requestStep;
 
-    const updateReadiness = () => {
-      if (durations.some((duration) => duration <= 0)) return;
+    if (frameEngine) {
+      const chapterZeroEnd = Math.ceil(stopFrames[1] ?? stopFrames[0]);
+      void (async () => {
+        try {
+          await frameEngine.loadFrame(stopFrames[0]);
+          if (!effectActive) return;
+          frameEngine.draw(stopFrames[0]);
 
-      let elapsed = 0;
-      durations.forEach((duration, index) => {
-        offsets[index] = elapsed;
-        elapsed += duration;
-      });
-      totalDuration = elapsed;
-      stopTimes = chapters.map(
-        (chapter) => offsets[chapter.segmentIndex] + chapter.at * durations[chapter.segmentIndex],
-      );
-      timeRef.value = stopTimes[0];
-      lastAppliedTime = timeRef.value;
-      applyVideoTime(timeRef.value);
-      isReady = true;
-      setReady(true);
-    };
+          await frameEngine.preloadRange(0, chapterZeroEnd);
+          if (!effectActive) return;
+          isReady = true;
+          setReady(true);
 
-    const metadataHandlers = videoRefs.current.map((video, index) => {
-      const onMetadata = () => {
-        const duration = video?.duration ?? 0;
-        durations[index] = Number.isFinite(duration) ? duration : 0;
-        video?.pause();
-        updateReadiness();
-      };
-      video?.addEventListener('loadedmetadata', onMetadata);
-      if (video && video.readyState >= 1) onMetadata();
-      return onMetadata;
-    });
+          await frameEngine.preloadRange(chapterZeroEnd + 1, maxFrame);
+        } catch (error) {
+          if (effectActive) console.error('Walkthrough frame sequence could not be loaded.', error);
+        }
+      })();
+    }
 
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
@@ -526,9 +607,7 @@ export default function WalkthroughScrub({
         stage.removeEventListener('pointermove', onPointerMove);
         stage.removeEventListener('pointerleave', resetPointer);
       }
-      videoRefs.current.forEach((video, index) => {
-        video?.removeEventListener('loadedmetadata', metadataHandlers[index]);
-      });
+      frameEngine?.destroy();
       cancelAnimations();
       context.revert();
       stepRef.current = () => undefined;
@@ -556,22 +635,19 @@ export default function WalkthroughScrub({
         className="dp-exp__viewport dp-walk__stage"
         aria-label="DezignPool cinematic home walkthrough"
       >
-        {walkthroughSegments.map((segment, index) => (
-          <video
-            key={segment.id}
-            ref={(node) => {
-              videoRefs.current[index] = node;
-            }}
-            className="dp-exp__canvas dp-vid__video dp-walk__video"
-            src={isMobile ? segment.mobileSrc : segment.src}
-            poster={isMobile ? segment.mobilePoster : segment.poster}
-            muted
-            playsInline
-            preload="auto"
-            aria-label={`${segment.id.replace(/-/g, ' ')} walkthrough`}
-            aria-hidden={index === 0 ? 'false' : 'true'}
+        <picture className="dp-walk__still-media" aria-hidden="true">
+          <source
+            media="(max-width: 767px)"
+            srcSet={walkthroughSegments[0].mobilePoster}
           />
-        ))}
+          <img src={walkthroughSegments[0].poster} alt="" />
+        </picture>
+        <canvas
+          ref={canvasRef}
+          className="dp-exp__canvas"
+          style={{ width: '100%', height: '100%', zIndex: 1 }}
+          aria-hidden="true"
+        />
 
         <div className="dp-vid__scrim dp-walk__scrim" />
         <div className="dp-exp__vignette dp-walk__vignette" />
