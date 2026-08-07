@@ -185,7 +185,16 @@ function makeSelector(candidates) {
     return candidate;
   }
 
-  return { claim };
+  function claimExact(style, room, filename) {
+    const key = `${style}/${room}/${filename}`.toLowerCase();
+    const candidate = candidates.find((item) => item.key === key);
+    if (!candidate) fail(`Curated pick not found in library: ${key}`);
+    if (used.has(key)) fail(`Curated pick used twice: ${key}`);
+    used.add(key);
+    return candidate;
+  }
+
+  return { claim, claimExact };
 }
 
 function selectAssets(candidates, styleOrder) {
@@ -193,11 +202,18 @@ function selectAssets(candidates, styleOrder) {
   const styleOffset = hash(`${SEED}|style-offset`) % styleOrder.length;
   const styleStride = 7;
   let styleSlot = 0;
+  const picksFile = join(repoRoot, 'scripts', 'quiz-picks.json');
+  const curatedPicks = existsSync(picksFile)
+    ? JSON.parse(readFileSync(picksFile, 'utf8').replace(/^﻿/, ''))
+    : {};
+
   const rounds = ROUND_BLUEPRINTS.map((blueprint) => ({
     ...blueprint,
-    candidates: blueprint.rooms.map((room) => {
+    candidates: blueprint.rooms.map((room, roomIndex) => {
       const style = styleOrder[(styleOffset + styleSlot * styleStride) % styleOrder.length];
       styleSlot += 1;
+      const pick = curatedPicks[blueprint.id]?.[roomIndex];
+      if (pick) return selector.claimExact(pick.style, pick.room, pick.filename);
       return selector.claim(style, room);
     }),
   }));

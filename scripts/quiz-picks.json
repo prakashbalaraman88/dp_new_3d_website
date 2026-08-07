@@ -1,0 +1,178 @@
+{
+ "living-room": [
+  {
+   "style": "japandi",
+   "room": "living-room",
+   "filename": "japandi_living-room_074.jpg"
+  },
+  {
+   "style": "traditional-south-indian",
+   "room": "living-room",
+   "filename": "traditional-south-indian_living-room_085.png"
+  },
+  {
+   "style": "modern-contemporary",
+   "room": "living-room",
+   "filename": "modern-contemporary_living-room_064.jpg"
+  },
+  {
+   "style": "neoclassical",
+   "room": "living-room",
+   "filename": "neoclassical_living-room_022.webp"
+  }
+ ],
+ "kitchen": [
+  {
+   "style": "indo-contemporary",
+   "room": "kitchen",
+   "filename": "indo-contemporary_kitchen_008.png"
+  },
+  {
+   "style": "industrial",
+   "room": "kitchen",
+   "filename": "industrial_kitchen_016.jpg"
+  },
+  {
+   "style": "warm-minimalism",
+   "room": "kitchen",
+   "filename": "warm-minimalism_kitchen_095.jpg"
+  },
+  {
+   "style": "wabi-sabi",
+   "room": "kitchen",
+   "filename": "wabi-sabi_kitchen_037.png"
+  }
+ ],
+ "master-bedroom": [
+  {
+   "style": "art-deco",
+   "room": "master-bedroom",
+   "filename": "art-deco_master-bedroom_043.jpg"
+  },
+  {
+   "style": "coastal",
+   "room": "master-bedroom",
+   "filename": "coastal_master-bedroom_061.png"
+  },
+  {
+   "style": "mid-century-modern",
+   "room": "master-bedroom",
+   "filename": "mid-century-modern_master-bedroom_074.jpg"
+  },
+  {
+   "style": "biophilic",
+   "room": "master-bedroom",
+   "filename": "biophilic_master-bedroom_012.jpg"
+  }
+ ],
+ "foyer": [
+  {
+   "style": "bohemian",
+   "room": "foyer",
+   "filename": "bohemian_foyer_038.jpg"
+  },
+  {
+   "style": "scandinavian",
+   "room": "foyer",
+   "filename": "scandinavian_foyer_074.png"
+  },
+  {
+   "style": "quiet-luxury",
+   "room": "foyer",
+   "filename": "quiet-luxury_foyer_097.jpg"
+  },
+  {
+   "style": "japandi",
+   "room": "foyer",
+   "filename": "japandi_foyer_045.jpg"
+  }
+ ],
+ "dining": [
+  {
+   "style": "traditional-south-indian",
+   "room": "dining",
+   "filename": "traditional-south-indian_dining_003.jpg"
+  },
+  {
+   "style": "modern-contemporary",
+   "room": "dining",
+   "filename": "modern-contemporary_dining_045.jpg"
+  },
+  {
+   "style": "neoclassical",
+   "room": "dining",
+   "filename": "neoclassical_dining_014.jpg"
+  },
+  {
+   "style": "indo-contemporary",
+   "room": "dining",
+   "filename": "indo-contemporary_dining_012.png"
+  }
+ ],
+ "wardrobe": [
+  {
+   "style": "industrial",
+   "room": "wardrobe",
+   "filename": "industrial_wardrobe_040.jpg"
+  },
+  {
+   "style": "warm-minimalism",
+   "room": "wardrobe",
+   "filename": "warm-minimalism_wardrobe_011.png"
+  },
+  {
+   "style": "wabi-sabi",
+   "room": "wardrobe",
+   "filename": "wabi-sabi_wardrobe_063.jpg"
+  },
+  {
+   "style": "art-deco",
+   "room": "wardrobe",
+   "filename": "art-deco_wardrobe_005.jpg"
+  }
+ ],
+ "wall-panel": [
+  {
+   "style": "coastal",
+   "room": "wall-panel",
+   "filename": "coastal_wall-panel_026.jpg"
+  },
+  {
+   "style": "mid-century-modern",
+   "room": "wall-panel",
+   "filename": "mid-century-modern_wall-panel_019.jpg"
+  },
+  {
+   "style": "biophilic",
+   "room": "wall-panel",
+   "filename": "biophilic_wall-panel_060.png"
+  },
+  {
+   "style": "bohemian",
+   "room": "wall-panel",
+   "filename": "bohemian_wall-panel_046.png"
+  }
+ ],
+ "final-instinct": [
+  {
+   "style": "scandinavian",
+   "room": "living-room",
+   "filename": "scandinavian_living-room_006.jpg"
+  },
+  {
+   "style": "quiet-luxury",
+   "room": "kitchen",
+   "filename": "quiet-luxury_kitchen_016.png"
+  },
+  {
+   "style": "japandi",
+   "room": "master-bedroom",
+   "filename": "japandi_master-bedroom_044.jpg"
+  },
+  {
+   "style": "traditional-south-indian",
+   "room": "dining",
+   "filename": "traditional-south-indian_dining_027.jpg"
+  }
+ ]
+}

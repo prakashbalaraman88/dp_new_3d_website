@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import AmbientBackground from '../components/AmbientBackground';
 import { ROUNDS } from './data';
 import type { Answers } from './report';
-import AmbientBackground from '../components/AmbientBackground';
 import DraftingAccents from './DraftingAccents';
 import IntroSection from './IntroSection';
 import { QuadSection } from './QuizSection';
@@ -175,7 +175,13 @@ export default function DiscoverExperience({
 
   return (
     <div className="dp-discover relative h-svh overflow-hidden font-sans text-white">
-      <AmbientBackground variant="plaster" />
+      <AmbientBackground variant="arches" />
+      {/* Legibility scrim: darkens the centre where copy and cards sit */}
+      <div
+        className="pointer-events-none fixed inset-0 z-[1]"
+        aria-hidden="true"
+        style={{ background: 'radial-gradient(ellipse 72% 62% at 50% 48%, rgba(11,11,12,0.82) 0%, rgba(11,11,12,0.45) 55%, transparent 78%)' }}
+      />
 
       {index > 0 && (
         <button
