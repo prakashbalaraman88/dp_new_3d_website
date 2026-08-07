@@ -41,17 +41,53 @@ type FrameVariantManifest = {
   count: number;
   width: number;
   height: number;
+  fps: number;
 };
 
 type FramesManifest = Record<FrameVariantName, FrameVariantManifest>;
 
 const framesManifest = JSON.parse(framesManifestSource) as FramesManifest;
 
+type FrameDirection = -1 | 1;
+
+type FrameState = {
+  loaded: boolean;
+  decoded: boolean;
+  loading: boolean;
+  queued: boolean;
+  priority: number;
+  order: number;
+  image?: HTMLImageElement;
+  bitmap?: ImageBitmap;
+  promise?: Promise<void>;
+  resolve?: () => void;
+  reject?: (reason: unknown) => void;
+};
+
+type FrameRenderResult = {
+  index: number;
+  caughtUp: boolean;
+};
+
+const FRAME_BITMAP_CACHE_LIMIT = 450;
+const FRAME_LOAD_CONCURRENCY = 8;
+const STARTUP_LOOKAHEAD = 10;
+const ROLLING_LOOKAHEAD = 18;
+const BACKGROUND_DECODE_PRIORITY = 1;
+const TRAVEL_DECODE_PRIORITY = 10;
+const LOOKAHEAD_DECODE_PRIORITY = 20;
+const WHEEL_BURST_SILENCE_MS = 160;
+const WHEEL_EVENT_LIMIT_PX = 80;
+const WHEEL_TRIGGER_PX = 32;
+
 class FrameEngine {
   private readonly context: CanvasRenderingContext2D;
-  private readonly images: Array<HTMLImageElement | undefined>;
-  private readonly loadPromises = new Map<number, Promise<HTMLImageElement>>();
+  private readonly frames: FrameState[];
+  private readonly decodeQueue: number[] = [];
+  private readonly bitmapCache = new Map<number, ImageBitmap>();
   private readonly resizeObserver: ResizeObserver;
+  private activeLoads = 0;
+  private queueOrder = 0;
   private lastDrawnIndex = -1;
   private destroyed = false;
 
@@ -63,67 +99,144 @@ class FrameEngine {
     const context = canvas.getContext('2d');
     if (!context) throw new Error('Canvas 2D rendering is unavailable.');
     this.context = context;
-    this.images = new Array(manifest.count);
+    this.frames = Array.from({ length: manifest.count }, () => ({
+      loaded: false,
+      decoded: false,
+      loading: false,
+      queued: false,
+      priority: Number.NEGATIVE_INFINITY,
+      order: 0,
+    }));
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.resize();
   }
 
-  loadFrame(index: number) {
+  loadFrame(index: number, priority = 0) {
     const frameIndex = clamp(Math.round(index), 0, this.manifest.count - 1);
-    const loaded = this.images[frameIndex];
-    if (loaded) return Promise.resolve(loaded);
+    const frame = this.frames[frameIndex];
+    if (frame.decoded) {
+      this.touchBitmap(frameIndex);
+      return Promise.resolve();
+    }
 
-    const pending = this.loadPromises.get(frameIndex);
-    if (pending) return pending;
+    if (!frame.promise) {
+      frame.promise = new Promise<void>((resolve, reject) => {
+        frame.resolve = resolve;
+        frame.reject = reject;
+      });
+    }
 
-    const promise = new Promise<HTMLImageElement>((resolve, reject) => {
-      const image = new Image();
-      image.decoding = 'async';
-      image.onload = () => {
-        if (!this.destroyed) this.images[frameIndex] = image;
-        resolve(image);
-      };
-      image.onerror = () => {
-        this.loadPromises.delete(frameIndex);
-        reject(new Error(`Could not load walkthrough frame ${this.frameUrl(frameIndex)}.`));
-      };
-      image.src = this.frameUrl(frameIndex);
-    });
-    this.loadPromises.set(frameIndex, promise);
-    return promise;
+    if (!frame.loading) {
+      if (!frame.queued) {
+        frame.queued = true;
+        this.decodeQueue.push(frameIndex);
+      }
+      if (priority > frame.priority) {
+        frame.priority = priority;
+        frame.order = this.queueOrder;
+        this.queueOrder += 1;
+      }
+      this.pumpDecodeQueue();
+    }
+
+    return frame.promise;
   }
 
-  async preloadRange(start: number, end: number, concurrency = 6) {
-    const first = clamp(Math.floor(start), 0, this.manifest.count - 1);
-    const last = clamp(Math.ceil(end), 0, this.manifest.count - 1);
-    if (last < first) return;
+  async preloadRange(
+    start: number,
+    end: number,
+    direction: FrameDirection,
+    priority = 0,
+  ) {
+    const first = clamp(Math.round(start), 0, this.manifest.count - 1);
+    const last = clamp(Math.round(end), 0, this.manifest.count - 1);
+    const distance = (last - first) * direction;
+    if (distance < 0) return;
 
-    const queue = Array.from({ length: last - first + 1 }, (_, index) => first + index);
-    let cursor = 0;
-    const worker = async () => {
-      while (!this.destroyed) {
-        const queueIndex = cursor;
-        cursor += 1;
-        if (queueIndex >= queue.length) return;
-        await this.loadFrame(queue[queueIndex]);
-      }
-    };
-    await Promise.all(
-      Array.from({ length: Math.min(concurrency, queue.length) }, () => worker()),
+    const frames = Array.from(
+      { length: distance + 1 },
+      (_, index) => first + index * direction,
     );
+    await Promise.all(frames.map((frameIndex) => this.loadFrame(frameIndex, priority)));
+  }
+
+  preloadLookahead(
+    origin: number,
+    target: number,
+    direction: FrameDirection,
+    frameCount: number,
+    priority: number,
+  ) {
+    const start = clamp(Math.round(origin), 0, this.manifest.count - 1);
+    const destination = clamp(Math.round(target), 0, this.manifest.count - 1);
+    const available = Math.max(0, (destination - start) * direction);
+    const lookaheadEnd = start + direction * Math.min(frameCount, available);
+    return this.preloadRange(start, lookaheadEnd, direction, priority);
   }
 
   draw(rawIndex: number) {
     if (this.destroyed || this.manifest.count <= 0) return false;
     const frameIndex = clamp(Math.round(rawIndex), 0, this.manifest.count - 1);
-    if (frameIndex === this.lastDrawnIndex) return true;
+    return this.drawFrame(frameIndex);
+  }
 
-    const image = this.images[frameIndex];
-    if (!image) return false;
+  drawDirectional(rawIndex: number, direction: FrameDirection): FrameRenderResult {
+    if (this.destroyed || this.lastDrawnIndex < 0) {
+      return { index: this.lastDrawnIndex, caughtUp: false };
+    }
 
-    const sourceWidth = image.naturalWidth || this.manifest.width;
-    const sourceHeight = image.naturalHeight || this.manifest.height;
+    const desiredIndex = clamp(
+      direction > 0 ? Math.floor(rawIndex) : Math.ceil(rawIndex),
+      0,
+      this.manifest.count - 1,
+    );
+    let frontier = this.lastDrawnIndex;
+
+    while ((desiredIndex - frontier) * direction > 0) {
+      const nextIndex = frontier + direction;
+      if (!this.frames[nextIndex]?.decoded) break;
+      this.drawFrame(nextIndex);
+      frontier = this.lastDrawnIndex;
+    }
+
+    return { index: this.lastDrawnIndex, caughtUp: this.lastDrawnIndex === desiredIndex };
+  }
+
+  destroy() {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    this.resizeObserver.disconnect();
+    this.decodeQueue.length = 0;
+
+    const destroyedError = new Error('Walkthrough frame engine was destroyed.');
+    this.frames.forEach((frame) => {
+      frame.bitmap?.close();
+      frame.bitmap = undefined;
+      frame.image = undefined;
+      frame.decoded = false;
+      if (frame.queued) frame.reject?.(destroyedError);
+      frame.queued = false;
+    });
+    this.bitmapCache.clear();
+  }
+
+  private drawFrame(frameIndex: number) {
+    if (frameIndex === this.lastDrawnIndex) {
+      this.touchBitmap(frameIndex);
+      return true;
+    }
+
+    const frame = this.frames[frameIndex];
+    const image = frame.bitmap ?? frame.image;
+    if (!frame.decoded || !image) return false;
+
+    const sourceWidth = image instanceof HTMLImageElement
+      ? image.naturalWidth || this.manifest.width
+      : image.width;
+    const sourceHeight = image instanceof HTMLImageElement
+      ? image.naturalHeight || this.manifest.height
+      : image.height;
     const scale = Math.max(this.canvas.width / sourceWidth, this.canvas.height / sourceHeight);
     const drawWidth = sourceWidth * scale;
     const drawHeight = sourceHeight * scale;
@@ -133,14 +246,111 @@ class FrameEngine {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
     this.lastDrawnIndex = frameIndex;
+    this.touchBitmap(frameIndex);
     return true;
   }
 
-  destroy() {
-    this.destroyed = true;
-    this.resizeObserver.disconnect();
-    this.images.length = 0;
-    this.loadPromises.clear();
+  private pumpDecodeQueue() {
+    if (this.destroyed) return;
+    this.decodeQueue.sort((leftIndex, rightIndex) => {
+      const left = this.frames[leftIndex];
+      const right = this.frames[rightIndex];
+      return right.priority - left.priority || left.order - right.order;
+    });
+
+    while (this.activeLoads < FRAME_LOAD_CONCURRENCY && this.decodeQueue.length > 0) {
+      const frameIndex = this.decodeQueue.shift();
+      if (frameIndex === undefined) return;
+      const frame = this.frames[frameIndex];
+      if (!frame.queued || frame.decoded) continue;
+
+      frame.queued = false;
+      frame.loading = true;
+      this.activeLoads += 1;
+      void this.decodeFrame(frameIndex)
+        .then(() => frame.resolve?.())
+        .catch((error: unknown) => {
+          frame.loaded = false;
+          frame.decoded = false;
+          frame.image = undefined;
+          frame.bitmap?.close();
+          frame.bitmap = undefined;
+          frame.reject?.(error);
+        })
+        .finally(() => {
+          frame.loading = false;
+          frame.priority = Number.NEGATIVE_INFINITY;
+          frame.promise = undefined;
+          frame.resolve = undefined;
+          frame.reject = undefined;
+          this.activeLoads -= 1;
+          this.pumpDecodeQueue();
+        });
+    }
+  }
+
+  private async decodeFrame(frameIndex: number) {
+    const frame = this.frames[frameIndex];
+    const image = new Image();
+    image.decoding = 'async';
+    frame.image = image;
+
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => {
+        reject(new Error(`Could not load walkthrough frame ${this.frameUrl(frameIndex)}.`));
+      };
+      image.src = this.frameUrl(frameIndex);
+    });
+    frame.loaded = true;
+
+    let bitmap: ImageBitmap | undefined;
+    if (typeof createImageBitmap === 'function') {
+      try {
+        bitmap = await createImageBitmap(image);
+      } catch {
+        if (typeof image.decode === 'function') await image.decode();
+      }
+    } else if (typeof image.decode === 'function') {
+      await image.decode();
+    }
+
+    if (this.destroyed) {
+      bitmap?.close();
+      throw new Error('Walkthrough frame engine was destroyed.');
+    }
+
+    if (bitmap) {
+      frame.bitmap = bitmap;
+      frame.image = undefined;
+      this.bitmapCache.set(frameIndex, bitmap);
+    }
+    frame.decoded = true;
+    if (bitmap) this.enforceBitmapCacheLimit();
+  }
+
+  private enforceBitmapCacheLimit() {
+    while (this.bitmapCache.size > FRAME_BITMAP_CACHE_LIMIT) {
+      const oldestIndex = Array.from(this.bitmapCache.keys()).find(
+        (frameIndex) => frameIndex !== this.lastDrawnIndex,
+      );
+      if (oldestIndex === undefined) return;
+      const bitmap = this.bitmapCache.get(oldestIndex);
+      this.bitmapCache.delete(oldestIndex);
+      bitmap?.close();
+
+      const frame = this.frames[oldestIndex];
+      frame.bitmap = undefined;
+      frame.loaded = false;
+      frame.decoded = false;
+    }
+  }
+
+  private touchBitmap(frameIndex: number) {
+    const bitmap = this.bitmapCache.get(frameIndex);
+    if (!bitmap) return;
+    this.bitmapCache.delete(frameIndex);
+    this.bitmapCache.set(frameIndex, bitmap);
   }
 
   private frameUrl(index: number) {
@@ -336,24 +546,39 @@ export default function WalkthroughScrub({
       Number.isInteger(variantManifest.count) &&
       variantManifest.count > 0 &&
       variantManifest.width > 0 &&
-      variantManifest.height > 0;
+      variantManifest.height > 0 &&
+      Number.isFinite(variantManifest.fps) &&
+      variantManifest.fps > 0;
     const maxFrame = hasFrames ? variantManifest.count - 1 : 0;
     const stopFrames = hasFrames
-      ? chapters.map((chapter) => clamp(chapter.at, 0, 1) * maxFrame)
+      ? chapters.map((chapter) => Math.round(clamp(chapter.at, 0, 1) * maxFrame))
       : [];
     let travelling = false;
     let isReady = false;
-    let frameId = 0;
-    let wheelResetId = 0;
-    let wheelDelta = 0;
-    let wheelBurstConsumed = false;
+    let pendingDirection: FrameDirection | null = null;
+    let travelDirection: FrameDirection | null = null;
+    let travelTargetFrame = 0;
+    let travelToken = 0;
+    let buffering = false;
+    let rollingLookaheadOrigin = -1;
     let touchStartY: number | null = null;
     let touchCurrentY: number | null = null;
     let travelTween: gsap.core.Tween | null = null;
     const frameRef = { value: stopFrames[0] ?? 0 };
     const frameEngine = hasFrames ? new FrameEngine(canvas, variant, variantManifest) : null;
+    const wheelBurst = {
+      active: false,
+      direction: 1 as FrameDirection,
+      accumulator: 0,
+      lastAt: 0,
+      lastMagnitude: 0,
+      peakMagnitude: 0,
+      consumed: false,
+      tailing: false,
+    };
 
     const luxuryEase = CustomEase.create('dp-walk-luxury', '0.625,0.05,0,1');
+    const travelEase = CustomEase.create('dp-walk-travel', '0.65,0,0.35,1');
 
     const animatedElements = () => {
       const acts = actRefs.current.filter(
@@ -366,11 +591,6 @@ export default function WalkthroughScrub({
         (element): element is HTMLElement => element !== null,
       );
       return [...acts, ...lines, ...cards];
-    };
-
-    const renderFrame = () => {
-      frameEngine?.draw(frameRef.value);
-      frameId = requestAnimationFrame(renderFrame);
     };
 
     const context = gsap.context(() => {
@@ -387,11 +607,15 @@ export default function WalkthroughScrub({
     }, root);
 
     const cancelAnimations = () => {
+      travelToken += 1;
       travelTween?.kill();
       travelTween = null;
       gsap.killTweensOf(frameRef);
       gsap.killTweensOf(animatedElements());
       travelling = false;
+      travelDirection = null;
+      pendingDirection = null;
+      buffering = false;
     };
     cancelRef.current = cancelAnimations;
 
@@ -435,10 +659,94 @@ export default function WalkthroughScrub({
       }
     };
 
-    const requestStep = (nextDirection: -1 | 1) => {
-      if (!isReady || travelling || doneRef.current || stopFrames.length !== chapters.length) {
+    const reportFrameError = (error: unknown) => {
+      if (effectActive) console.error('Walkthrough frame sequence could not be loaded.', error);
+    };
+
+    let startStep: (direction: FrameDirection) => void = () => undefined;
+
+    const drainPendingIntent = () => {
+      if (!isReady || travelling || pendingDirection === null || doneRef.current) return;
+      const direction = pendingDirection;
+      pendingDirection = null;
+      startStep(direction);
+    };
+
+    const submitIntent = (direction: FrameDirection) => {
+      if (doneRef.current) return;
+      if (!isReady || travelling) {
+        pendingDirection = direction;
         return;
       }
+      startStep(direction);
+    };
+    stepRef.current = submitIntent;
+
+    const pauseForUnderrun = (frontier: number) => {
+      if (
+        buffering ||
+        !frameEngine ||
+        travelDirection === null ||
+        !travelTween ||
+        doneRef.current
+      ) {
+        return;
+      }
+
+      travelTween.pause();
+      frameRef.value = frontier;
+      buffering = true;
+      const token = travelToken;
+      void frameEngine
+        .preloadLookahead(
+          frontier,
+          travelTargetFrame,
+          travelDirection,
+          ROLLING_LOOKAHEAD,
+          LOOKAHEAD_DECODE_PRIORITY,
+        )
+        .then(() => {
+          if (
+            !effectActive ||
+            token !== travelToken ||
+            !travelling ||
+            doneRef.current
+          ) {
+            return;
+          }
+          buffering = false;
+          rollingLookaheadOrigin = frontier;
+          travelTween?.resume();
+        })
+        .catch((error: unknown) => {
+          buffering = false;
+          reportFrameError(error);
+        });
+    };
+
+    const updateTravelFrame = () => {
+      if (!frameEngine || !travelling || travelDirection === null) return;
+      const result = frameEngine.drawDirectional(frameRef.value, travelDirection);
+      if (
+        rollingLookaheadOrigin < 0 ||
+        Math.abs(result.index - rollingLookaheadOrigin) >= Math.floor(ROLLING_LOOKAHEAD / 3)
+      ) {
+        rollingLookaheadOrigin = result.index;
+        void frameEngine
+          .preloadLookahead(
+            result.index,
+            travelTargetFrame,
+            travelDirection,
+            ROLLING_LOOKAHEAD,
+            LOOKAHEAD_DECODE_PRIORITY,
+          )
+          .catch(reportFrameError);
+      }
+      if (!result.caughtUp) pauseForUnderrun(result.index);
+    };
+
+    startStep = (nextDirection) => {
+      if (doneRef.current || !frameEngine || stopFrames.length !== chapters.length) return;
 
       const fromIndex = currentIndexRef.current;
       const nextIndex = fromIndex + nextDirection;
@@ -448,12 +756,22 @@ export default function WalkthroughScrub({
         return;
       }
 
-      travelling = true;
+      const fromFrame = stopFrames[fromIndex];
+      const targetFrame = stopFrames[nextIndex];
+      const frameSpan = Math.abs(targetFrame - fromFrame);
       const currentAct = actRefs.current[fromIndex];
       const currentCard = cardRefs.current[fromIndex];
       const currentLines = Array.from(
         currentAct?.querySelectorAll<HTMLElement>('[data-copy-line]') ?? [],
       );
+
+      travelling = true;
+      travelDirection = nextDirection;
+      travelTargetFrame = targetFrame;
+      rollingLookaheadOrigin = fromFrame;
+      buffering = false;
+      const token = travelToken + 1;
+      travelToken = token;
 
       gsap.to(currentLines, {
         autoAlpha: 0,
@@ -470,66 +788,146 @@ export default function WalkthroughScrub({
         });
       }
 
-      frameRef.value = stopFrames[fromIndex];
-      travelTween = gsap.to(frameRef, {
-        value: stopFrames[nextIndex],
-        duration: 1.6,
-        ease: luxuryEase,
-        overwrite: false,
-        onComplete: () => {
-          frameRef.value = stopFrames[nextIndex];
-          frameEngine?.draw(frameRef.value);
-          currentAct?.setAttribute('aria-hidden', 'true');
-          currentCard?.setAttribute('aria-hidden', 'true');
-          if (currentAct) gsap.set(currentAct, { autoAlpha: 0 });
-          if (currentCard) gsap.set(currentCard, { autoAlpha: 0 });
+      void frameEngine
+        .preloadRange(fromFrame, targetFrame, nextDirection, TRAVEL_DECODE_PRIORITY)
+        .catch(reportFrameError);
 
-          currentIndexRef.current = nextIndex;
-          setCurrentIndex(nextIndex);
-          enterChapter(nextIndex);
-          travelling = false;
-          travelTween = null;
-        },
-      });
-    };
-    stepRef.current = requestStep;
-
-    if (frameEngine) {
-      const chapterZeroEnd = Math.ceil(stopFrames[1] ?? stopFrames[0]);
       void (async () => {
         try {
-          await frameEngine.loadFrame(stopFrames[0]);
+          await frameEngine.preloadLookahead(
+            fromFrame,
+            targetFrame,
+            nextDirection,
+            STARTUP_LOOKAHEAD,
+            LOOKAHEAD_DECODE_PRIORITY,
+          );
+          if (!effectActive || token !== travelToken || doneRef.current) return;
+
+          frameRef.value = fromFrame;
+          frameEngine.draw(fromFrame);
+          travelTween = gsap.to(frameRef, {
+            value: targetFrame,
+            duration: clamp(frameSpan / 50, 1.4, 1.9),
+            ease: travelEase,
+            overwrite: false,
+            onUpdate: updateTravelFrame,
+            onComplete: () => {
+              frameRef.value = targetFrame;
+              frameEngine.drawDirectional(targetFrame, nextDirection);
+              currentAct?.setAttribute('aria-hidden', 'true');
+              currentCard?.setAttribute('aria-hidden', 'true');
+              if (currentAct) gsap.set(currentAct, { autoAlpha: 0 });
+              if (currentCard) gsap.set(currentCard, { autoAlpha: 0 });
+
+              currentIndexRef.current = nextIndex;
+              setCurrentIndex(nextIndex);
+              enterChapter(nextIndex);
+              travelling = false;
+              travelDirection = null;
+              buffering = false;
+              travelTween = null;
+              drainPendingIntent();
+            },
+          });
+        } catch (error) {
+          if (!effectActive || token !== travelToken) return;
+          travelling = false;
+          travelDirection = null;
+          enterChapter(fromIndex);
+          reportFrameError(error);
+          drainPendingIntent();
+        }
+      })();
+    };
+
+    if (frameEngine) {
+      const chapterZeroEnd = stopFrames[1] ?? stopFrames[0];
+      void (async () => {
+        try {
+          await frameEngine.loadFrame(stopFrames[0], LOOKAHEAD_DECODE_PRIORITY);
           if (!effectActive) return;
           frameEngine.draw(stopFrames[0]);
 
-          await frameEngine.preloadRange(0, chapterZeroEnd);
+          await frameEngine.preloadLookahead(
+            stopFrames[0],
+            chapterZeroEnd,
+            1,
+            STARTUP_LOOKAHEAD,
+            LOOKAHEAD_DECODE_PRIORITY,
+          );
           if (!effectActive) return;
           isReady = true;
           setReady(true);
+          drainPendingIntent();
 
-          await frameEngine.preloadRange(chapterZeroEnd + 1, maxFrame);
+          await frameEngine.preloadRange(
+            stopFrames[0],
+            chapterZeroEnd,
+            1,
+            BACKGROUND_DECODE_PRIORITY,
+          );
+          if (chapterZeroEnd < maxFrame) {
+            await frameEngine.preloadRange(
+              chapterZeroEnd + 1,
+              maxFrame,
+              1,
+              BACKGROUND_DECODE_PRIORITY,
+            );
+          }
         } catch (error) {
-          if (effectActive) console.error('Walkthrough frame sequence could not be loaded.', error);
+          reportFrameError(error);
         }
       })();
     }
 
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
-      window.clearTimeout(wheelResetId);
-      wheelResetId = window.setTimeout(() => {
-        wheelDelta = 0;
-        wheelBurstConsumed = false;
-      }, 220);
-
-      if (wheelBurstConsumed || travelling || doneRef.current) return;
-
       const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
-      wheelDelta += event.deltaY * scale;
-      if (Math.abs(wheelDelta) < 32) return;
+      const delta = clamp(event.deltaY * scale, -WHEEL_EVENT_LIMIT_PX, WHEEL_EVENT_LIMIT_PX);
+      const magnitude = Math.abs(delta);
+      if (magnitude < 0.5) return;
 
-      wheelBurstConsumed = true;
-      requestStep(wheelDelta > 0 ? 1 : -1);
+      const now = performance.now();
+      const direction: FrameDirection = delta > 0 ? 1 : -1;
+      const afterSilence = !wheelBurst.active || now - wheelBurst.lastAt >= WHEEL_BURST_SILENCE_MS;
+      const reversed = wheelBurst.active && direction !== wheelBurst.direction;
+      const renewedImpulse =
+        wheelBurst.active &&
+        wheelBurst.consumed &&
+        wheelBurst.tailing &&
+        direction === wheelBurst.direction &&
+        magnitude >= Math.max(12, wheelBurst.lastMagnitude * 1.8);
+
+      if (afterSilence || reversed || renewedImpulse) {
+        wheelBurst.active = true;
+        wheelBurst.direction = direction;
+        wheelBurst.accumulator = 0;
+        wheelBurst.lastMagnitude = 0;
+        wheelBurst.peakMagnitude = 0;
+        wheelBurst.consumed = false;
+        wheelBurst.tailing = false;
+      }
+
+      wheelBurst.accumulator += delta;
+      if (wheelBurst.consumed) {
+        if (
+          magnitude <= wheelBurst.lastMagnitude * 0.82 ||
+          magnitude <= wheelBurst.peakMagnitude * 0.3
+        ) {
+          wheelBurst.tailing = true;
+        }
+        wheelBurst.lastAt = now;
+        wheelBurst.lastMagnitude = magnitude;
+        return;
+      }
+
+      wheelBurst.lastAt = now;
+      wheelBurst.lastMagnitude = magnitude;
+      wheelBurst.peakMagnitude = Math.max(wheelBurst.peakMagnitude, magnitude);
+      if (Math.abs(wheelBurst.accumulator) < WHEEL_TRIGGER_PX) return;
+
+      wheelBurst.consumed = true;
+      submitIntent(wheelBurst.accumulator > 0 ? 1 : -1);
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -547,7 +945,7 @@ export default function WalkthroughScrub({
       if (!forwardKey && !reverseKey) return;
 
       event.preventDefault();
-      if (!event.repeat) requestStep(forwardKey ? 1 : -1);
+      if (!event.repeat) submitIntent(forwardKey ? 1 : -1);
     };
 
     const onTouchStart = (event: TouchEvent) => {
@@ -573,7 +971,12 @@ export default function WalkthroughScrub({
       const distance = touchStartY - touchCurrentY;
       touchStartY = null;
       touchCurrentY = null;
-      if (Math.abs(distance) >= 48) requestStep(distance > 0 ? 1 : -1);
+      if (Math.abs(distance) >= 48) submitIntent(distance > 0 ? 1 : -1);
+    };
+
+    const onTouchCancel = () => {
+      touchStartY = null;
+      touchCurrentY = null;
     };
 
     const onPointerMove = (event: PointerEvent) => {
@@ -602,22 +1005,20 @@ export default function WalkthroughScrub({
     stage.addEventListener('touchstart', onTouchStart, { passive: false });
     stage.addEventListener('touchmove', onTouchMove, { passive: false });
     stage.addEventListener('touchend', onTouchEnd, { passive: false });
+    stage.addEventListener('touchcancel', onTouchCancel);
     if (finePointer) {
       stage.addEventListener('pointermove', onPointerMove, { passive: true });
       stage.addEventListener('pointerleave', resetPointer);
     }
 
-    frameId = requestAnimationFrame(renderFrame);
-
     return () => {
       effectActive = false;
-      window.clearTimeout(wheelResetId);
-      cancelAnimationFrame(frameId);
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKeyDown);
       stage.removeEventListener('touchstart', onTouchStart);
       stage.removeEventListener('touchmove', onTouchMove);
       stage.removeEventListener('touchend', onTouchEnd);
+      stage.removeEventListener('touchcancel', onTouchCancel);
       if (finePointer) {
         stage.removeEventListener('pointermove', onPointerMove);
         stage.removeEventListener('pointerleave', resetPointer);
@@ -722,11 +1123,14 @@ export default function WalkthroughScrub({
           type="button"
           className="dp-walk__badge"
           onClick={() => stepRef.current(1)}
-          disabled={!ready}
+          data-loading={!ready ? 'true' : 'false'}
+          aria-busy={!ready}
           aria-label={
-            currentIndex === chapters.length - 1
-              ? 'Continue to the style quiz'
-              : 'Move to the next chapter'
+            !ready
+              ? 'Loading walkthrough; activate to queue the next chapter'
+              : currentIndex === chapters.length - 1
+                ? 'Continue to the style quiz'
+                : 'Move to the next chapter'
           }
         >
           <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -745,6 +1149,7 @@ export default function WalkthroughScrub({
           <span className="dp-walk__badge-arrow" aria-hidden="true">
             <ArrowDown size={22} strokeWidth={1.4} />
           </span>
+          <span className="dp-walk__badge-loader" aria-hidden="true" />
         </button>
 
         <div className="dp-walk__cards" aria-live="polite">

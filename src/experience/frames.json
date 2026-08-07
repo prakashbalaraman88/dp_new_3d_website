@@ -1,12 +1,14 @@
 {
   "desktop": {
-    "count": 181,
-    "width": 1600,
-    "height": 900
+    "count": 361,
+    "width": 1440,
+    "height": 810,
+    "fps": 24
   },
   "mobile": {
-    "count": 181,
+    "count": 361,
     "width": 648,
-    "height": 1152
+    "height": 1152,
+    "fps": 24
   }
 }

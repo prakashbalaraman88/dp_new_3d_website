@@ -4,9 +4,9 @@ import { fileURLToPath } from 'node:url';
 
 const DESKTOP_VIDEO_LIMIT = 20 * 1024 * 1024;
 const MOBILE_VIDEO_LIMIT = 8 * 1024 * 1024;
-const DESKTOP_FRAMES_LIMIT = 16 * 1024 * 1024;
-const MOBILE_FRAMES_LIMIT = 8 * 1024 * 1024;
-const FRAMES_LIMIT = 24 * 1024 * 1024;
+const DESKTOP_FRAMES_LIMIT = 30 * 1024 * 1024;
+const MOBILE_FRAMES_LIMIT = 14 * 1024 * 1024;
+const FRAMES_LIMIT = 44 * 1024 * 1024;
 const DISCOVER_LIMIT = 60 * 1024 * 1024;
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const publicRoot = join(repoRoot, 'public');
@@ -18,7 +18,7 @@ const discoverRoot = join(publicRoot, 'images', 'discover');
 const errors = [];
 const frameCounts = { desktop: 0, mobile: 0 };
 const frameVariants = {
-  desktop: { width: 1600, height: 900, limit: DESKTOP_FRAMES_LIMIT },
+  desktop: { width: 1440, height: 810, limit: DESKTOP_FRAMES_LIMIT },
   mobile: { width: 648, height: 1152, limit: MOBILE_FRAMES_LIMIT },
 };
 
@@ -131,7 +131,7 @@ if (framesManifest) {
       continue;
     }
 
-    const { count, width, height } = manifest;
+    const { count, width, height, fps } = manifest;
     if (!Number.isInteger(count) || count <= 0) {
       issue(`frames.json ${variant}.count must be a positive integer. Run node scripts/extract-frames.mjs.`);
       continue;
@@ -141,6 +141,9 @@ if (framesManifest) {
       issue(
         `frames.json ${variant} dimensions are ${width}x${height}; expected ${expected.width}x${expected.height}.`,
       );
+    }
+    if (typeof fps !== 'number' || !Number.isFinite(fps) || fps <= 0 || fps > 24) {
+      issue(`frames.json ${variant}.fps must be a number greater than 0 and no greater than 24.`);
     }
 
     const variantRoot = join(framesRoot, variant);
@@ -188,7 +191,15 @@ if (framesManifest) {
 
 const framesBytes = directoryBytes(framesRoot);
 if (framesBytes > FRAMES_LIMIT) {
-  issue(`public/videos/frames is ${(framesBytes / 1024 / 1024).toFixed(2)}MB; limit is 22MB.`);
+  issue(`public/videos/frames is ${(framesBytes / 1024 / 1024).toFixed(2)}MB; limit is 44MB.`);
+}
+
+if (
+  framesManifest?.desktop?.fps !== undefined &&
+  framesManifest?.mobile?.fps !== undefined &&
+  framesManifest.desktop.fps !== framesManifest.mobile.fps
+) {
+  issue('frames.json desktop and mobile fps values must match.');
 }
 
 const quizAssets = existsSync(quizAssetsFile) ? readJson(quizAssetsFile, 'quizAssets.json') : null;

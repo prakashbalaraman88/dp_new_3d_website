@@ -6,29 +6,29 @@ import {
   unlinkSync,
   writeFileSync,
 } from 'node:fs';
-import { basename, dirname, join, resolve } from 'node:path';
+import { basename, dirname, extname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-const FPS = 12;
-const DESKTOP_LIMIT = 16 * 1024 * 1024;
-const MOBILE_LIMIT = 8 * 1024 * 1024;
-const TOTAL_LIMIT = 24 * 1024 * 1024;
+const MAX_FPS = 24;
+const DESKTOP_LIMIT = 30 * 1024 * 1024;
+const MOBILE_LIMIT = 14 * 1024 * 1024;
+const TOTAL_LIMIT = 44 * 1024 * 1024;
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const source = join(repoRoot, 'assets-src', 'segments', 'exterior-approach.mp4');
 const framesRoot = join(repoRoot, 'public', 'videos', 'frames');
 const manifestFile = join(repoRoot, 'src', 'experience', 'frames.json');
 const variants = {
   desktop: {
-    width: 1600,
-    height: 900,
-    quality: 72,
+    width: 1440,
+    height: 810,
+    quality: 70,
     limit: DESKTOP_LIMIT,
   },
   mobile: {
     width: 648,
     height: 1152,
-    quality: 70,
+    quality: 68,
     limit: MOBILE_LIMIT,
   },
 };
@@ -47,27 +47,77 @@ function executableWorks(command) {
   return !result.error && result.status === 0;
 }
 
-function resolveFfmpeg() {
+function resolveFfmpegTools() {
   const executableSuffix = process.platform === 'win32' ? '.exe' : '';
   const configured = process.env.FFMPEG_PATH?.trim();
   let ffmpeg = `ffmpeg${executableSuffix}`;
+  let ffprobe = `ffprobe${executableSuffix}`;
 
   if (configured) {
     if (existsSync(configured) && statSync(configured).isDirectory()) {
       ffmpeg = join(configured, `ffmpeg${executableSuffix}`);
+      ffprobe = join(configured, `ffprobe${executableSuffix}`);
+    } else if (isAbsolute(configured) || configured.includes('/') || configured.includes('\\')) {
+      ffmpeg = configured;
+      const extension = extname(configured);
+      ffprobe = join(dirname(configured), `ffprobe${extension}`);
     } else {
       ffmpeg = configured;
+      ffprobe = basename(configured).replace(/^ffmpeg/i, 'ffprobe');
     }
   }
 
-  if (!executableWorks(ffmpeg)) {
-    const configuredHint = configured
-      ? `FFMPEG_PATH resolved to ${ffmpeg}, but it could not be executed.`
-      : 'ffmpeg was not found on PATH.';
-    fail(`${configuredHint} Install ffmpeg or set FFMPEG_PATH to the executable or its directory.`);
+  if (!executableWorks(ffmpeg) || !executableWorks(ffprobe)) {
+    fail(
+      'ffmpeg and ffprobe are required. Install both on PATH, or set FFMPEG_PATH to the ffmpeg executable or its containing directory.',
+    );
   }
 
-  return ffmpeg;
+  return { ffmpeg, ffprobe };
+}
+
+function parseFrameRate(value) {
+  if (typeof value !== 'string' || value.length === 0) return Number.NaN;
+  const [numeratorValue, denominatorValue = '1'] = value.split('/');
+  const numerator = Number.parseFloat(numeratorValue);
+  const denominator = Number.parseFloat(denominatorValue);
+  if (!Number.isFinite(numerator) || !Number.isFinite(denominator) || denominator <= 0) {
+    return Number.NaN;
+  }
+  return numerator / denominator;
+}
+
+function probeSourceFps(ffprobe) {
+  const result = spawnSync(
+    ffprobe,
+    [
+      '-v', 'error',
+      '-select_streams', 'v:0',
+      '-show_entries', 'stream=avg_frame_rate,r_frame_rate',
+      '-of', 'json',
+      source,
+    ],
+    { encoding: 'utf8', windowsHide: true },
+  );
+  if (result.error || result.status !== 0) {
+    fail(`Could not probe source fps for ${source}. Confirm the file is a valid video.`);
+  }
+
+  let stream;
+  try {
+    stream = JSON.parse(result.stdout).streams?.[0];
+  } catch {
+    fail(`ffprobe returned invalid JSON while probing source fps for ${source}.`);
+  }
+
+  const averageFps = parseFrameRate(stream?.avg_frame_rate);
+  const reportedFps = parseFrameRate(stream?.r_frame_rate);
+  const sourceFps = Number.isFinite(averageFps) && averageFps > 0 ? averageFps : reportedFps;
+  if (!Number.isFinite(sourceFps) || sourceFps <= 0) {
+    fail(`ffprobe returned an invalid source fps for ${source}.`);
+  }
+
+  return { sourceFps, extractionFps: Math.min(sourceFps, MAX_FPS) };
 }
 
 function run(command, args, label) {
@@ -102,12 +152,12 @@ function formatMb(bytes) {
   return `${(bytes / 1024 / 1024).toFixed(2)}MB`;
 }
 
-function extractVariant(ffmpeg, name, config) {
+function extractVariant(ffmpeg, name, config, fps) {
   const outputDir = join(framesRoot, name);
   clearGeneratedFrames(outputDir);
 
   const filter = [
-    `fps=${FPS}`,
+    `fps=${fps.toFixed(6)}`,
     `scale=${config.width}:${config.height}:force_original_aspect_ratio=increase`,
     `crop=${config.width}:${config.height}`,
   ].join(',');
@@ -149,6 +199,7 @@ function extractVariant(ffmpeg, name, config) {
     count: files.length,
     width: config.width,
     height: config.height,
+    fps,
     bytes,
   };
 }
@@ -157,9 +208,13 @@ if (!existsSync(source) || !statSync(source).isFile()) {
   fail(`Source clip is missing: ${source}`);
 }
 
-const ffmpeg = resolveFfmpeg();
-const desktop = extractVariant(ffmpeg, 'desktop', variants.desktop);
-const mobile = extractVariant(ffmpeg, 'mobile', variants.mobile);
+const { ffmpeg, ffprobe } = resolveFfmpegTools();
+const { sourceFps, extractionFps: fps } = probeSourceFps(ffprobe);
+console.log(
+  `Source frame rate: ${sourceFps.toFixed(3)}fps; extracting at ${fps.toFixed(3)}fps (cap ${MAX_FPS}fps)`,
+);
+const desktop = extractVariant(ffmpeg, 'desktop', variants.desktop, fps);
+const mobile = extractVariant(ffmpeg, 'mobile', variants.mobile, fps);
 const totalBytes = desktop.bytes + mobile.bytes;
 if (totalBytes > TOTAL_LIMIT) {
   fail(`desktop + mobile frames total ${formatMb(totalBytes)}; budget is ${formatMb(TOTAL_LIMIT)}.`);
@@ -170,11 +225,13 @@ const manifest = {
     count: desktop.count,
     width: desktop.width,
     height: desktop.height,
+    fps: desktop.fps,
   },
   mobile: {
     count: mobile.count,
     width: mobile.width,
     height: mobile.height,
+    fps: mobile.fps,
   },
 };
 writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
