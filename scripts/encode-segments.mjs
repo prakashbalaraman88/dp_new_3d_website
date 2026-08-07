@@ -4,8 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const SEGMENT_IDS = ['exterior-approach'];
-const DESKTOP_LIMIT = 15 * 1024 * 1024;
-const MOBILE_LIMIT = 6 * 1024 * 1024;
+const DESKTOP_LIMIT = 20 * 1024 * 1024;
+const MOBILE_LIMIT = 8 * 1024 * 1024;
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outputDir = join(repoRoot, 'public', 'videos', 'segments');
 const placeholderSource = join(repoRoot, 'public', 'videos', 'kitchen-desktop.mp4');
@@ -87,7 +87,7 @@ function encodeVariant(ffmpeg, source, output, variant, clip, crfOverride) {
   const filter = desktop
     ? 'scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080'
     : 'scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,scale=720:1280';
-  const crf = String(crfOverride ?? (desktop ? 21 : 23));
+  const crf = String(crfOverride ?? 26);
 
   run(
     ffmpeg,
@@ -99,7 +99,7 @@ function encodeVariant(ffmpeg, source, output, variant, clip, crfOverride) {
       '-c:v', 'libx264',
       '-preset', 'slow',
       '-crf', crf,
-      '-g', '12',
+      '-g', '1',
       '-bf', '0',
       '-pix_fmt', 'yuv420p',
       '-movflags', '+faststart',
@@ -109,10 +109,9 @@ function encodeVariant(ffmpeg, source, output, variant, clip, crfOverride) {
   );
 }
 
-// Re-encode at +2 CRF steps until the size budget holds (max CRF 28).
+// All-intra encoding is larger, so walk the agreed CRF 26-28 ladder.
 function encodeWithinBudget(ffmpeg, source, output, variant, clip, limit, label) {
-  const baseCrf = variant === 'desktop' ? 21 : 23;
-  for (let crf = baseCrf; crf <= 28; crf += 2) {
+  for (let crf = 26; crf <= 28; crf += 1) {
     encodeVariant(ffmpeg, source, output, variant, clip, crf);
     if (statSync(output).size <= limit) return;
     console.log(`${label}: over budget at crf ${crf}, retrying…`);

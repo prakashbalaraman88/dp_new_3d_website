@@ -2,10 +2,9 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const DESKTOP_VIDEO_LIMIT = 15 * 1024 * 1024;
-const MOBILE_VIDEO_LIMIT = 6 * 1024 * 1024;
+const DESKTOP_VIDEO_LIMIT = 20 * 1024 * 1024;
+const MOBILE_VIDEO_LIMIT = 8 * 1024 * 1024;
 const DISCOVER_LIMIT = 60 * 1024 * 1024;
-const MAX_WEIGHT_VH = 650;
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const publicRoot = join(repoRoot, 'public');
 const walkthroughFile = join(repoRoot, 'src', 'experience', 'walkthrough.ts');
@@ -56,7 +55,7 @@ function parseWalkthrough() {
     return [];
   }
   const source = readFileSync(walkthroughFile, 'utf8');
-  const pattern = /\{\s*id:\s*['"]([^'"]+)['"]\s*,\s*src:\s*['"]([^'"]+)['"]\s*,\s*mobileSrc:\s*['"]([^'"]+)['"]\s*,\s*poster:\s*['"]([^'"]+)['"]\s*,\s*mobilePoster:\s*['"]([^'"]+)['"]\s*,\s*weightVh:\s*(\d+(?:\.\d+)?)/g;
+  const pattern = /\{\s*id:\s*['"]([^'"]+)['"]\s*,\s*src:\s*['"]([^'"]+)['"]\s*,\s*mobileSrc:\s*['"]([^'"]+)['"]\s*,\s*poster:\s*['"]([^'"]+)['"]\s*,\s*mobilePoster:\s*['"]([^'"]+)['"]\s*,\s*acts:\s*\[/g;
   const segments = [];
   for (const match of source.matchAll(pattern)) {
     segments.push({
@@ -65,7 +64,6 @@ function parseWalkthrough() {
       mobileSrc: match[3],
       poster: match[4],
       mobilePoster: match[5],
-      weightVh: Number(match[6]),
     });
   }
   if (segments.length < 1) issue(`Expected at least 1 walkthrough segment, parsed ${segments.length}.`);
@@ -100,17 +98,13 @@ for (const segment of segments) {
   fileSize(segment.poster, `${segment.id} desktop poster`);
   fileSize(segment.mobilePoster, `${segment.id} mobile poster`);
   if (desktopBytes !== null && desktopBytes > DESKTOP_VIDEO_LIMIT) {
-    issue(`${segment.id} desktop video is ${(desktopBytes / 1024 / 1024).toFixed(2)}MB; limit is 15MB.`);
+    issue(`${segment.id} desktop video is ${(desktopBytes / 1024 / 1024).toFixed(2)}MB; limit is 20MB.`);
   }
   if (mobileBytes !== null && mobileBytes > MOBILE_VIDEO_LIMIT) {
-    issue(`${segment.id} mobile video is ${(mobileBytes / 1024 / 1024).toFixed(2)}MB; limit is 6MB.`);
+    issue(`${segment.id} mobile video is ${(mobileBytes / 1024 / 1024).toFixed(2)}MB; limit is 8MB.`);
   }
 }
 
-const totalWeightVh = segments.reduce((sum, segment) => sum + segment.weightVh, 0);
-if (totalWeightVh > MAX_WEIGHT_VH) {
-  issue(`Walkthrough weightVh totals ${totalWeightVh}; maximum is ${MAX_WEIGHT_VH}.`);
-}
 
 const quizAssets = existsSync(quizAssetsFile) ? readJson(quizAssetsFile, 'quizAssets.json') : null;
 if (!existsSync(quizAssetsFile)) issue('src/discover/quizAssets.json is missing.');
@@ -200,6 +194,6 @@ if (errors.length > 0) {
 }
 
 console.log('verify-journey: OK');
-console.log(`- ${segments.length} walkthrough segments, ${totalWeightVh}vh total`);
+console.log(`- ${segments.length} walkthrough segment${segments.length === 1 ? '' : 's'}`);
 console.log(`- ${quizAssets.rounds.length} image rounds, ${quizAssets.styleOrder.length} styles`);
 console.log(`- public/images/discover ${(discoverBytes / 1024 / 1024).toFixed(2)}MB`);
