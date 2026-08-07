@@ -2,7 +2,7 @@ import { useEffect, useState, type CSSProperties } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import KineticText from '../components/KineticText';
-import { STYLE_PROFILES, type ImageOption, type QuadRound } from './data';
+import { STYLE_PROFILES, STYLE_WORDS, type ImageOption, type QuadRound } from './data';
 import './quiz.css';
 
 const CARD_ROTATIONS = [-6, -2, 3, 7] as const;
@@ -204,7 +204,7 @@ export function QuadSection({
             <div className="dp-quiz-card-slot" key={image.id}>
               <PickCard
                 image={image}
-                label={`Option ${String(optionIndex + 1).padStart(2, '0')}`}
+                label={STYLE_WORDS[image.style] ?? `Option ${String(optionIndex + 1).padStart(2, '0')}`}
                 selected={selected === image.id}
                 delay={optionIndex * 0.08}
                 dealRotation={optionIndex % 2 === 0 ? -6 : 6}

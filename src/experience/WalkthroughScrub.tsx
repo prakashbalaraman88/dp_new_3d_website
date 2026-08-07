@@ -1210,7 +1210,7 @@ export default function WalkthroughScrub({
         <button
           type="button"
           onClick={onSkipWebsite}
-          className="absolute bottom-[140px] left-1/2 z-[9] -translate-x-1/2 text-[12px] font-light lowercase tracking-[0.04em] text-[#f2efe9]/45 underline-offset-4 transition-colors hover:text-[#f2efe9]/75 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A98E5F] md:bottom-4"
+          className="absolute bottom-[150px] left-1/2 z-[9] -translate-x-1/2 text-[12px] font-light lowercase tracking-[0.04em] text-[#f2efe9]/45 underline-offset-4 transition-colors hover:text-[#f2efe9]/75 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A98E5F] md:bottom-6 md:left-auto md:right-[clamp(22px,3.5vw,54px)] md:translate-x-0"
         >
           skip to website
         </button>

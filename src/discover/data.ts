@@ -46,6 +46,26 @@ export interface QuizAssetImage {
   motifs: string[];
 }
 
+
+// One-word persona label per style, shown on quiz cards instead of "Option N".
+export const STYLE_WORDS: Record<string, string> = {
+  'japandi': 'Serene',
+  'traditional-south-indian': 'Rooted',
+  'modern-contemporary': 'Sleek',
+  'neoclassical': 'Regal',
+  'indo-contemporary': 'Fusion',
+  'industrial': 'Bold',
+  'warm-minimalism': 'Gentle',
+  'wabi-sabi': 'Soulful',
+  'art-deco': 'Glamorous',
+  'coastal': 'Breezy',
+  'mid-century-modern': 'Retro',
+  'biophilic': 'Wild',
+  'bohemian': 'Free-Spirited',
+  'scandinavian': 'Light',
+  'quiet-luxury': 'Understated',
+};
+
 export interface StyleProfile {
   label: string;
   essence: string;
