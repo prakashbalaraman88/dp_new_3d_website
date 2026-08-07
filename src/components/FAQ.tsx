@@ -55,7 +55,7 @@ export default function FAQ() {
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full text-left p-6 bg-secondary/10 backdrop-blur-sm rounded-xl border border-secondary/20 hover:border-secondary/50 transition-all duration-300"
+                className="w-full text-left p-6 bg-secondary/10 backdrop-blur-sm rounded-xl border border-secondary/20 hover:border-secondary/50 transition-all duration-300 dp-site-faq__item"
               >
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-medium pr-8">{faq.question}</h3>

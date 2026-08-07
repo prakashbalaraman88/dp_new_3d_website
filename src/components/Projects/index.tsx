@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import { projects } from './data';
 
 export default function Projects() {
@@ -101,18 +102,12 @@ export default function Projects() {
                 }
               }}
               viewport={{ once: true, margin: "-100px" }}
-              className="group"
+              className="group dp-site-project"
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={() => handleMouseLeave(index)}
             >
-              <div className="relative aspect-[4/5] rounded-2xl overflow-hidden">
-                <motion.div
-                  className="relative h-full transform-gpu transition-all duration-700 ease-out"
-                  whileHover={{ 
-                    scale: 1.05,
-                    transition: { duration: 0.7 }
-                  }}
-                >
+              <div className="relative aspect-[4/5] rounded-2xl overflow-hidden dp-site-project__card">
+                <div className="relative h-full transform-gpu transition-all duration-700 ease-out dp-site-project__media">
                   <video
                     ref={el => videoRefs.current[index] = el}
                     poster={project.image}
@@ -131,7 +126,7 @@ export default function Projects() {
                   />
                   
                   <div 
-                    className={`absolute inset-x-0 bottom-0 p-6 transition-opacity duration-500 ${
+                    className={`absolute inset-x-0 bottom-0 p-6 transition-opacity duration-500 dp-site-project__legacy-label ${
                       hoveredIndex === index ? 'opacity-0' : 'opacity-100'
                     }`}
                   >
@@ -141,7 +136,16 @@ export default function Projects() {
                       <p className="text-white/80 text-sm">{project.description}</p>
                     </div>
                   </div>
-                </motion.div>
+                  <span className="hidden dp-site-arrow-chip dp-site-project__chip" aria-hidden="true">
+                    <ArrowUpRight size={16} strokeWidth={1.8} />
+                  </span>
+                </div>
+
+                <div className="hidden dp-site-project__label">
+                  <p>{project.category}</p>
+                  <h3>{project.title}</h3>
+                  <span>{project.description}</span>
+                </div>
               </div>
             </motion.div>
           ))}

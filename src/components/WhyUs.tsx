@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Award, Shield, Users, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Award, Shield, Users, Sparkles } from 'lucide-react';
 
 const features = [
   {
@@ -54,9 +54,9 @@ export default function WhyUs() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="group"
+              className="group dp-site-subtle"
             >
-              <div className="relative h-full bg-secondary/10 backdrop-blur-sm rounded-2xl border border-secondary/20 hover:border-secondary/50 transition-all duration-300 overflow-hidden">
+              <div className="relative h-full bg-secondary/10 backdrop-blur-sm rounded-2xl border border-secondary/20 hover:border-secondary/50 transition-all duration-300 overflow-hidden dp-site-subtle-card">
                 {/* Abstract Lines */}
                 <div className="absolute inset-0 overflow-hidden">
                   {/* Circular patterns */}
@@ -74,6 +74,10 @@ export default function WhyUs() {
                 <div className="absolute inset-0 bg-accent-gradient opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
 
                 <div className="relative p-8 flex flex-col items-center text-center">
+                  <span className="hidden dp-site-arrow-chip dp-site-subtle-card__chip" aria-hidden="true">
+                    <ArrowUpRight size={15} strokeWidth={1.8} />
+                  </span>
+
                   {/* Icon with animated background */}
                   <div className="relative mb-6 transform-gpu transition-transform duration-500 group-hover:scale-110">
                     <div className="absolute -inset-4 bg-accent-gradient opacity-20 blur-xl rounded-full transition-opacity duration-500 group-hover:opacity-40" />

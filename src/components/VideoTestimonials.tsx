@@ -257,77 +257,80 @@ export default function VideoTestimonials() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.2 }}
-                className="group"
+                className="group dp-site-testimonial"
               >
-                <div className="relative aspect-video rounded-2xl overflow-hidden bg-secondary/10 backdrop-blur-sm border border-secondary/20 mb-6">
-                  <video
-                    ref={el => videoRefs.current[index] = el}
-                    poster={testimonial.poster}
-                    muted={mutedStates[index]}
-                    loop
-                    playsInline
-                    className="w-full h-full object-cover"
-                  >
-                    <source src={testimonial.video} type="video/mp4" />
-                  </video>
-
-                  <div 
-                    className={`absolute inset-0 flex items-center justify-center bg-black/30 transition-opacity duration-300 ${
-                      isPlaying[index] ? 'opacity-0 pointer-events-none' : 'opacity-100'
-                    }`}
-                  >
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => togglePlay(index)}
-                      className="p-4 rounded-full bg-secondary/90 text-white hover:bg-secondary transition-colors"
+                <div className="dp-site-testimonial__media">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-secondary/10 backdrop-blur-sm border border-secondary/20 mb-6 dp-site-testimonial__stage">
+                    <video
+                      ref={el => videoRefs.current[index] = el}
+                      poster={testimonial.poster}
+                      muted={mutedStates[index]}
+                      loop
+                      playsInline
+                      className="w-full h-full object-cover"
                     >
-                      <PlayCircle className="h-12 w-12" />
-                    </motion.button>
-                  </div>
+                      <source src={testimonial.video} type="video/mp4" />
+                    </video>
 
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div 
-                      className="w-full h-1 bg-white/20 rounded-full mb-3 cursor-pointer"
-                      onClick={(e) => handleProgressClick(e, index)}
+                      className={`absolute inset-0 flex items-center justify-center bg-black/30 transition-opacity duration-300 ${
+                        isPlaying[index] ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                      }`}
                     >
-                      <div 
-                        className="h-full bg-secondary rounded-full relative"
-                        style={{ width: `${progress[index]}%` }}
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => togglePlay(index)}
+                        className="p-4 rounded-full bg-secondary/90 text-white hover:bg-secondary transition-colors"
                       >
-                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-secondary rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-200" />
-                      </div>
+                        <PlayCircle className="h-12 w-12" />
+                      </motion.button>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={() => togglePlay(index)}
-                        className="p-2 rounded-full bg-black/30 hover:bg-black/40 backdrop-blur-sm transition-colors"
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div
+                        className="w-full h-1 bg-white/20 rounded-full mb-3 cursor-pointer"
+                        onClick={(e) => handleProgressClick(e, index)}
                       >
-                        {isPlaying[index] ? (
-                          <Pause className="h-5 w-5 text-white" />
-                        ) : (
-                          <Play className="h-5 w-5 text-white" />
-                        )}
-                      </button>
+                        <div
+                          className="h-full bg-secondary rounded-full relative"
+                          style={{ width: `${progress[index]}%` }}
+                        >
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-secondary rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-200" />
+                        </div>
+                      </div>
 
-                      <button
-                        onClick={() => toggleMute(index)}
-                        className="p-2 rounded-full bg-black/30 hover:bg-black/40 backdrop-blur-sm transition-colors"
-                      >
-                        {mutedStates[index] ? (
-                          <VolumeX className="h-5 w-5 text-white" />
-                        ) : (
-                          <Volume2 className="h-5 w-5 text-white" />
-                        )}
-                      </button>
+                      <div className="flex items-center justify-between">
+                        <button
+                          onClick={() => togglePlay(index)}
+                          className="p-2 rounded-full bg-black/30 hover:bg-black/40 backdrop-blur-sm transition-colors"
+                        >
+                          {isPlaying[index] ? (
+                            <Pause className="h-5 w-5 text-white" />
+                          ) : (
+                            <Play className="h-5 w-5 text-white" />
+                          )}
+                        </button>
+
+                        <button
+                          onClick={() => toggleMute(index)}
+                          className="p-2 rounded-full bg-black/30 hover:bg-black/40 backdrop-blur-sm transition-colors"
+                        >
+                          {mutedStates[index] ? (
+                            <VolumeX className="h-5 w-5 text-white" />
+                          ) : (
+                            <Volume2 className="h-5 w-5 text-white" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-secondary/10 backdrop-blur-sm rounded-xl p-6 border border-secondary/20">
+                <div className="bg-secondary/10 backdrop-blur-sm rounded-xl p-6 border border-secondary/20 dp-site-testimonial__quote">
+                  <span className="hidden dp-site-testimonial__quote-mark" aria-hidden="true">&ldquo;</span>
                   <p className="text-white text-lg mb-4 font-medium italic">
-                    "{testimonial.quote}"
+                    {testimonial.quote}
                   </p>
                   <div>
                     <h4 className="text-white font-semibold">{testimonial.name}</h4>

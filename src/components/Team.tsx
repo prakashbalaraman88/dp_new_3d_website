@@ -100,9 +100,9 @@ const Team = () => {
                 }
               }}
               viewport={{ once: true }}
-              className="group"
+              className="group dp-site-team"
             >
-              <div className="relative p-8 bg-secondary/10 backdrop-blur-sm rounded-2xl border border-secondary/20 hover:border-secondary/50 transition-all duration-300 overflow-hidden">
+              <div className="relative p-8 bg-secondary/10 backdrop-blur-sm rounded-2xl border border-secondary/20 hover:border-secondary/50 transition-all duration-300 overflow-hidden dp-site-team__card">
                 {/* Abstract Lines */}
                 <div className="absolute inset-0 overflow-hidden">
                   {/* Circular patterns */}
@@ -120,41 +120,44 @@ const Team = () => {
                 <div className="absolute inset-0 bg-accent-gradient opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
                 
                 <div className="relative">
-                  <div className="mb-6 transform-gpu transition-all duration-500 group-hover:scale-105">
-                    <div className="relative">
-                      <div className="absolute -inset-4 bg-accent-gradient opacity-20 blur-xl rounded-full transition-opacity duration-500 group-hover:opacity-40" />
-                      <div className="relative w-32 h-32 mx-auto">
-                        {/* Blur placeholder */}
-                        <img
-                          src={member.thumbnailImage}
-                          alt={`Loading ${member.name}`}
-                          className={`absolute inset-0 w-full h-full rounded-full object-cover transition-opacity duration-500 ${loadedImages[member.name] ? 'opacity-0' : 'opacity-100'}`}
-                          style={{
-                            objectPosition: member.name === "Adarsh HY" ? "center top" : "center"
-                          }}
-                        />
-                        {/* Main image */}
-                        <img
-                          src={member.image}
-                          alt={member.name}
-                          className={`w-full h-full rounded-full object-cover ring-4 ring-secondary/20 group-hover:ring-secondary/40 transition-all duration-500 ${loadedImages[member.name] ? 'opacity-100' : 'opacity-0'}`}
-                          loading="lazy"
-                          onLoad={() => handleImageLoad(member.name)}
-                          style={{
-                            objectPosition: member.name === "Adarsh HY" ? "center top" : "center"
-                          }}
-                        />
+                  <div className="dp-site-team__visual">
+                    <div className="mb-6 transform-gpu transition-all duration-500 group-hover:scale-105 dp-site-team__portrait-card">
+                      <div className="relative">
+                        <div className="absolute -inset-4 bg-accent-gradient opacity-20 blur-xl rounded-full transition-opacity duration-500 group-hover:opacity-40" />
+                        <div className="relative w-32 h-32 mx-auto dp-site-team__portrait">
+                          {/* Blur placeholder */}
+                          <img
+                            src={member.thumbnailImage}
+                            alt={`Loading ${member.name}`}
+                            className={`absolute inset-0 w-full h-full rounded-full object-cover transition-opacity duration-500 ${loadedImages[member.name] ? 'opacity-0' : 'opacity-100'}`}
+                            style={{
+                              objectPosition: member.name === "Adarsh HY" ? "center top" : "center"
+                            }}
+                          />
+                          {/* Main image */}
+                          <img
+                            src={member.image}
+                            alt={member.name}
+                            className={`w-full h-full rounded-full object-cover ring-4 ring-secondary/20 group-hover:ring-secondary/40 transition-all duration-500 ${loadedImages[member.name] ? 'opacity-100' : 'opacity-0'}`}
+                            loading="lazy"
+                            onLoad={() => handleImageLoad(member.name)}
+                            style={{
+                              objectPosition: member.name === "Adarsh HY" ? "center top" : "center"
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
+
+                    <div className="text-center dp-site-team__label">
+                      <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-secondary transition-colors duration-300">
+                        {member.name}
+                      </h3>
+                      <p className="text-secondary mb-4">{member.role}</p>
+                    </div>
                   </div>
-                  
-                  <div className="text-center">
-                    <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-secondary transition-colors duration-300">
-                      {member.name}
-                    </h3>
-                    <p className="text-secondary mb-4">{member.role}</p>
-                    <p className="text-accent">{member.bio}</p>
-                  </div>
+
+                  <p className="text-accent dp-site-team__bio">{member.bio}</p>
                 </div>
               </div>
             </motion.div>
