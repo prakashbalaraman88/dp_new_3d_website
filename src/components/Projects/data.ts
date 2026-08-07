@@ -53,6 +53,13 @@ export const projects: Project[] = [
     designNotes: ['Warm timber detailing', 'Layered ambient light', 'Pattern-led accents'],
     accent: '#b79a69',
     teaser: [0, 2, 1],
+    film: {
+      src: '/videos/projects/after-the-rain-montage.mp4',
+      poster: '/images/projects/after-the-rain/after-the-rain-montage-poster.webp',
+      label: 'After the Rain project film',
+      width: 720,
+      height: 960,
+    },
     images: [
       projectImage('after-the-rain', 'after-the-rain-formal-living-room', 2400, 1792, 'Formal living room with tufted seating, warm lighting and an adjoining dining space'),
       projectImage('after-the-rain', 'after-the-rain-indoor-courtyard', 1792, 2400, 'Indoor courtyard with patterned tile, timber-framed doors and abundant planting'),
@@ -127,6 +134,13 @@ export const projects: Project[] = [
     designNotes: ['Personalised rooms', 'Restrained warm neutrals', 'Integrated display lighting'],
     accent: '#b4976c',
     teaser: [0, 1, 4],
+    film: {
+      src: '/videos/projects/prestige-lakeridge-montage.mp4',
+      poster: '/images/projects/prestige-lakeridge/prestige-lakeridge-montage-poster.webp',
+      label: 'Prestige Lakeridge project film',
+      width: 720,
+      height: 960,
+    },
     images: [
       projectImage('prestige-lakeridge', 'prestige-lakeridge-living-room', 2560, 1440, 'Elegant living room with warm wall lighting and full-height sheer curtains'),
       projectImage('prestige-lakeridge', 'prestige-lakeridge-kitchen', 1536, 2752, 'Dark contemporary kitchen with timber upper cabinets and patterned flooring'),
