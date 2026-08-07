@@ -9,10 +9,6 @@ const smoothstep = (e0: number, e1: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-/**
- * Scroll-scrubbed video hero. Calls onComplete once the user scrolls to the end,
- * so a parent can transition straight into the discovery quiz.
- */
 export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const act1Ref = useRef<HTMLDivElement>(null);
@@ -30,10 +26,8 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
   const posterSrc = isMobile ? '/videos/kitchen-mobile-poster.jpg' : '/videos/kitchen-desktop-poster.jpg';
 
   useEffect(() => {
-    const video = videoRef.current;
-    let duration = 0;
     let lastP = 0;
-    window.scrollTo(0, 0); // always start the hero at the top (incl. re-entry from the quiz)
+    window.scrollTo(0, 0);
 
     const setEl = (el: HTMLElement | null, opacity: number, ty: number) => {
       if (!el) return;
@@ -50,9 +44,6 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
       if (cueRef.current) cueRef.current.style.opacity = String(1 - smoothstep(0.02, 0.08, p));
       if (barRef.current) barRef.current.style.width = (p * 100).toFixed(2) + '%';
     };
-    const scrub = (p: number) => {
-      if (video && duration > 0) video.currentTime = Math.min(duration - 0.01, Math.max(0, p * duration));
-    };
     const maybeComplete = (p: number) => {
       if (!doneRef.current && p >= 0.99) {
         doneRef.current = true;
@@ -61,16 +52,6 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
     };
 
     update(0);
-
-    const onMeta = () => {
-      duration = video?.duration || 0;
-      scrub(reducedMotion ? 1 : lastP);
-    };
-    if (video) {
-      video.muted = true;
-      if (video.readyState >= 1) onMeta();
-      else video.addEventListener('loadedmetadata', onMeta);
-    }
 
     const docEl = document.documentElement;
     const prevScrollBehavior = docEl.style.scrollBehavior;
@@ -87,7 +68,6 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
       onScroll();
       return () => {
         window.removeEventListener('scroll', onScroll);
-        if (video) video.removeEventListener('loadedmetadata', onMeta);
         docEl.style.scrollBehavior = prevScrollBehavior;
       };
     }
@@ -102,12 +82,6 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
     let raf = 0;
     const loop = (time: number) => {
       lenis.raf(time);
-      // Drive the video from the latest scroll target, but only when the decoder
-      // is free — never queue seeks faster than it can render (kills the jitter).
-      if (video && duration > 0 && !video.seeking) {
-        const target = Math.min(duration - 0.05, Math.max(0, lastP * duration));
-        if (Math.abs(video.currentTime - target) > 0.02) video.currentTime = target;
-      }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
@@ -127,7 +101,6 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
       cancelAnimationFrame(raf);
       lenis.destroy();
       ctx.revert();
-      if (video) video.removeEventListener('loadedmetadata', onMeta);
       docEl.style.scrollBehavior = prevScrollBehavior;
     };
   }, [reducedMotion, onComplete]);
@@ -135,21 +108,37 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
   return (
     <div className="dp-exp">
       <div className="dp-exp__viewport">
+        {/* Poster shows instantly; video fades in once playing */}
+        <img
+          src={posterSrc}
+          alt=""
+          aria-hidden="true"
+          className="dp-exp__canvas dp-vid__video"
+        />
         <video
           ref={videoRef}
-          className="dp-exp__canvas dp-vid__video"
+          className="dp-exp__canvas dp-vid__video dp-vid__autoplay"
           src={videoSrc}
-          poster={posterSrc}
+          autoPlay
           muted
+          loop
           playsInline
           preload="auto"
+          onCanPlay={(e) => {
+            (e.currentTarget as HTMLVideoElement).style.opacity = '1';
+          }}
         />
 
         <div className="dp-vid__scrim" />
         <div className="dp-exp__vignette" />
 
         <header className="dp-exp__bar" style={{ justifyContent: 'center' }}>
-          <img src="/assets/images/logo.png" alt="DezignPool" className="h-20 sm:h-24 w-auto object-contain" style={{ filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.55))' }} />
+          <img
+            src="/assets/images/logo.png"
+            alt="DezignPool"
+            className="h-20 sm:h-24 w-auto object-contain"
+            style={{ filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.55))' }}
+          />
         </header>
 
         <div className="dp-exp__progress">
@@ -168,7 +157,7 @@ export default function HeroScrub({ onComplete }: { onComplete: () => void }) {
             </span>
           </h1>
           <p className="dp-exp__sub">
-            <span className="dp-exp__line">Scroll to watch it come together.</span>
+            <span className="dp-exp__line">Scroll to continue.</span>
           </p>
         </div>
 
