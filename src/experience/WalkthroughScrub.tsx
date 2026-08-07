@@ -889,14 +889,23 @@ export default function WalkthroughScrub({
 
       const now = performance.now();
       const direction: FrameDirection = delta > 0 ? 1 : -1;
-      const afterSilence = !wheelBurst.active || now - wheelBurst.lastAt >= WHEEL_BURST_SILENCE_MS;
-      const reversed = wheelBurst.active && direction !== wheelBurst.direction;
+      // While travelling, inertia tails must never look like new gestures:
+      // no same-direction "renewed impulse", and a much longer silence gate.
+      const silenceGate = travelling ? 450 : WHEEL_BURST_SILENCE_MS;
+      const afterSilence =
+        (!wheelBurst.active || now - wheelBurst.lastAt >= silenceGate) &&
+        (!travelling || magnitude >= 15);
+      const reversed =
+        wheelBurst.active &&
+        direction !== wheelBurst.direction &&
+        (!travelling || magnitude >= 20);
       const renewedImpulse =
+        !travelling &&
         wheelBurst.active &&
         wheelBurst.consumed &&
         wheelBurst.tailing &&
         direction === wheelBurst.direction &&
-        magnitude >= Math.max(12, wheelBurst.lastMagnitude * 1.8);
+        magnitude >= Math.max(28, wheelBurst.lastMagnitude * 1.8);
 
       if (afterSilence || reversed || renewedImpulse) {
         wheelBurst.active = true;
