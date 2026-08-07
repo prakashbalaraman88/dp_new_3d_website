@@ -9,12 +9,13 @@ import JourneyNav from './JourneyNav';
 import type { Answers } from './report';
 
 /**
- * One continuous journey: scroll-scrubbed video hero → discovery quiz deck →
- * personalized projects/testimonials showcase.
+ * One continuous journey: cinematic canvas hero → optional discovery quiz →
+ * personalized full site.
  */
 export default function JourneyExperience() {
-  const [phase, setPhase] = useState<'hero' | 'quiz' | 'showcase'>('hero');
+  const [phase, setPhase] = useState<'hero' | 'quiz' | 'site'>('hero');
   const [answers, setAnswers] = useState<Answers>({});
+  const [showStyleReport, setShowStyleReport] = useState(false);
   const [targetSection, setTargetSection] = useState<string | null>(null);
   const [quizProgress, setQuizProgress] = useState(0);
   const showcaseLenis = useRef<Lenis | null>(null);
@@ -46,46 +47,60 @@ export default function JourneyExperience() {
   }, []);
   const toHero = useCallback(() => {
     setTargetSection(null);
+    setShowStyleReport(false);
     bridgeRef.current?.start();
     bridgeRef.current?.lenis.scrollTo(0, { immediate: true });
     window.scrollTo(0, 0);
     setPhase('hero');
   }, []);
-  const toShowcase = useCallback((a: Answers) => {
+  const toSite = useCallback((a: Answers = {}, quizComplete = false) => {
     setAnswers(a);
+    setShowStyleReport(quizComplete);
     setTargetSection(null);
     bridgeRef.current?.start();
     bridgeRef.current?.lenis.scrollTo(0, { immediate: true });
     window.scrollTo(0, 0);
-    setPhase('showcase');
+    setPhase('site');
   }, []);
   const goToSection = useCallback((id: string) => {
-    if (phaseRef.current === 'showcase') {
+    if (phaseRef.current === 'site') {
       if (showcaseLenis.current) showcaseLenis.current.scrollTo('#' + id, { offset: -64 });
       else document.getElementById(id)?.scrollIntoView();
     } else {
       setTargetSection(id);
-      setPhase('showcase');
+      setShowStyleReport(false);
+      setPhase('site');
     }
   }, []);
 
   return (
     <>
-      {phase !== 'hero' && <JourneyNav onHome={toHero} onNavigate={goToSection} progress={phase === 'showcase' ? 1 : quizProgress} />}
+      {phase !== 'hero' && <JourneyNav onHome={toHero} onNavigate={goToSection} progress={phase === 'site' ? 1 : quizProgress} />}
       <AnimatePresence mode="wait">
       {phase === 'hero' && (
         <motion.div key="hero" exit={{ opacity: 0 }} transition={{ duration: 0.6, ease: 'easeInOut' }}>
-          <WalkthroughScrub bridge={bridge} onComplete={toQuiz} />
+          <WalkthroughScrub bridge={bridge} onComplete={toQuiz} onSkipWebsite={() => toSite()} />
         </motion.div>
       )}
       {phase === 'quiz' && (
         <motion.div key="quiz" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6, ease: 'easeInOut' }}>
-          <DiscoverExperience onFinish={toShowcase} onReturnToHero={toHero} onProgress={setQuizProgress} />
+          <DiscoverExperience
+            onFinish={(quizAnswers) => toSite(quizAnswers, true)}
+            onSkipWebsite={(partialAnswers) => toSite(partialAnswers, false)}
+            onReturnToHero={toHero}
+            onProgress={setQuizProgress}
+          />
         </motion.div>
       )}
-      {phase === 'showcase' && (
-        <motion.div key="showcase" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: 'easeInOut' }}>
-          <Showcase answers={answers} initialSection={targetSection} lenisRef={showcaseLenis} scrollBridge={bridge} />
+      {phase === 'site' && (
+        <motion.div key="site" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: 'easeInOut' }}>
+          <Showcase
+            answers={answers}
+            showStyleReport={showStyleReport}
+            initialSection={targetSection}
+            lenisRef={showcaseLenis}
+            scrollBridge={bridge}
+          />
         </motion.div>
       )}
       </AnimatePresence>

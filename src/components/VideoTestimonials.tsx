@@ -243,7 +243,7 @@ export default function VideoTestimonials() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-serif mb-4">Client Stories</h2>
+            <h2 className="text-4xl font-serif mb-4">Client <span className="dp-heading-accent">Stories</span></h2>
             <p className="text-xl text-accent max-w-2xl mx-auto">
               Hear directly from our clients about their journey with DezignPool
             </p>

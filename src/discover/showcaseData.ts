@@ -50,7 +50,9 @@ export function rankProjects(answers: Answers): { matched: ShowcaseProject[]; re
 }
 
 export function whatsappLink(answers: Answers): string {
-  const label = buildReport(answers).label;
-  const msg = `Hi DezignPool! I just completed your style quiz — my design style is "${label}". I'd love to talk about my home.`;
+  const report = buildReport(answers);
+  const msg = report.picks.length > 0
+    ? `Hi DezignPool! I just completed your style quiz — my design style is "${report.label}". I'd love to talk about my home.`
+    : 'Hi DezignPool! I just sent an enquiry through your website and would love to talk about my home.';
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }

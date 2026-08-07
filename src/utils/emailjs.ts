@@ -1,6 +1,7 @@
 import emailjs from '@emailjs/browser';
+import { emailjsEnv } from '../config/environment';
 
-emailjs.init("98i8Pncvl-khTXgn5");
+emailjs.init(emailjsEnv.PUBLIC_KEY);
 
 export const sendEmail = async ({ template_id, service_id, user_id, template_params }: {
   template_id: string;

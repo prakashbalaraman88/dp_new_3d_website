@@ -7,13 +7,9 @@ import DraftingAccents from './DraftingAccents';
 import IntroSection from './IntroSection';
 import { BoardSection, DuelSection, QuadSection } from './QuizSection';
 import ChoiceSection from './ChoiceSection';
-import FloorPlanSection from './FloorPlanSection';
-import ContactSection from './ContactSection';
 
 type Item =
   | { kind: 'intro'; key: string }
-  | { kind: 'floorplan'; key: string }
-  | { kind: 'contact'; key: string }
   | { kind: 'round'; key: string; roundIndex: number };
 
 const slide = {
@@ -24,8 +20,6 @@ const slide = {
 
 function variantFor(item: Item): string {
   if (item.kind === 'intro') return 'kitchen';
-  if (item.kind === 'floorplan') return 'plan';
-  if (item.kind === 'contact') return 'wall';
   const round = ROUNDS[item.roundIndex];
   if (round.kind === 'duel') return 'kitchen';
   if (round.kind === 'board') return 'wall';
@@ -43,10 +37,12 @@ function boardDecisions(answer: Answer | undefined): BoardDecisions {
 
 export default function DiscoverExperience({
   onFinish,
+  onSkipWebsite,
   onReturnToHero,
   onProgress,
 }: {
   onFinish?: (answers: Answers) => void;
+  onSkipWebsite?: (answers: Answers) => void;
   onReturnToHero?: () => void;
   onProgress?: (progress: number) => void;
 }) {
@@ -54,8 +50,6 @@ export default function DiscoverExperience({
   const items = useMemo<Item[]>(() => {
     const list: Item[] = [{ kind: 'intro', key: 'intro' }];
     ROUNDS.forEach((round, roundIndex) => list.push({ kind: 'round', key: round.id, roundIndex }));
-    list.push({ kind: 'floorplan', key: 'floorplan' });
-    list.push({ kind: 'contact', key: 'contact' });
     return list;
   }, []);
   const last = items.length - 1;
@@ -63,11 +57,10 @@ export default function DiscoverExperience({
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [answers, setAnswers] = useState<Answers>({});
-  const [floorPlan, setFloorPlan] = useState<File | null>(null);
-  const [notes, setNotes] = useState('');
 
   const indexRef = useRef(0);
   const lockRef = useRef(false);
+  const advanceTimerRef = useRef<number | null>(null);
   const returnHeroRef = useRef(onReturnToHero);
   returnHeroRef.current = onReturnToHero;
 
@@ -92,6 +85,7 @@ export default function DiscoverExperience({
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
+      if (advanceTimerRef.current !== null) window.clearTimeout(advanceTimerRef.current);
       document.body.style.overflow = previous;
     };
   }, []);
@@ -111,8 +105,7 @@ export default function DiscoverExperience({
 
   useEffect(() => {
     const current = () => items[indexRef.current];
-    const active = () => current().kind !== 'contact';
-    const canAdvance = () => current().kind === 'intro' || current().kind === 'floorplan';
+    const canAdvance = () => current().kind === 'intro';
     const goBack = () => {
       if (indexRef.current === 0) {
         if (!lockRef.current) returnHeroRef.current?.();
@@ -122,7 +115,6 @@ export default function DiscoverExperience({
     };
 
     const onWheel = (event: WheelEvent) => {
-      if (!active()) return;
       if (event.deltaY > 24) {
         if (canAdvance()) go(1);
       } else if (event.deltaY < -24) {
@@ -134,7 +126,6 @@ export default function DiscoverExperience({
       touchStartY = event.touches[0].clientY;
     };
     const onTouchEnd = (event: TouchEvent) => {
-      if (!active()) return;
       const deltaY = touchStartY - event.changedTouches[0].clientY;
       if (deltaY > 55) {
         if (canAdvance()) go(1);
@@ -143,7 +134,6 @@ export default function DiscoverExperience({
       }
     };
     const onKey = (event: KeyboardEvent) => {
-      if (!active()) return;
       if (event.key === 'ArrowDown' || event.key === 'PageDown' || event.key === ' ') {
         if (canAdvance()) go(1);
       } else if (event.key === 'ArrowUp' || event.key === 'PageUp') {
@@ -163,9 +153,19 @@ export default function DiscoverExperience({
     };
   }, [go, items]);
 
+  const completeOrAdvance = (completionAnswers: Answers = answers) => {
+    if (indexRef.current === last) onFinish?.(completionAnswers);
+    else go(1);
+  };
+
   const select = (roundId: string, imageOrOptionId: string) => {
-    setAnswers((current) => ({ ...current, [roundId]: imageOrOptionId }));
-    window.setTimeout(() => go(1), reduceMotion ? 100 : 360);
+    const nextAnswers = { ...answers, [roundId]: imageOrOptionId };
+    setAnswers(nextAnswers);
+    if (advanceTimerRef.current !== null) window.clearTimeout(advanceTimerRef.current);
+    advanceTimerRef.current = window.setTimeout(
+      () => completeOrAdvance(nextAnswers),
+      reduceMotion ? 100 : 360,
+    );
   };
 
   const decideBoard = (roundId: string, imageId: string, decision: 'keep' | 'toss') => {
@@ -177,12 +177,6 @@ export default function DiscoverExperience({
 
   const renderItem = (item: Item) => {
     if (item.kind === 'intro') return <IntroSection />;
-    if (item.kind === 'floorplan') {
-      return <FloorPlanSection onChange={(file, nextNotes) => { setFloorPlan(file); setNotes(nextNotes); }} />;
-    }
-    if (item.kind === 'contact') {
-      return <ContactSection answers={answers} floorPlan={floorPlan} notes={notes} onExplore={() => onFinish?.(answers)} />;
-    }
 
     const round = ROUNDS[item.roundIndex];
     const answer = answers[round.id];
@@ -216,7 +210,7 @@ export default function DiscoverExperience({
           total={ROUNDS.length}
           decisions={boardDecisions(answer)}
           onDecide={(imageId, decision) => decideBoard(round.id, imageId, decision)}
-          onDone={() => go(1)}
+          onDone={() => completeOrAdvance()}
         />
       );
     }
@@ -247,6 +241,13 @@ export default function DiscoverExperience({
           <span className="text-sm leading-none">↑</span> Back
         </button>
       )}
+      <button
+        type="button"
+        onClick={() => onSkipWebsite?.(answers)}
+        className="fixed bottom-7 right-5 z-[60] text-[12px] font-light lowercase tracking-[0.04em] text-[#f2efe9]/45 underline-offset-4 transition-colors hover:text-[#f2efe9]/75 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A98E5F] sm:right-7"
+      >
+        skip to website
+      </button>
       <div className="relative z-10 h-full">
         <AnimatePresence custom={direction} initial={false}>
           <motion.div

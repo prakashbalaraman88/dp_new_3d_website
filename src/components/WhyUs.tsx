@@ -40,7 +40,7 @@ export default function WhyUs() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-serif mb-4">Why Choose Us?</h2>
+          <h2 className="text-4xl font-serif mb-4">Why Choose <span className="dp-heading-accent">Us?</span></h2>
           <p className="text-xl text-accent max-w-2xl mx-auto">
             Because excellence with a side of wit is our specialty. We don't just raise the bar – we redesign it.
           </p>

@@ -80,7 +80,7 @@ const Team = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-serif mb-4">Meet the Dream Team</h2>
+          <h2 className="text-4xl font-serif mb-4">Meet the <span className="dp-heading-accent">Dream Team</span></h2>
           <p className="text-xl text-accent max-w-2xl mx-auto">
             Not your average design squad. We're the rebels who color outside the lines (but only when it's aesthetically pleasing).
           </p>

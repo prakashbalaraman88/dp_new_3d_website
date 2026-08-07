@@ -224,11 +224,24 @@ function AccentTitle({ act }: { act: Act }) {
   );
 }
 
-function ReducedWalkthrough({ onComplete }: { onComplete: () => void }) {
+function ReducedWalkthrough({
+  onComplete,
+  onSkipWebsite,
+}: {
+  onComplete: () => void;
+  onSkipWebsite: () => void;
+}) {
   const sectionRefs = useRef<Array<HTMLElement | null>>([]);
 
   return (
     <div className="dp-walk dp-walk--reduced">
+      <button
+        type="button"
+        onClick={onSkipWebsite}
+        className="fixed bottom-4 left-1/2 z-[9] -translate-x-1/2 text-[12px] font-light lowercase tracking-[0.04em] text-[#f2efe9]/45 underline-offset-4 transition-colors hover:text-[#f2efe9]/75 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A98E5F]"
+      >
+        skip to website
+      </button>
       {walkthroughSegments.map((segment, index) => {
         const lead = segment.acts[0];
         return (
@@ -275,9 +288,11 @@ function ReducedWalkthrough({ onComplete }: { onComplete: () => void }) {
 export default function WalkthroughScrub({
   bridge,
   onComplete,
+  onSkipWebsite,
 }: {
   bridge: ScrollBridge | null;
   onComplete: () => void;
+  onSkipWebsite: () => void;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -615,7 +630,9 @@ export default function WalkthroughScrub({
     };
   }, [bridge, finePointer, isMobile, onComplete, reducedMotion]);
 
-  if (reducedMotion) return <ReducedWalkthrough onComplete={onComplete} />;
+  if (reducedMotion) {
+    return <ReducedWalkthrough onComplete={onComplete} onSkipWebsite={onSkipWebsite} />;
+  }
 
   const skip = () => {
     if (doneRef.current) return;
@@ -753,6 +770,14 @@ export default function WalkthroughScrub({
             </article>
           ))}
         </div>
+
+        <button
+          type="button"
+          onClick={onSkipWebsite}
+          className="absolute bottom-[140px] left-1/2 z-[9] -translate-x-1/2 text-[12px] font-light lowercase tracking-[0.04em] text-[#f2efe9]/45 underline-offset-4 transition-colors hover:text-[#f2efe9]/75 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A98E5F] md:bottom-4"
+        >
+          skip to website
+        </button>
       </div>
     </div>
   );

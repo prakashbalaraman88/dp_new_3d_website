@@ -81,7 +81,7 @@ export default function Projects() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-serif mb-4">Our Masterpieces</h2>
+          <h2 className="text-4xl font-serif mb-4">Our <span className="dp-heading-accent">Masterpieces</span></h2>
           <p className="text-xl text-accent max-w-2xl mx-auto">
             A gallery of spaces that make Pinterest boards look like amateur hour
           </p>

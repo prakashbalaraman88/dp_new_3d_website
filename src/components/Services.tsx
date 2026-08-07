@@ -39,7 +39,7 @@ export default function Services() {
             viewport={{ once: true }}
             className="text-4xl font-serif mb-4"
           >
-            Our Services
+            Our <span className="dp-heading-accent">Services</span>
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
