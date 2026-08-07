@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import RotatingBrandMark from '../components/RotatingBrandMark';
 
 // Pill-shaped sticky nav for the journey (quiz + site). Shows a quiz-progress
 // bar, hides on scroll-down / shows on scroll-up, and collapses to a menu on mobile.
@@ -43,25 +44,33 @@ export default function JourneyNav({
     >
       <div className="mx-auto max-w-5xl">
         <div className="relative overflow-hidden rounded-full border border-white/10 bg-[#101012]/90 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
-          <div className="relative flex h-14 items-center justify-between px-3 sm:h-16 sm:px-5">
-            <button onClick={() => act(onHome)} aria-label="Home" className="shrink-0 transition-transform hover:scale-105">
-              <img src="/assets/images/logo.png" alt="DezignPool" className="h-11 w-auto object-contain sm:h-12" style={{ filter: 'drop-shadow(0 1px 6px rgba(0,0,0,0.7))' }} />
-            </button>
-
-            <div className="hidden items-center gap-7 md:flex">
+          <div className="relative grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-3 sm:h-16 sm:px-5">
+            <div className="hidden min-w-0 items-center justify-evenly pr-5 md:flex lg:pr-10">
               <button onClick={() => act(onHome)} className={LINK}>Home</button>
               <button onClick={() => act(() => onNavigate('services'))} className={LINK}>Services</button>
+            </div>
+
+            <button onClick={() => act(onHome)} aria-label="Home" className="col-start-2 row-start-1 justify-self-center transition-transform hover:scale-105">
+              <RotatingBrandMark
+                key={showProgress ? 'quiz-logo' : 'site-logo'}
+                className="h-11 w-11 object-contain sm:h-12 sm:w-12"
+                rotationProgress={showProgress ? pct : undefined}
+                style={{ filter: 'drop-shadow(0 1px 6px rgba(0,0,0,0.7))' }}
+              />
+            </button>
+
+            <div className="hidden min-w-0 items-center justify-evenly pl-5 md:flex lg:pl-10">
               <button onClick={() => act(() => onNavigate('about'))} className={LINK}>About</button>
               <button onClick={() => act(() => onNavigate('gallery'))} className={LINK}>Projects</button>
               <button
                 onClick={() => act(() => onNavigate('lead-form'))}
-                className="rounded-full bg-[#f2efe9] px-6 py-2 text-[12px] uppercase tracking-[1.4px] text-[#101012] transition-transform hover:-translate-y-0.5"
+                className="rounded-full bg-[#f2efe9] px-5 py-2 text-[12px] uppercase tracking-[1.4px] text-[#101012] transition-transform hover:-translate-y-0.5 lg:px-6"
               >
                 Enquire
               </button>
             </div>
 
-            <button onClick={() => setMenuOpen((o) => !o)} aria-label="Menu" className="text-[#f2efe9]/65 transition-colors hover:text-[#A98E5F] md:hidden">
+            <button onClick={() => setMenuOpen((o) => !o)} aria-label="Menu" className="col-start-3 row-start-1 justify-self-end text-[#f2efe9]/65 transition-colors hover:text-[#A98E5F] md:hidden">
               {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>

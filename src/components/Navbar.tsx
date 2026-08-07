@@ -78,7 +78,7 @@ export default function Navbar() {
               to="/"
               className="flex items-center transform transition-transform duration-300 hover:scale-105"
             >
-              <Logo showText={false} className="md:-my-8 -my-12 scale-100 md:scale-75" />
+              <Logo showText={false} rotateOnScroll className="md:-my-8 -my-12 scale-100 md:scale-75" />
             </Link>
             
             <div className="hidden md:flex items-center space-x-8">

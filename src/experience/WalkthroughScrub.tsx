@@ -17,6 +17,7 @@ import {
   type Act,
   type WalkthroughIcon,
 } from './walkthrough';
+import RotatingBrandMark from '../components/RotatingBrandMark';
 import './experience.css';
 
 gsap.registerPlugin(CustomEase);
@@ -516,6 +517,7 @@ export default function WalkthroughScrub({
   const stepRef = useRef<(direction: -1 | 1) => void>(() => undefined);
   const cancelRef = useRef<() => void>(() => undefined);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [logoIndex, setLogoIndex] = useState(0);
   const [ready, setReady] = useState(false);
   const isMobile = useMediaQuery('(max-width: 767px)');
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
@@ -532,6 +534,7 @@ export default function WalkthroughScrub({
     doneRef.current = false;
     currentIndexRef.current = 0;
     setCurrentIndex(0);
+    setLogoIndex(0);
     setReady(false);
     bridge?.stop();
     bridge?.lenis.scrollTo(0, { immediate: true });
@@ -768,6 +771,7 @@ export default function WalkthroughScrub({
       );
 
       travelling = true;
+      setLogoIndex(nextIndex);
       travelDirection = nextDirection;
       travelTargetFrame = targetFrame;
       rollingLookaheadOrigin = fromFrame;
@@ -834,6 +838,7 @@ export default function WalkthroughScrub({
         } catch (error) {
           if (!effectActive || token !== travelToken) return;
           travelling = false;
+          setLogoIndex(fromIndex);
           travelDirection = null;
           enterChapter(fromIndex);
           reportFrameError(error);
@@ -1087,7 +1092,6 @@ export default function WalkthroughScrub({
               ['Home', ''],
               ['Services', 'services'],
               ['Projects', 'projects'],
-              ['Contact', 'contact'],
             ].map(([label, section]) => (
               <button
                 key={label}
@@ -1099,12 +1103,26 @@ export default function WalkthroughScrub({
               </button>
             ))}
           </nav>
-          <img
-            src="/assets/images/logo.png"
-            alt="DezignPool"
-            className="dp-walk__logo h-20 w-auto object-contain sm:h-24"
+          <RotatingBrandMark
+            className="dp-walk__logo object-contain"
+            rotationProgress={chapters.length > 1 ? logoIndex / (chapters.length - 1) : 0}
           />
           <div className="dp-walk__bar-end">
+            <nav className="dp-walk__nav dp-walk__nav--secondary" aria-label="More">
+              {[
+                ['About', 'about'],
+                ['Contact', 'contact'],
+              ].map(([label, section]) => (
+                <button
+                  key={label}
+                  type="button"
+                  className="dp-walk__nav-link"
+                  onClick={() => (onNavigate ? onNavigate(section) : undefined)}
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
             <button type="button" className="dp-walk__skip" onClick={skip}>
               <span className="dp-walk__live-dot" aria-hidden="true" />
               <span>Discover my style</span>

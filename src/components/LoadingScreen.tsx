@@ -68,7 +68,7 @@ export default function LoadingScreen() {
         {/* Logo */}
         <div className="flex justify-center mb-12">
           <motion.img 
-            src="/assets/images/logo.png"
+            src="/assets/images/dezignpool-split-ribbon.png"
             alt="DezignPool Logo"
             className="h-32 w-auto"
             initial={{ scale: 0.8, opacity: 0 }}
