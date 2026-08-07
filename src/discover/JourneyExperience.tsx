@@ -75,7 +75,14 @@ export default function JourneyExperience() {
 
   return (
     <>
-      {phase !== 'hero' && <JourneyNav onHome={toHero} onNavigate={goToSection} progress={phase === 'site' ? 1 : quizProgress} />}
+      {phase !== 'hero' && (
+        <JourneyNav
+          onHome={toHero}
+          onNavigate={goToSection}
+          progress={quizProgress}
+          showProgress={phase === 'quiz'}
+        />
+      )}
       <AnimatePresence mode="wait">
       {phase === 'hero' && (
         <motion.div key="hero" exit={{ opacity: 0 }} transition={{ duration: 0.6, ease: 'easeInOut' }}>

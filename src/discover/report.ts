@@ -1,9 +1,7 @@
 import { ROUNDS, STYLE_ORDER, STYLE_PROFILES, type ImageOption } from './data';
 import { sendEmail } from '../utils/emailjs';
 
-export type BoardDecision = 'keep' | 'toss';
-export type BoardDecisions = Record<string, BoardDecision>;
-export type Answer = string | BoardDecisions;
+export type Answer = string;
 export type Answers = Record<string, Answer | undefined>;
 
 export interface Contact {
@@ -46,10 +44,6 @@ export interface DesignReport {
   materials: string[];
   motifs: string[];
   emailText: string;
-}
-
-function isBoardDecisions(answer: Answer | undefined): answer is BoardDecisions {
-  return Boolean(answer && typeof answer === 'object' && !Array.isArray(answer));
 }
 
 function addCount(counts: Map<string, number>, values: string[]) {
@@ -100,31 +94,9 @@ export function buildReport(answers: Answers, contact?: Partial<Contact>, floorP
     const answer = answers[round.id];
     if (!answer) continue;
 
-    if (round.kind === 'choice') {
-      if (typeof answer !== 'string') continue;
-      const option = round.options.find((candidate) => candidate.id === answer);
-      if (option) details.push({ label: round.kicker, value: option.label });
-      continue;
-    }
-
-    if (round.kind === 'board') {
-      if (!isBoardDecisions(answer)) continue;
-      for (const image of round.images) {
-        const decision = answer[image.id];
-        if (decision === 'keep') {
-          addScore(image.style, 1);
-          positivePick(image, picks, materialCounts, motifCounts);
-        } else if (decision === 'toss') {
-          addScore(image.style, -0.5);
-        }
-      }
-      continue;
-    }
-
-    if (typeof answer !== 'string') continue;
     const image = round.options.find((candidate) => candidate.id === answer);
     if (!image) continue;
-    addScore(image.style, round.kind === 'quad' ? 2 : 1);
+    addScore(image.style, 2);
     positivePick(image, picks, materialCounts, motifCounts);
   }
 

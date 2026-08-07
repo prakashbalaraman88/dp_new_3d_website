@@ -12,17 +12,13 @@ const outputRoot = join(repoRoot, 'public', 'images', 'discover');
 const manifestFile = join(repoRoot, 'src', 'discover', 'quizAssets.json');
 
 const ROUND_BLUEPRINTS = [
-  { kind: 'quad', id: 'living-instinct', kicker: 'Living room', question: 'Which room feels most like your kind of welcome?', rooms: ['living-room', 'living-room', 'living-room', 'living-room'] },
-  { kind: 'duel', id: 'kitchen-duel', kicker: 'Kitchen', question: 'Which kitchen would make everyday rituals feel better?', rooms: ['kitchen', 'kitchen'] },
-  { kind: 'quad', id: 'bedroom-mood', kicker: 'Master bedroom', question: 'Where would you exhale at the end of the day?', rooms: ['master-bedroom', 'master-bedroom', 'master-bedroom', 'master-bedroom'] },
-  { kind: 'board', id: 'detail-board', kicker: 'The details', question: 'Keep what speaks to you. Toss what does not.', rooms: ['wall-panel', 'false-ceiling', 'tv-unit', 'pooja-unit', 'bar-unit', 'crockery-unit'] },
-  { kind: 'quad', id: 'first-impression', kicker: 'Foyer', question: 'How should your home introduce itself?', rooms: ['foyer', 'foyer', 'foyer', 'foyer'] },
-  { kind: 'duel', id: 'wardrobe-duel', kicker: 'Wardrobe', question: 'Which wardrobe language would you live with?', rooms: ['wardrobe', 'wardrobe'] },
-  { kind: 'quad', id: 'dining-gathering', kicker: 'Dining', question: 'Which setting makes you want to gather longer?', rooms: ['dining', 'dining', 'dining', 'dining'] },
-  { kind: 'duel', id: 'bathroom-duel', kicker: 'Bathroom', question: 'Which retreat belongs in your morning?', rooms: ['bathroom-vanity', 'bathroom-vanity'] },
-  { kind: 'board', id: 'life-board', kicker: 'Rooms for real life', question: 'Keep the spaces you would bring into your own home.', rooms: ['study-office', 'kids-bedroom', 'shoe-rack', 'kitchen', 'living-room', 'master-bedroom'] },
-  { kind: 'quad', id: 'material-instinct', kicker: 'Material mood', question: 'Which composition has the texture you are drawn to?', rooms: ['wall-panel', 'wall-panel', 'wall-panel', 'wall-panel'] },
-  { kind: 'duel', id: 'pooja-duel', kicker: 'Quiet corner', question: 'Which sacred space feels more personal?', rooms: ['pooja-unit', 'pooja-unit'] },
+  { kind: 'quad', id: 'living-room', kicker: 'Living room', question: 'Which room feels most like your kind of welcome?', rooms: ['living-room', 'living-room', 'living-room', 'living-room'] },
+  { kind: 'quad', id: 'kitchen', kicker: 'Kitchen', question: 'Which kitchen would make everyday rituals feel better?', rooms: ['kitchen', 'kitchen', 'kitchen', 'kitchen'] },
+  { kind: 'quad', id: 'master-bedroom', kicker: 'Master bedroom', question: 'Where would you exhale at the end of the day?', rooms: ['master-bedroom', 'master-bedroom', 'master-bedroom', 'master-bedroom'] },
+  { kind: 'quad', id: 'foyer', kicker: 'Foyer', question: 'How should your home introduce itself?', rooms: ['foyer', 'foyer', 'foyer', 'foyer'] },
+  { kind: 'quad', id: 'dining', kicker: 'Dining', question: 'Which setting makes you want to gather longer?', rooms: ['dining', 'dining', 'dining', 'dining'] },
+  { kind: 'quad', id: 'wardrobe', kicker: 'Wardrobe', question: 'Which wardrobe language would you live with?', rooms: ['wardrobe', 'wardrobe', 'wardrobe', 'wardrobe'] },
+  { kind: 'quad', id: 'wall-panel', kicker: 'Material mood', question: 'Which composition has the texture you are drawn to?', rooms: ['wall-panel', 'wall-panel', 'wall-panel', 'wall-panel'] },
   { kind: 'quad', id: 'final-instinct', kicker: 'One last instinct', question: 'No overthinking. Which space is simply you?', rooms: ['living-room', 'kitchen', 'master-bedroom', 'dining'] },
 ];
 
@@ -44,13 +40,6 @@ function hash(text) {
     value = Math.imul(value, 16777619);
   }
   return value >>> 0;
-}
-
-function seededOrder(items, salt) {
-  return items
-    .map((item, index) => ({ item, index, rank: hash(`${SEED}|${salt}|${index}`) }))
-    .sort((a, b) => a.rank - b.rank || a.index - b.index)
-    .map(({ item }) => item);
 }
 
 function uniqueStrings(value) {
@@ -137,7 +126,6 @@ function loadCandidates(libraryRoot, styleOrder, captions) {
 
     for (const [sheetIndex, filename] of orderedSheetValues(sheet).entries()) {
       const caption = captions.get(captionKey(style, room, filename));
-      if (!caption) continue;
       const source = join(libraryImagesRoot, style, room, filename);
       if (!existsSync(source) || !statSync(source).isFile()) continue;
       candidates.push({
@@ -148,14 +136,15 @@ function loadCandidates(libraryRoot, styleOrder, captions) {
         source,
         sheetFile,
         sheetIndex,
-        materials: uniqueStrings(caption.materials),
-        motifs: uniqueStrings(caption.motifs),
+        captioned: Boolean(caption),
+        materials: uniqueStrings(caption?.materials),
+        motifs: uniqueStrings(caption?.motifs),
       });
     }
   }
 
   if (candidates.length < TARGET_IMAGE_COUNT) {
-    fail(`Only ${candidates.length} indexed images have complete captions; at least ${TARGET_IMAGE_COUNT} are required.`);
+    fail(`Only ${candidates.length} indexed images are available; at least ${TARGET_IMAGE_COUNT} are required.`);
   }
   return candidates;
 }
@@ -171,19 +160,27 @@ function makeSelector(candidates) {
   const used = new Set();
   const cache = new Map();
 
-  function pool(style, room) {
-    const key = `${style}|${room || '*'}`;
+  function pool(style, room, captionRequired) {
+    const key = `${style}|${room || '*'}|${captionRequired ? 'captioned' : 'all'}`;
     if (!cache.has(key)) {
-      const matching = candidates.filter((candidate) => candidate.style === style && (!room || candidate.room === room));
-      cache.set(key, seededOrder(matching, key));
+      const matching = candidates.filter((candidate) => (
+        candidate.style === style
+        && (!room || candidate.room === room)
+        && (!captionRequired || candidate.captioned)
+      ));
+      // loadCandidates follows the curator's sheet order; retain it here.
+      cache.set(key, matching);
     }
     return cache.get(key);
   }
 
-  function claim(style, preferredRoom) {
-    const candidate = pool(style, preferredRoom).find((item) => !used.has(item.key))
-      || pool(style).find((item) => !used.has(item.key));
-    if (!candidate) fail(`Not enough captioned images to select another asset for ${style}/${preferredRoom || '*'}.`);
+  function claim(style, preferredRoom, captionRequired = false) {
+    const candidate = pool(style, preferredRoom, captionRequired).find((item) => !used.has(item.key))
+      || pool(style, undefined, captionRequired).find((item) => !used.has(item.key));
+    if (!candidate) {
+      const captionLabel = captionRequired ? ' captioned' : '';
+      fail(`Not enough${captionLabel} images to select another asset for ${style}/${preferredRoom || '*'}.`);
+    }
     used.add(candidate.key);
     return candidate;
   }
@@ -207,14 +204,15 @@ function selectAssets(candidates, styleOrder) {
 
   const montages = {};
   for (const style of styleOrder) {
-    const availableRooms = [...new Set(candidates.filter((candidate) => candidate.style === style).map((candidate) => candidate.room))];
-    const rooms = seededOrder(availableRooms, `montage-rooms|${style}`);
+    const rooms = [...new Set(candidates
+      .filter((candidate) => candidate.style === style && candidate.captioned)
+      .map((candidate) => candidate.room))];
     montages[style] = [];
     for (const room of rooms) {
       if (montages[style].length === 6) break;
-      montages[style].push(selector.claim(style, room));
+      montages[style].push(selector.claim(style, room, true));
     }
-    while (montages[style].length < 6) montages[style].push(selector.claim(style));
+    while (montages[style].length < 6) montages[style].push(selector.claim(style, undefined, true));
   }
 
   const selected = [
@@ -327,7 +325,7 @@ const rounds = selection.rounds.map(({ rooms: _rooms, candidates: roundCandidate
 }));
 
 const manifest = {
-  version: 1,
+  version: 2,
   seed: SEED,
   styleOrder,
   styles,

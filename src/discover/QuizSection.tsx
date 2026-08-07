@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import KineticText from '../components/KineticText';
-import { STYLE_PROFILES, type BoardRound, type DuelRound, type ImageOption, type QuadRound } from './data';
-import type { BoardDecisions } from './report';
+import { STYLE_PROFILES, type ImageOption, type QuadRound } from './data';
 
 function StepHeading({ kicker, question, index, total }: { kicker: string; question: string; index: number; total: number }) {
   return (
@@ -109,138 +108,6 @@ export function QuadSection({
         ))}
       </div>
       <p className="mt-5 text-center text-[11px] text-white/35">Tap the one that feels like you</p>
-    </div>
-  );
-}
-
-export function DuelSection({
-  round,
-  index,
-  total,
-  selected,
-  onSelect,
-}: {
-  round: DuelRound;
-  index: number;
-  total: number;
-  selected?: string;
-  onSelect: (imageId: string) => void;
-}) {
-  return (
-    <div className="mx-auto w-full max-w-5xl">
-      <StepHeading kicker={round.kicker} question={round.question} index={index} total={total} />
-      <div className="grid grid-cols-2 gap-3 sm:gap-6">
-        {round.options.map((image, optionIndex) => (
-          <PickCard
-            key={image.id}
-            image={image}
-            label={optionIndex === 0 ? 'A' : 'B'}
-            selected={selected === image.id}
-            delay={optionIndex * 0.1}
-            className="aspect-[3/4] sm:aspect-[4/3]"
-            onSelect={() => onSelect(image.id)}
-          />
-        ))}
-      </div>
-      <p className="mt-5 text-center text-[11px] text-white/35">Choose on instinct</p>
-    </div>
-  );
-}
-
-function BoardCard({
-  image,
-  decision,
-  index,
-  onDecide,
-}: {
-  image: ImageOption;
-  decision?: 'keep' | 'toss';
-  index: number;
-  onDecide: (decision: 'keep' | 'toss') => void;
-}) {
-  const reduceMotion = useReducedMotion();
-  return (
-    <motion.div
-      initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: reduceMotion ? 0 : 0.4, delay: reduceMotion ? 0 : index * 0.055 }}
-      className={`group relative aspect-[4/3] overflow-hidden rounded-xl border transition-colors sm:rounded-2xl ${
-        decision === 'keep'
-          ? 'border-secondary ring-2 ring-secondary/35'
-          : decision === 'toss'
-            ? 'border-white/10 opacity-55'
-            : 'border-white/10'
-      }`}
-    >
-      <ImageSurface image={image} label={`Board image ${index + 1}`} />
-      <div className="absolute inset-x-2 bottom-2 grid grid-cols-2 gap-1.5 sm:inset-x-3 sm:bottom-3 sm:gap-2">
-        <button
-          type="button"
-          onClick={() => onDecide('toss')}
-          aria-pressed={decision === 'toss'}
-          className={`rounded-full border px-2 py-2 text-[9px] uppercase tracking-[0.12em] backdrop-blur-md transition-colors sm:text-[10px] ${
-            decision === 'toss' ? 'border-white/50 bg-white/80 text-main' : 'border-white/25 bg-main/60 text-white/75 hover:bg-main/85'
-          }`}
-        >
-          Toss
-        </button>
-        <button
-          type="button"
-          onClick={() => onDecide('keep')}
-          aria-pressed={decision === 'keep'}
-          className={`rounded-full border px-2 py-2 text-[9px] uppercase tracking-[0.12em] backdrop-blur-md transition-colors sm:text-[10px] ${
-            decision === 'keep' ? 'border-secondary bg-secondary text-main' : 'border-secondary/45 bg-main/60 text-secondary hover:bg-main/85'
-          }`}
-        >
-          Keep
-        </button>
-      </div>
-    </motion.div>
-  );
-}
-
-export function BoardSection({
-  round,
-  index,
-  total,
-  decisions,
-  onDecide,
-  onDone,
-}: {
-  round: BoardRound;
-  index: number;
-  total: number;
-  decisions: BoardDecisions;
-  onDecide: (imageId: string, decision: 'keep' | 'toss') => void;
-  onDone: () => void;
-}) {
-  const count = round.images.filter((image) => decisions[image.id]).length;
-  const canFinish = count >= 3;
-  return (
-    <div className="mx-auto w-full max-w-5xl">
-      <StepHeading kicker={round.kicker} question={round.question} index={index} total={total} />
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4">
-        {round.images.map((image, imageIndex) => (
-          <BoardCard
-            key={image.id}
-            image={image}
-            decision={decisions[image.id]}
-            index={imageIndex}
-            onDecide={(decision) => onDecide(image.id, decision)}
-          />
-        ))}
-      </div>
-      <div className="mt-5 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-        <p className="text-[11px] text-white/45">{count} of 6 sorted · choose at least 3</p>
-        <button
-          type="button"
-          onClick={onDone}
-          disabled={!canFinish}
-          className="rounded-full bg-secondary px-7 py-2.5 text-xs font-medium uppercase tracking-[0.16em] text-main transition-transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:scale-100"
-        >
-          {count === round.images.length ? 'All sorted — continue' : 'Done'}
-        </button>
-      </div>
     </div>
   );
 }

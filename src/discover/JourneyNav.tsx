@@ -2,17 +2,19 @@ import { useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
 // Pill-shaped sticky nav for the journey (quiz + site). Shows a quiz-progress
-// fill, hides on scroll-down / shows on scroll-up, and collapses to a menu on mobile.
+// bar, hides on scroll-down / shows on scroll-up, and collapses to a menu on mobile.
 const LINK = 'text-[12px] uppercase tracking-[1.4px] text-[#f2efe9]/60 transition-colors duration-300 hover:text-[#A98E5F]';
 
 export default function JourneyNav({
   onHome,
   onNavigate,
   progress = 0,
+  showProgress = false,
 }: {
   onHome: () => void;
   onNavigate: (id: string) => void;
   progress?: number;
+  showProgress?: boolean;
 }) {
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -41,10 +43,6 @@ export default function JourneyNav({
     >
       <div className="mx-auto max-w-5xl">
         <div className="relative overflow-hidden rounded-full border border-white/10 bg-[#101012]/90 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
-          {/* quiz progress fill */}
-          <div className="absolute inset-0 origin-left bg-[#A98E5F]/10 transition-transform duration-500" style={{ transform: `scaleX(${pct})` }} />
-          <div className="absolute bottom-0 left-0 h-px w-full origin-left bg-[#A98E5F] transition-transform duration-500" style={{ transform: `scaleX(${pct})` }} />
-
           <div className="relative flex h-14 items-center justify-between px-3 sm:h-16 sm:px-5">
             <button onClick={() => act(onHome)} aria-label="Home" className="shrink-0 transition-transform hover:scale-105">
               <img src="/assets/images/logo.png" alt="DezignPool" className="h-11 w-auto object-contain sm:h-12" style={{ filter: 'drop-shadow(0 1px 6px rgba(0,0,0,0.7))' }} />
@@ -68,6 +66,22 @@ export default function JourneyNav({
             </button>
           </div>
         </div>
+
+        {showProgress && (
+          <div
+            className="mx-5 mt-2 h-[3px] overflow-hidden rounded-full bg-[#f2efe9]/10 sm:mx-7"
+            role="progressbar"
+            aria-label="Style quiz progress"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(pct * 100)}
+          >
+            <div
+              className="h-full w-full origin-left rounded-full bg-[#A98E5F] shadow-[0_0_12px_rgba(169,142,95,0.72)] transition-transform duration-500"
+              style={{ transform: `scaleX(${pct})` }}
+            />
+          </div>
+        )}
 
         {menuOpen && (
           <div className="mt-2 rounded-3xl border border-white/10 bg-[#101012]/95 p-3 backdrop-blur-2xl md:hidden">

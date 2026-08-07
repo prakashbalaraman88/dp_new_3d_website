@@ -200,9 +200,12 @@ if (quizAssets) {
   }
   const images = quizAssets.images && typeof quizAssets.images === 'object' ? quizAssets.images : {};
   const imageRounds = Array.isArray(quizAssets.rounds)
-    ? quizAssets.rounds.filter((round) => ['quad', 'duel', 'board'].includes(round?.kind))
+    ? quizAssets.rounds.filter((round) => round?.kind === 'quad')
     : [];
-  if (imageRounds.length < 12) issue(`Expected at least 12 image rounds, found ${imageRounds.length}.`);
+  if (imageRounds.length < 8) issue(`Expected at least 8 image rounds, found ${imageRounds.length}.`);
+  if (Array.isArray(quizAssets.rounds) && imageRounds.length !== quizAssets.rounds.length) {
+    issue('Every quiz round must be a quad round.');
+  }
 
   const styleOrder = Array.isArray(quizAssets.styleOrder) ? quizAssets.styleOrder : [];
   const uniqueStyles = new Set(styleOrder);
@@ -225,6 +228,9 @@ if (quizAssets) {
     if (!Array.isArray(round.imageIds)) {
       issue(`Round ${round.id || '(unknown)'} has no imageIds array.`);
       continue;
+    }
+    if (round.imageIds.length !== 4) {
+      issue(`Round ${round.id || '(unknown)'} must reference exactly 4 images.`);
     }
     for (const imageId of round.imageIds) {
       const image = images[imageId];

@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ROUNDS } from './data';
-import type { Answer, Answers, BoardDecisions } from './report';
+import type { Answers } from './report';
 import AmbientBackground from '../components/AmbientBackground';
 import DraftingAccents from './DraftingAccents';
 import IntroSection from './IntroSection';
-import { BoardSection, DuelSection, QuadSection } from './QuizSection';
-import ChoiceSection from './ChoiceSection';
+import { QuadSection } from './QuizSection';
 
 type Item =
   | { kind: 'intro'; key: string }
@@ -20,19 +19,7 @@ const slide = {
 
 function variantFor(item: Item): string {
   if (item.kind === 'intro') return 'kitchen';
-  const round = ROUNDS[item.roundIndex];
-  if (round.kind === 'duel') return 'kitchen';
-  if (round.kind === 'board') return 'wall';
-  if (round.kind === 'quad') return 'wardrobe';
-  return 'plan';
-}
-
-function selectedId(answer: Answer | undefined): string | undefined {
-  return typeof answer === 'string' ? answer : undefined;
-}
-
-function boardDecisions(answer: Answer | undefined): BoardDecisions {
-  return answer && typeof answer === 'object' && !Array.isArray(answer) ? answer : {};
+  return 'wardrobe';
 }
 
 export default function DiscoverExperience({
@@ -168,59 +155,18 @@ export default function DiscoverExperience({
     );
   };
 
-  const decideBoard = (roundId: string, imageId: string, decision: 'keep' | 'toss') => {
-    setAnswers((current) => {
-      const previous = boardDecisions(current[roundId]);
-      return { ...current, [roundId]: { ...previous, [imageId]: decision } };
-    });
-  };
-
   const renderItem = (item: Item) => {
     if (item.kind === 'intro') return <IntroSection />;
 
     const round = ROUNDS[item.roundIndex];
     const answer = answers[round.id];
-    if (round.kind === 'quad') {
-      return (
-        <QuadSection
-          round={round}
-          index={item.roundIndex}
-          total={ROUNDS.length}
-          selected={selectedId(answer)}
-          onSelect={(imageId) => select(round.id, imageId)}
-        />
-      );
-    }
-    if (round.kind === 'duel') {
-      return (
-        <DuelSection
-          round={round}
-          index={item.roundIndex}
-          total={ROUNDS.length}
-          selected={selectedId(answer)}
-          onSelect={(imageId) => select(round.id, imageId)}
-        />
-      );
-    }
-    if (round.kind === 'board') {
-      return (
-        <BoardSection
-          round={round}
-          index={item.roundIndex}
-          total={ROUNDS.length}
-          decisions={boardDecisions(answer)}
-          onDecide={(imageId, decision) => decideBoard(round.id, imageId, decision)}
-          onDone={() => completeOrAdvance()}
-        />
-      );
-    }
     return (
-      <ChoiceSection
-        step={round}
+      <QuadSection
+        round={round}
         index={item.roundIndex}
         total={ROUNDS.length}
-        selected={selectedId(answer)}
-        onSelect={(optionId) => select(round.id, optionId)}
+        selected={answer}
+        onSelect={(imageId) => select(round.id, imageId)}
       />
     );
   };
