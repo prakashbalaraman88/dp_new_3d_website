@@ -14,11 +14,16 @@ import { dispatchAICommand } from '../utils/aiActions';
 const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '';
 const CALENDLY_LINK = "https://calendar.app.google/UiboyWruwDtY15nr5"; // Google Calendar Booking Link
 
-const client = new OpenAI({
-    baseURL: "https://openrouter.ai/api/v1",
-    apiKey: API_KEY,
-    dangerouslyAllowBrowser: true, // Required for client-side usage
-});
+// Do not construct the SDK without a key: OpenAI throws during module evaluation,
+// which would prevent the entire site from mounting on deployments where chat is
+// intentionally not configured.
+const client = API_KEY
+    ? new OpenAI({
+        baseURL: "https://openrouter.ai/api/v1",
+        apiKey: API_KEY,
+        dangerouslyAllowBrowser: true, // Required for client-side usage
+    })
+    : null;
 
 interface Message {
     id: string;
@@ -28,6 +33,10 @@ interface Message {
 }
 
 const ChatWidget: React.FC = () => {
+    // Keep the rest of the website available when the optional chat integration
+    // has no deployment key.
+    if (!client) return null;
+
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
