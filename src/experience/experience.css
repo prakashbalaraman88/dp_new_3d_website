@@ -280,14 +280,74 @@
 
 .dp-walk__bar {
   z-index: 8;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
   padding: 20px clamp(20px, 4vw, 52px);
 }
 
-.dp-walk__bar img {
+.dp-walk__logo {
   height: 76px;
   width: auto;
+  justify-self: center;
   filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.55));
+}
+
+.dp-walk__nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2.6vw, 38px);
+  justify-self: start;
+}
+
+.dp-walk__nav-link {
+  pointer-events: auto;
+  padding: 6px 2px;
+  border: 0;
+  background: none;
+  color: rgba(242, 239, 233, 0.72);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.dp-walk__nav-link:hover {
+  color: #f2efe9;
+}
+
+.dp-walk__nav-link:first-child {
+  color: #f2efe9;
+}
+
+.dp-walk__bar-end {
+  justify-self: end;
+}
+
+.dp-walk__live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #a98e5f;
+  animation: dpLiveDot 1.6s ease-in-out infinite;
+}
+
+@keyframes dpLiveDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.75); }
+}
+
+@media (max-width: 860px) {
+  .dp-walk__nav {
+    display: none;
+  }
+  .dp-walk__bar {
+    grid-template-columns: auto 1fr;
+  }
+  .dp-walk__logo {
+    justify-self: start;
+  }
 }
 
 .dp-walk__skip {
@@ -437,7 +497,7 @@
 
 .dp-walk__badge {
   position: absolute;
-  left: clamp(22px, 3.5vw, 54px);
+  right: clamp(22px, 3.5vw, 54px);
   bottom: clamp(24px, 3.4vw, 48px);
   z-index: 7;
   width: 116px;
@@ -456,9 +516,9 @@
   background: rgba(11, 11, 12, 0.42);
 }
 
-.dp-walk__badge:disabled {
-  cursor: wait;
-  opacity: 0.48;
+.dp-walk__badge[data-loading='true'] {
+  cursor: progress;
+  opacity: 0.68;
 }
 
 .dp-walk__badge svg {
@@ -496,15 +556,43 @@
   transform: translate(-50%, -50%);
 }
 
+.dp-walk__badge-loader {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(242, 239, 233, 0.12);
+  border-top-color: #a98e5f;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.dp-walk__badge[data-loading='true'] .dp-walk__badge-arrow {
+  opacity: 0.42;
+}
+
+.dp-walk__badge[data-loading='true'] .dp-walk__badge-loader {
+  opacity: 1;
+  animation: dpWalkLoading 0.9s linear infinite;
+}
+
 @keyframes dpWalkOrbit {
   to {
     transform: rotate(360deg);
   }
 }
 
+@keyframes dpWalkLoading {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
 .dp-walk__cards {
   position: absolute;
-  right: clamp(22px, 3.5vw, 54px);
+  left: clamp(22px, 3.5vw, 54px);
   bottom: clamp(24px, 3.4vw, 48px);
   z-index: 7;
   width: min(350px, 32vw);
@@ -746,5 +834,9 @@
 
   .dp-walk__badge svg {
     animation: none;
+  }
+
+  .dp-walk__badge-loader {
+    animation: none !important;
   }
 }

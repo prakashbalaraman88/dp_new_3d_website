@@ -499,10 +499,12 @@ export default function WalkthroughScrub({
   bridge,
   onComplete,
   onSkipWebsite,
+  onNavigate,
 }: {
   bridge: ScrollBridge | null;
   onComplete: () => void;
   onSkipWebsite: () => void;
+  onNavigate?: (section: string) => void;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -1080,17 +1082,37 @@ export default function WalkthroughScrub({
         <div className="dp-exp__vignette dp-walk__vignette" />
 
         <header className="dp-exp__bar dp-walk__bar">
+          <nav className="dp-walk__nav" aria-label="Site">
+            {[
+              ['Home', ''],
+              ['Services', 'services'],
+              ['Projects', 'projects'],
+              ['Contact', 'contact'],
+            ].map(([label, section]) => (
+              <button
+                key={label}
+                type="button"
+                className="dp-walk__nav-link"
+                onClick={() => (section && onNavigate ? onNavigate(section) : undefined)}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
           <img
             src="/assets/images/logo.png"
             alt="DezignPool"
-            className="h-20 w-auto object-contain sm:h-24"
+            className="dp-walk__logo h-20 w-auto object-contain sm:h-24"
           />
-          <button type="button" className="dp-walk__skip" onClick={skip}>
-            <span>Discover my style</span>
-            <span className="dp-walk__skip-chip" aria-hidden="true">
-              <ArrowRight size={16} strokeWidth={1.6} />
-            </span>
-          </button>
+          <div className="dp-walk__bar-end">
+            <button type="button" className="dp-walk__skip" onClick={skip}>
+              <span className="dp-walk__live-dot" aria-hidden="true" />
+              <span>Discover my style</span>
+              <span className="dp-walk__skip-chip" aria-hidden="true">
+                <ArrowRight size={16} strokeWidth={1.6} />
+              </span>
+            </button>
+          </div>
         </header>
 
         <p className="dp-walk__counter" aria-live="polite">

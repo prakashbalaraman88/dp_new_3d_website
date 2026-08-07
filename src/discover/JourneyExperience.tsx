@@ -86,7 +86,7 @@ export default function JourneyExperience() {
       <AnimatePresence mode="wait">
       {phase === 'hero' && (
         <motion.div key="hero" exit={{ opacity: 0 }} transition={{ duration: 0.6, ease: 'easeInOut' }}>
-          <WalkthroughScrub bridge={bridge} onComplete={toQuiz} onSkipWebsite={() => toSite()} />
+          <WalkthroughScrub bridge={bridge} onComplete={toQuiz} onSkipWebsite={() => toSite()} onNavigate={goToSection} />
         </motion.div>
       )}
       {phase === 'quiz' && (
