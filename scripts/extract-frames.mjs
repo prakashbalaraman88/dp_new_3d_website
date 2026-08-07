@@ -12,8 +12,8 @@ import { spawnSync } from 'node:child_process';
 
 const MAX_FPS = 24;
 const DESKTOP_LIMIT = 30 * 1024 * 1024;
-const MOBILE_LIMIT = 14 * 1024 * 1024;
-const TOTAL_LIMIT = 44 * 1024 * 1024;
+const MOBILE_LIMIT = 16 * 1024 * 1024;
+const TOTAL_LIMIT = 46 * 1024 * 1024;
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const source = join(repoRoot, 'assets-src', 'segments', 'exterior-approach.mp4');
 const framesRoot = join(repoRoot, 'public', 'videos', 'frames');

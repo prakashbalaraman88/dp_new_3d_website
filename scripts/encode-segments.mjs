@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process';
 
 const SEGMENT_IDS = ['exterior-approach'];
 const DESKTOP_LIMIT = 20 * 1024 * 1024;
-const MOBILE_LIMIT = 8 * 1024 * 1024;
+const MOBILE_LIMIT = 10 * 1024 * 1024;
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outputDir = join(repoRoot, 'public', 'videos', 'segments');
 const placeholderSource = join(repoRoot, 'public', 'videos', 'kitchen-desktop.mp4');

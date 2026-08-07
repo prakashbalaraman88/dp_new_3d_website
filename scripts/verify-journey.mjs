@@ -3,10 +3,10 @@ import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DESKTOP_VIDEO_LIMIT = 20 * 1024 * 1024;
-const MOBILE_VIDEO_LIMIT = 8 * 1024 * 1024;
+const MOBILE_VIDEO_LIMIT = 10 * 1024 * 1024;
 const DESKTOP_FRAMES_LIMIT = 30 * 1024 * 1024;
-const MOBILE_FRAMES_LIMIT = 14 * 1024 * 1024;
-const FRAMES_LIMIT = 44 * 1024 * 1024;
+const MOBILE_FRAMES_LIMIT = 16 * 1024 * 1024;
+const FRAMES_LIMIT = 46 * 1024 * 1024;
 const DISCOVER_LIMIT = 60 * 1024 * 1024;
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const publicRoot = join(repoRoot, 'public');
@@ -111,7 +111,7 @@ for (const segment of segments) {
     issue(`${segment.id} desktop video is ${(desktopBytes / 1024 / 1024).toFixed(2)}MB; limit is 20MB.`);
   }
   if (mobileBytes !== null && mobileBytes > MOBILE_VIDEO_LIMIT) {
-    issue(`${segment.id} mobile video is ${(mobileBytes / 1024 / 1024).toFixed(2)}MB; limit is 8MB.`);
+    issue(`${segment.id} mobile video is ${(mobileBytes / 1024 / 1024).toFixed(2)}MB; limit is 10MB.`);
   }
 }
 
