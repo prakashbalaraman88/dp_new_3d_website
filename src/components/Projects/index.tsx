@@ -1,155 +1,164 @@
-import { motion } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
-import { ArrowUpRight } from 'lucide-react';
-import { projects } from './data';
+import { useEffect, useRef, type CSSProperties } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowUpRight, Play } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { projects, type ProjectFilm } from './data';
+import './projects.css';
 
-export default function Projects() {
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-  const [isMobile, setIsMobile] = useState(false);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [isIntersecting, setIsIntersecting] = useState<boolean[]>(new Array(projects.length).fill(false));
+const MASTER_EASE: [number, number, number, number] = [0.625, 0.05, 0, 1];
+
+type ProjectStyle = CSSProperties & { '--project-accent': string };
+
+function ProjectFilmPreview({ film, reducedMotion }: { film: ProjectFilm; reducedMotion: boolean | null }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+    const video = videoRef.current;
+    if (!video || reducedMotion) return undefined;
+
+    let isInView = false;
+    const syncPlayback = () => {
+      if (isInView && !document.hidden) video.play().catch(() => undefined);
+      else video.pause();
     };
 
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isInView = entry.isIntersecting;
+        syncPlayback();
+      },
+      { threshold: 0.42 },
+    );
 
-  useEffect(() => {
-    const observers = videoRefs.current.map((videoRef, index) => {
-      if (!videoRef) return null;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            setIsIntersecting(prev => {
-              const newState = [...prev];
-              newState[index] = entry.isIntersecting;
-              return newState;
-            });
-
-            if (entry.isIntersecting && hoveredIndex === index) {
-              videoRef?.play().catch(() => {});
-            } else {
-              videoRef?.pause();
-            }
-          });
-        },
-        { threshold: 0.5 }
-      );
-
-      observer.observe(videoRef);
-      return observer;
-    });
-
+    observer.observe(video);
+    document.addEventListener('visibilitychange', syncPlayback);
     return () => {
-      observers.forEach(observer => observer?.disconnect());
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', syncPlayback);
+      video.pause();
     };
-  }, [hoveredIndex]);
+  }, [film.src, reducedMotion]);
 
-  const handleMouseEnter = (index: number) => {
-    if (!isMobile && videoRefs.current[index] && isIntersecting[index]) {
-      videoRefs.current[index]?.play().catch(() => {});
-    }
-    setHoveredIndex(index);
-  };
-
-  const handleMouseLeave = (index: number) => {
-    if (!isMobile && videoRefs.current[index]) {
-      videoRefs.current[index]?.pause();
-      if (videoRefs.current[index]) {
-        videoRefs.current[index]!.currentTime = 0;
-      }
-    }
-    setHoveredIndex(null);
-  };
+  if (reducedMotion) {
+    return <img src={film.poster} alt="" loading="lazy" decoding="async" />;
+  }
 
   return (
-    <section id="projects" className="py-24 bg-main relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl" />
+    <video
+      ref={videoRef}
+      src={film.src}
+      poster={film.poster}
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      aria-hidden="true"
+    />
+  );
+}
+
+export default function Projects() {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <section id="projects" className="dp-portfolio" aria-labelledby="selected-projects-title">
+      <div className="dp-portfolio__intro">
+        <div>
+          <p className="dp-portfolio__eyebrow">Selected residences · Real project photography</p>
+          <h2 id="selected-projects-title">Every home has a <em>point of view.</em></h2>
+        </div>
+        <p>
+          Four distinct homes, seen through material, light and the rituals of everyday life.
+          Open a project to explore every room in its original composition.
+        </p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl font-serif mb-4">Our <span className="dp-heading-accent">Masterpieces</span></h2>
-          <p className="text-xl text-accent max-w-2xl mx-auto">
-            A gallery of spaces that make Pinterest boards look like amateur hour
-          </p>
-        </motion.div>
+      <div className="dp-portfolio__chapters">
+        {projects.map((project, projectIndex) => {
+          const [heroIndex, ...detailIndexes] = project.teaser;
+          const heroImage = project.images[heroIndex];
+          const detailImages = detailIndexes.map((imageIndex) => project.images[imageIndex]);
+          const projectNumber = String(projectIndex + 1).padStart(2, '0');
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <motion.div
+          return (
+            <motion.article
               key={project.id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ 
-                opacity: 1, 
-                y: 0,
-                transition: { 
-                  duration: 0.8,
-                  delay: index * 0.1 
-                }
-              }}
-              viewport={{ once: true, margin: "-100px" }}
-              className="group dp-site-project"
-              onMouseEnter={() => handleMouseEnter(index)}
-              onMouseLeave={() => handleMouseLeave(index)}
+              className={`dp-project-chapter ${projectIndex % 2 ? 'is-reversed' : ''}`}
+              style={{ '--project-accent': project.accent } as ProjectStyle}
+              initial={reducedMotion ? false : { opacity: 0, y: 46 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.12 }}
+              transition={{ duration: reducedMotion ? 0 : 0.95, ease: MASTER_EASE }}
             >
-              <div className="relative aspect-[4/5] rounded-2xl overflow-hidden dp-site-project__card">
-                <div className="relative h-full transform-gpu transition-all duration-700 ease-out dp-site-project__media">
-                  <video
-                    ref={el => videoRefs.current[index] = el}
-                    poster={project.image}
-                    muted
-                    loop
-                    playsInline
-                    className="w-full h-full object-cover"
+              <div className="dp-project-chapter__copy">
+                <div className="dp-project-chapter__index" aria-hidden="true">{projectNumber}</div>
+                <p className="dp-project-chapter__category">{project.category}</p>
+                <h3>{project.title}</h3>
+                {project.community !== project.title && (
+                  <p className="dp-project-chapter__community">{project.community}</p>
+                )}
+                <p className="dp-project-chapter__summary">{project.summary}</p>
+
+                <ul aria-label={`${project.title} design highlights`}>
+                  {project.designNotes.map((note) => <li key={note}>{note}</li>)}
+                </ul>
+
+                <Link to={`/project/${project.id}`} className="dp-project-chapter__link">
+                  Explore the residence
+                  <span aria-hidden="true"><ArrowUpRight size={17} /></span>
+                </Link>
+              </div>
+
+              <Link
+                to={`/project/${project.id}`}
+                className="dp-project-collage"
+                aria-label={project.film
+                  ? `Watch the ${project.title} project film and open its gallery`
+                  : `View ${project.title} project gallery`}
+              >
+                <div className="dp-project-collage__lead">
+                  <figure
+                    className={project.film ? 'dp-project-collage__film' : undefined}
+                    style={{
+                      aspectRatio: project.film
+                        ? `${project.film.width} / ${project.film.height}`
+                        : `${heroImage.width} / ${heroImage.height}`,
+                    }}
                   >
-                    <source src={project.video} type="video/mp4" />
-                  </video>
-                  
-                  <div 
-                    className={`absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent transition-opacity duration-700 ${
-                      hoveredIndex === index ? 'opacity-0' : 'opacity-100'
-                    }`}
-                  />
-                  
-                  <div 
-                    className={`absolute inset-x-0 bottom-0 p-6 transition-opacity duration-500 dp-site-project__legacy-label ${
-                      hoveredIndex === index ? 'opacity-0' : 'opacity-100'
-                    }`}
-                  >
-                    <div className="bg-black/10 backdrop-blur-sm rounded-xl p-4 border border-white/5">
-                      <h3 className="text-2xl font-serif mb-1 text-white font-bold">{project.title}</h3>
-                      <p className="text-white/90 font-medium mb-1">{project.category}</p>
-                      <p className="text-white/80 text-sm">{project.description}</p>
-                    </div>
+                    {project.film ? (
+                      <>
+                        <ProjectFilmPreview film={project.film} reducedMotion={reducedMotion} />
+                        <span className="dp-project-collage__film-label" aria-hidden="true">
+                          <Play size={13} fill="currentColor" /> Project film
+                        </span>
+                      </>
+                    ) : (
+                      <img
+                        src={heroImage.preview}
+                        alt={heroImage.alt}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    )}
+                  </figure>
+                  <div className="dp-project-collage__meta">
+                    <span>{projectNumber} / {String(projects.length).padStart(2, '0')}</span>
+                    <span>{String(project.images.length).padStart(2, '0')} photographs</span>
+                    <span className="dp-project-collage__arrow" aria-hidden="true"><ArrowUpRight size={19} /></span>
                   </div>
-                  <span className="hidden dp-site-arrow-chip dp-site-project__chip" aria-hidden="true">
-                    <ArrowUpRight size={16} strokeWidth={1.8} />
-                  </span>
                 </div>
 
-                <div className="hidden dp-site-project__label">
-                  <p>{project.category}</p>
-                  <h3>{project.title}</h3>
-                  <span>{project.description}</span>
+                <div className="dp-project-collage__details">
+                  {detailImages.map((image) => (
+                    <figure key={image.src} style={{ aspectRatio: `${image.width} / ${image.height}` }}>
+                      <img src={image.preview} alt={image.alt} loading="lazy" decoding="async" />
+                    </figure>
+                  ))}
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </Link>
+            </motion.article>
+          );
+        })}
       </div>
     </section>
   );

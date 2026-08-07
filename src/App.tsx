@@ -98,6 +98,7 @@ export default function App() {
               <Route path="/classic" element={<HomePage />} />
               <Route path="/about" element={<About />} />
               <Route path="/services" element={<ServicesPage />} />
+              <Route path="/projects" element={<Projects />} />
               <Route path="/calculator" element={<Calculator />} />
               <Route path="/interior-calculator" element={<InteriorCalculator />} />
               <Route path="/project/:id" element={<ProjectDetail />} />

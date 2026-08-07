@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:project-assets": "node scripts/build-project-assets.mjs",
+    "build:project-videos": "node scripts/build-project-videos.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
