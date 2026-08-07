@@ -769,7 +769,8 @@
   }
 
   .dp-walk__badge {
-    left: 16px;
+    left: 50%;
+    margin-left: -43px;
     bottom: 148px;
     width: 86px;
     height: 86px;
@@ -810,6 +811,7 @@
 
   .dp-walk__badge {
     bottom: 132px;
+    margin-left: -38px;
     width: 76px;
     height: 76px;
   }
