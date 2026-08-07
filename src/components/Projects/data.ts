@@ -101,6 +101,13 @@ export const projects: Project[] = [
     designNotes: ['Purpose-built storage', 'Soft neutral palette', 'Navy joinery accents'],
     accent: '#ac936e',
     teaser: [0, 1, 2],
+    film: {
+      src: '/videos/projects/kolte-patil-montage.mp4',
+      poster: '/images/projects/kolte-patil/kolte-patil-montage-poster.webp',
+      label: 'Kolte Patil project film',
+      width: 720,
+      height: 960,
+    },
     images: [
       projectImage('kolte-patil', 'kolte-patil-living-room', 2752, 1536, 'Warm living room with a textured television wall and balcony light'),
       projectImage('kolte-patil', 'kolte-patil-home-office', 1536, 2752, 'Window-side home office with integrated storage and warm timber slats'),

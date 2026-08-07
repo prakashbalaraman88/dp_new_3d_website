@@ -50,7 +50,7 @@ for (const [folderName, slug] of Object.entries(projectFolders)) {
   runFfmpeg([
     '-i', sourcePath,
     '-map', '0:v:0',
-    '-vf', 'scale=720:-2:flags=lanczos',
+    '-vf', 'scale=720:960:force_original_aspect_ratio=increase:flags=lanczos,crop=720:960',
     '-c:v', 'libx264',
     '-preset', 'slow',
     '-crf', '23',
@@ -70,7 +70,7 @@ for (const [folderName, slug] of Object.entries(projectFolders)) {
     '-ss', '0.8',
     '-i', sourcePath,
     '-frames:v', '1',
-    '-vf', 'scale=1100:-2:flags=lanczos',
+    '-vf', 'scale=900:1200:force_original_aspect_ratio=increase:flags=lanczos,crop=900:1200',
     '-c:v', 'libwebp',
     '-quality', '82',
     '-y', posterPath,
