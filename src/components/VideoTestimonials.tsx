@@ -329,7 +329,7 @@ export default function VideoTestimonials() {
                     </blockquote>
                   </div>
 
-                  <footer>
+                  <div className="dp-video-testimonial__byline">
                     <div>
                       <strong>{testimonial.name}</strong>
                       <span>{testimonial.role}</span>
@@ -337,7 +337,7 @@ export default function VideoTestimonials() {
                     <p className={isPlaying[index] ? 'is-live' : undefined}>
                       <span aria-hidden="true" /> {isPlaying[index] ? 'Playing now' : reducedMotion ? 'Tap to play' : 'Plays in view'}
                     </p>
-                  </footer>
+                  </div>
                 </div>
               </motion.article>
             ))}
