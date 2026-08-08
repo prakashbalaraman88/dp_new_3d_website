@@ -154,6 +154,11 @@ export default function LeadForm({ answers }: { answers: Answers }) {
           `Plot location: ${data.plotLocation?.trim() || 'Not provided'}`,
         ];
     const message = [
+      'Contact details:',
+      `Full name: ${data.name}`,
+      `Email: ${data.email}`,
+      `Phone: ${data.phone}`,
+      '',
       `Form type: ${data.formType}`,
       ...projectLines,
       '',

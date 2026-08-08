@@ -3,6 +3,16 @@ import { emailjsEnv } from '../config/environment';
 
 emailjs.init(emailjsEnv.PUBLIC_KEY);
 
+const withContactAliases = (templateParams: Record<string, unknown>) => {
+  const params = { ...templateParams };
+
+  if (params.from_name && !params.name) params.name = params.from_name;
+  if (params.from_email && !params.email) params.email = params.from_email;
+  if (params.phone && !params.phone_number) params.phone_number = params.phone;
+
+  return params;
+};
+
 export const sendEmail = async ({ template_id, service_id, user_id, template_params }: {
   template_id: string;
   service_id: string;
@@ -13,7 +23,7 @@ export const sendEmail = async ({ template_id, service_id, user_id, template_par
     return await emailjs.send(
       service_id,
       template_id,
-      template_params,
+      withContactAliases(template_params),
       user_id
     );
   } catch (error) {
