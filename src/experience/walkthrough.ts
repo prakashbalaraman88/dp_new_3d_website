@@ -58,7 +58,7 @@ export const walkthroughSegments: Segment[] = [
         },
       },
       {
-        at: 0.6,
+        at: 0.652,
         hold: 0.07,
         eyebrow: 'The social heart',
         title: 'Where every evening\nfinds its centre.',
