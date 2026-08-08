@@ -806,7 +806,8 @@
 
 .dp-lead__question legend,
 .dp-lead__plot > span,
-.dp-lead__fields label > span {
+.dp-lead__fields label > span:first-child,
+.dp-lead__phone-field > label {
   display: block;
   margin-bottom: 14px;
   color: var(--site-cream);
@@ -885,7 +886,8 @@
 }
 
 .dp-lead__plot input,
-.dp-lead__fields input {
+.dp-lead__fields input,
+.dp-lead__phone-control select {
   width: 100%;
   min-height: 50px;
   padding: 13px 15px;
@@ -904,9 +906,97 @@
 }
 
 .dp-lead__plot input:focus,
-.dp-lead__fields input:focus {
+.dp-lead__fields input:focus,
+.dp-lead__phone-control select:focus {
   border-color: var(--site-bronze);
   box-shadow: 0 0 0 3px rgba(169, 142, 95, 0.12);
+}
+
+.dp-lead__plot input[aria-invalid="true"],
+.dp-lead__fields input[aria-invalid="true"] {
+  border-color: rgba(216, 168, 152, 0.72);
+}
+
+.dp-lead__input-shell {
+  position: relative;
+  display: block;
+  margin: 0 !important;
+}
+
+.dp-lead__input-shell input {
+  padding-right: 42px;
+}
+
+.dp-lead__valid {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  color: var(--site-bronze);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.dp-lead__phone-control {
+  display: grid;
+  grid-template-columns: minmax(142px, 0.76fr) minmax(0, 1.24fr);
+  gap: 8px;
+}
+
+.dp-lead__phone-control select {
+  padding: 13px 34px 13px 13px;
+  color-scheme: dark;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.dp-lead__phone-control option {
+  background: #171717;
+  color: var(--site-cream);
+}
+
+.dp-lead__fields .dp-lead__phone-hint {
+  margin-top: 8px;
+  color: var(--site-faint);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+}
+
+.dp-lead__fields .dp-lead__field-error {
+  color: #d8a898;
+}
+
+.dp-lead__remember {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-top: 19px;
+  color: var(--site-muted);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.dp-lead__remember input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  margin: 1px 0 0;
+  accent-color: var(--site-bronze);
+}
+
+.dp-lead__remember small {
+  display: block;
+  margin-top: 3px;
+  color: var(--site-faint);
+  font-size: 10.5px;
+  font-weight: 300;
+}
+
+.dp-lead__plot input:-webkit-autofill,
+.dp-lead__fields input:-webkit-autofill {
+  box-shadow: 0 0 0 1000px #151515 inset;
+  -webkit-text-fill-color: var(--site-cream);
+  caret-color: var(--site-cream);
 }
 
 .dp-lead__submit,
@@ -1084,6 +1174,10 @@
 
   .dp-lead__fields .dp-lead__email {
     grid-column: auto;
+  }
+
+  .dp-lead__phone-control {
+    grid-template-columns: minmax(125px, 0.76fr) minmax(0, 1.24fr);
   }
 
   .dp-lead__pills button {
