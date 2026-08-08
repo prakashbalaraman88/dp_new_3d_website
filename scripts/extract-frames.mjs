@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const MAX_FPS = 24;
+const MAX_FRAME_COUNT = 360;
 const DESKTOP_LIMIT = 30 * 1024 * 1024;
 const MOBILE_LIMIT = 16 * 1024 * 1024;
 const TOTAL_LIMIT = 46 * 1024 * 1024;
@@ -22,13 +23,13 @@ const variants = {
   desktop: {
     width: 1440,
     height: 810,
-    quality: 70,
+    quality: 63,
     limit: DESKTOP_LIMIT,
   },
   mobile: {
     width: 648,
     height: 1152,
-    quality: 68,
+    quality: 61,
     limit: MOBILE_LIMIT,
   },
 };
@@ -50,6 +51,7 @@ function executableWorks(command) {
 function resolveFfmpegTools() {
   const executableSuffix = process.platform === 'win32' ? '.exe' : '';
   const configured = process.env.FFMPEG_PATH?.trim();
+  const configuredProbe = process.env.FFPROBE_PATH?.trim();
   let ffmpeg = `ffmpeg${executableSuffix}`;
   let ffprobe = `ffprobe${executableSuffix}`;
 
@@ -67,9 +69,11 @@ function resolveFfmpegTools() {
     }
   }
 
+  if (configuredProbe) ffprobe = configuredProbe;
+
   if (!executableWorks(ffmpeg) || !executableWorks(ffprobe)) {
     fail(
-      'ffmpeg and ffprobe are required. Install both on PATH, or set FFMPEG_PATH to the ffmpeg executable or its containing directory.',
+      'ffmpeg and ffprobe are required. Install both on PATH, or set FFMPEG_PATH and FFPROBE_PATH to their executables.',
     );
   }
 
@@ -87,13 +91,13 @@ function parseFrameRate(value) {
   return numerator / denominator;
 }
 
-function probeSourceFps(ffprobe) {
+function probeSource(ffprobe) {
   const result = spawnSync(
     ffprobe,
     [
       '-v', 'error',
       '-select_streams', 'v:0',
-      '-show_entries', 'stream=avg_frame_rate,r_frame_rate',
+      '-show_entries', 'stream=avg_frame_rate,r_frame_rate:format=duration',
       '-of', 'json',
       source,
     ],
@@ -103,12 +107,14 @@ function probeSourceFps(ffprobe) {
     fail(`Could not probe source fps for ${source}. Confirm the file is a valid video.`);
   }
 
-  let stream;
+  let probe;
   try {
-    stream = JSON.parse(result.stdout).streams?.[0];
+    probe = JSON.parse(result.stdout);
   } catch {
     fail(`ffprobe returned invalid JSON while probing source fps for ${source}.`);
   }
+
+  const stream = probe.streams?.[0];
 
   const averageFps = parseFrameRate(stream?.avg_frame_rate);
   const reportedFps = parseFrameRate(stream?.r_frame_rate);
@@ -117,7 +123,16 @@ function probeSourceFps(ffprobe) {
     fail(`ffprobe returned an invalid source fps for ${source}.`);
   }
 
-  return { sourceFps, extractionFps: Math.min(sourceFps, MAX_FPS) };
+  const sourceDuration = Number.parseFloat(probe.format?.duration);
+  if (!Number.isFinite(sourceDuration) || sourceDuration <= 0) {
+    fail(`ffprobe returned an invalid source duration for ${source}.`);
+  }
+
+  return {
+    sourceFps,
+    sourceDuration,
+    extractionFps: Math.min(sourceFps, MAX_FPS, MAX_FRAME_COUNT / sourceDuration),
+  };
 }
 
 function run(command, args, label) {
@@ -176,7 +191,7 @@ function extractVariant(ffmpeg, name, config, fps) {
       '-compression_level', '6',
       '-preset', 'picture',
       '-start_number', '1',
-      '-vsync', '0',
+      '-fps_mode', 'passthrough',
       outputPattern,
     ],
     `extract ${name} frames`,
@@ -209,9 +224,10 @@ if (!existsSync(source) || !statSync(source).isFile()) {
 }
 
 const { ffmpeg, ffprobe } = resolveFfmpegTools();
-const { sourceFps, extractionFps: fps } = probeSourceFps(ffprobe);
+const { sourceFps, sourceDuration, extractionFps: fps } = probeSource(ffprobe);
 console.log(
-  `Source frame rate: ${sourceFps.toFixed(3)}fps; extracting at ${fps.toFixed(3)}fps (cap ${MAX_FPS}fps)`,
+  `Source: ${sourceDuration.toFixed(3)}s at ${sourceFps.toFixed(3)}fps; extracting at ${fps.toFixed(3)}fps ` +
+  `(caps: ${MAX_FPS}fps / ${MAX_FRAME_COUNT} frames)`,
 );
 const desktop = extractVariant(ffmpeg, 'desktop', variants.desktop, fps);
 const mobile = extractVariant(ffmpeg, 'mobile', variants.mobile, fps);

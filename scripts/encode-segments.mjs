@@ -30,6 +30,7 @@ function executableWorks(command) {
 function resolveFfmpegTools() {
   const executableSuffix = process.platform === 'win32' ? '.exe' : '';
   const configured = process.env.FFMPEG_PATH?.trim();
+  const configuredProbe = process.env.FFPROBE_PATH?.trim();
   let ffmpeg = `ffmpeg${executableSuffix}`;
   let ffprobe = `ffprobe${executableSuffix}`;
 
@@ -47,9 +48,11 @@ function resolveFfmpegTools() {
     }
   }
 
+  if (configuredProbe) ffprobe = configuredProbe;
+
   if (!executableWorks(ffmpeg) || !executableWorks(ffprobe)) {
     fail(
-      'ffmpeg and ffprobe are required. Install both on PATH, or set FFMPEG_PATH to the ffmpeg executable or its containing directory.',
+      'ffmpeg and ffprobe are required. Install both on PATH, or set FFMPEG_PATH and FFPROBE_PATH to their executables.',
     );
   }
 
@@ -99,8 +102,11 @@ function encodeVariant(ffmpeg, source, output, variant, clip, crfOverride) {
       '-c:v', 'libx264',
       '-preset', 'slow',
       '-crf', crf,
-      '-g', '1',
-      '-bf', '0',
+      '-g', '48',
+      '-keyint_min', '48',
+      '-sc_threshold', '0',
+      '-profile:v', 'high',
+      '-level', '4.1',
       '-pix_fmt', 'yuv420p',
       '-movflags', '+faststart',
       output,
@@ -109,7 +115,8 @@ function encodeVariant(ffmpeg, source, output, variant, clip, crfOverride) {
   );
 }
 
-// All-intra encoding is larger, so walk the agreed CRF 26-28 ladder.
+// Streaming fallbacks use a two-second GOP; walk the CRF 26-28 ladder if a
+// visually complex clip needs extra compression to stay within budget.
 function encodeWithinBudget(ffmpeg, source, output, variant, clip, limit, label) {
   for (let crf = 26; crf <= 28; crf += 1) {
     encodeVariant(ffmpeg, source, output, variant, clip, crf);
@@ -122,7 +129,7 @@ function encodeWithinBudget(ffmpeg, source, output, variant, clip, limit, label)
 function makePoster(ffmpeg, video, poster) {
   run(
     ffmpeg,
-    ['-y', '-i', video, '-map', '0:v:0', '-frames:v', '1', '-q:v', '2', poster],
+    ['-y', '-i', video, '-map', '0:v:0', '-frames:v', '1', '-q:v', '2', '-update', '1', poster],
     `poster ${basename(poster)}`,
   );
 }

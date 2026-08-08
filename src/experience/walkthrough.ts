@@ -45,7 +45,7 @@ export const walkthroughSegments: Segment[] = [
         },
       },
       {
-        at: 0.22,
+        at: 0.44,
         hold: 0.07,
         eyebrow: 'The threshold',
         title: 'Some doors open\nto more than rooms.',
@@ -58,7 +58,7 @@ export const walkthroughSegments: Segment[] = [
         },
       },
       {
-        at: 0.5,
+        at: 0.6,
         hold: 0.07,
         eyebrow: 'The social heart',
         title: 'Where every evening\nfinds its centre.',
@@ -71,7 +71,7 @@ export const walkthroughSegments: Segment[] = [
         },
       },
       {
-        at: 0.72,
+        at: 0.81,
         hold: 0.07,
         eyebrow: 'The living court',
         title: 'Calm, sculpted\ninto every corner.',
