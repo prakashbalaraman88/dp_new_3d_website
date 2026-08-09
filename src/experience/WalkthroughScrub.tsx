@@ -470,6 +470,10 @@ function ReducedWalkthrough({
             <div className="dp-vid__scrim" />
             <div className="dp-exp__vignette" />
             <div className="dp-walk__still-copy">
+              <div
+                className="dp-walk__copy-wash dp-walk__copy-wash--still"
+                aria-hidden="true"
+              />
               {lead.eyebrow && <p className="dp-exp__eyebrow">{lead.eyebrow}</p>}
               <h1 className="dp-exp__title dp-walk__still-title">{lead.title}</h1>
               {lead.sub && <p className="dp-exp__sub">{lead.sub}</p>}
@@ -592,10 +596,13 @@ export default function WalkthroughScrub({
       const lines = actRefs.current.flatMap((act) =>
         Array.from(act?.querySelectorAll<HTMLElement>('[data-copy-line]') ?? []),
       );
+      const washes = actRefs.current.flatMap((act) =>
+        Array.from(act?.querySelectorAll<HTMLElement>('[data-copy-wash]') ?? []),
+      );
       const cards = cardRefs.current.filter(
         (element): element is HTMLElement => element !== null,
       );
-      return [...acts, ...lines, ...cards];
+      return [...acts, ...lines, ...washes, ...cards];
     };
 
     const context = gsap.context(() => {
@@ -604,6 +611,11 @@ export default function WalkthroughScrub({
         gsap.set(act?.querySelectorAll('[data-copy-line]') ?? [], {
           autoAlpha: index === 0 ? 1 : 0,
           y: 0,
+        });
+        gsap.set(act?.querySelectorAll('[data-copy-wash]') ?? [], {
+          autoAlpha: index === 0 ? 1 : 0,
+          x: 0,
+          scaleX: 1,
         });
       });
       cardRefs.current.forEach((card, index) => {
@@ -637,10 +649,24 @@ export default function WalkthroughScrub({
       const lines = Array.from(
         act?.querySelectorAll<HTMLElement>('[data-copy-line]') ?? [],
       );
+      const wash = act?.querySelector<HTMLElement>('[data-copy-wash]');
 
       if (act) {
         act.setAttribute('aria-hidden', 'false');
         gsap.set(act, { autoAlpha: 1 });
+      }
+      if (wash) {
+        gsap.fromTo(
+          wash,
+          { autoAlpha: 0, x: -22, scaleX: 0.9 },
+          {
+            autoAlpha: 1,
+            x: 0,
+            scaleX: 1,
+            duration: 0.78,
+            ease: 'power3.out',
+          },
+        );
       }
       gsap.fromTo(
         lines,
@@ -769,6 +795,7 @@ export default function WalkthroughScrub({
       const currentLines = Array.from(
         currentAct?.querySelectorAll<HTMLElement>('[data-copy-line]') ?? [],
       );
+      const currentWash = currentAct?.querySelector<HTMLElement>('[data-copy-wash]');
 
       travelling = true;
       setLogoIndex(nextIndex);
@@ -785,6 +812,15 @@ export default function WalkthroughScrub({
         duration: 0.4,
         ease: 'power2.in',
       });
+      if (currentWash) {
+        gsap.to(currentWash, {
+          autoAlpha: 0,
+          x: 18 * nextDirection,
+          scaleX: 0.94,
+          duration: 0.36,
+          ease: 'power2.in',
+        });
+      }
       if (currentCard) {
         gsap.to(currentCard, {
           autoAlpha: 0,
@@ -1146,6 +1182,7 @@ export default function WalkthroughScrub({
             className={`dp-exp__act dp-walk__act${index === 0 ? ' dp-walk__act--initial' : ''}`}
             aria-hidden={currentIndex !== index}
           >
+            <div className="dp-walk__copy-wash" data-copy-wash aria-hidden="true" />
             <div className="dp-walk__layer" data-layer="eyebrow">
               {act.eyebrow && (
                 <p className="dp-exp__eyebrow" data-copy-line>
