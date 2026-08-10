@@ -1,7 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Pause, Play, Quote, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import './VideoTestimonials.css';
 
 interface Testimonial {
@@ -37,44 +36,7 @@ export default function VideoTestimonials() {
   const [isPlaying, setIsPlaying] = useState(() => testimonials.map(() => false));
   const [progress, setProgress] = useState(() => testimonials.map(() => 0));
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-  const cardRefs = useRef<(HTMLElement | null)[]>([]);
-  const intersectionRatios = useRef(testimonials.map(() => 0));
   const activeIndex = useRef<number | null>(null);
-
-  const testimonialsSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    itemListElement: testimonials.map((testimonial, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      item: {
-        '@type': 'Review',
-        reviewRating: {
-          '@type': 'Rating',
-          ratingValue: '5',
-          bestRating: '5',
-        },
-        author: {
-          '@type': 'Person',
-          name: testimonial.name,
-        },
-        itemReviewed: {
-          '@type': 'LocalBusiness',
-          name: 'DezignPool',
-          '@id': 'https://dezignpool.com',
-          image: 'https://dezignpool.com/assets/images/logo.png',
-          address: {
-            '@type': 'PostalAddress',
-            streetAddress: 'Goodu. No 1, Greenvalley Cleartitle',
-            addressLocality: 'Bangalore',
-            postalCode: '560100',
-            addressCountry: 'IN',
-          },
-        },
-        reviewBody: testimonial.quote,
-      },
-    })),
-  };
 
   const updatePlayingState = useCallback((playingIndex: number | null) => {
     setIsPlaying(testimonials.map((_, index) => index === playingIndex));
@@ -144,57 +106,18 @@ export default function VideoTestimonials() {
   }, []);
 
   useEffect(() => {
-    if (reducedMotion) {
-      pauseAll();
-      return undefined;
-    }
-
-    const syncMostVisibleVideo = () => {
-      if (document.hidden) {
-        pauseAll();
-        return;
-      }
-
-      const mostVisible = intersectionRatios.current.reduce(
-        (best, ratio, index) => ratio > best.ratio ? { index, ratio } : best,
-        { index: -1, ratio: 0 },
-      );
-
-      if (mostVisible.ratio < 0.46) {
-        pauseAll();
-        return;
-      }
-
-      const video = videoRefs.current[mostVisible.index];
-      if (activeIndex.current !== mostVisible.index || video?.paused) {
-        void playExclusive(mostVisible.index);
-      }
+    const pauseWhenHidden = () => {
+      if (document.hidden) pauseAll();
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const index = Number((entry.target as HTMLElement).dataset.testimonialIndex);
-          if (Number.isInteger(index)) {
-            intersectionRatios.current[index] = entry.isIntersecting ? entry.intersectionRatio : 0;
-          }
-        });
-        syncMostVisibleVideo();
-      },
-      { threshold: [0, 0.25, 0.46, 0.65, 0.85] },
-    );
-
-    cardRefs.current.forEach((card) => {
-      if (card) observer.observe(card);
-    });
-    document.addEventListener('visibilitychange', syncMostVisibleVideo);
+    if (reducedMotion) pauseAll();
+    document.addEventListener('visibilitychange', pauseWhenHidden);
 
     return () => {
-      observer.disconnect();
-      document.removeEventListener('visibilitychange', syncMostVisibleVideo);
+      document.removeEventListener('visibilitychange', pauseWhenHidden);
       pauseAll();
     };
-  }, [pauseAll, playExclusive, reducedMotion]);
+  }, [pauseAll, reducedMotion]);
 
   const togglePlay = (index: number) => {
     const video = videoRefs.current[index];
@@ -235,12 +158,7 @@ export default function VideoTestimonials() {
   };
 
   return (
-    <>
-      <Helmet>
-        <script type="application/ld+json">{JSON.stringify(testimonialsSchema)}</script>
-      </Helmet>
-
-      <section className="dp-video-testimonials" aria-labelledby="client-stories-title">
+    <section className="dp-video-testimonials" aria-labelledby="client-stories-title">
         <div className="dp-video-testimonials__glow" aria-hidden="true" />
         <div className="dp-video-testimonials__shell">
           <motion.header
@@ -264,8 +182,6 @@ export default function VideoTestimonials() {
             {testimonials.map((testimonial, index) => (
               <motion.article
                 key={testimonial.name}
-                ref={(node) => { cardRefs.current[index] = node; }}
-                data-testimonial-index={index}
                 className={`dp-video-testimonial ${index % 2 ? 'is-reversed' : ''} ${isPlaying[index] ? 'is-playing' : ''}`}
                 initial={reducedMotion ? false : { opacity: 0, y: 42 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -279,7 +195,7 @@ export default function VideoTestimonials() {
                     muted={mutedStates[index]}
                     loop
                     playsInline
-                    preload="metadata"
+                    preload="none"
                     aria-label={`${testimonial.name}'s DezignPool client story`}
                   >
                     <source src={testimonial.video} type="video/mp4" />
@@ -335,7 +251,7 @@ export default function VideoTestimonials() {
                       <span>{testimonial.role}</span>
                     </div>
                     <p className={isPlaying[index] ? 'is-live' : undefined}>
-                      <span aria-hidden="true" /> {isPlaying[index] ? 'Playing now' : reducedMotion ? 'Tap to play' : 'Plays in view'}
+                      <span aria-hidden="true" /> {isPlaying[index] ? 'Playing now' : 'Tap to play'}
                     </p>
                   </div>
                 </div>
@@ -343,7 +259,6 @@ export default function VideoTestimonials() {
             ))}
           </div>
         </div>
-      </section>
-    </>
+    </section>
   );
 }

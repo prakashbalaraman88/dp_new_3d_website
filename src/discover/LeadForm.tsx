@@ -3,10 +3,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { z } from 'zod';
-import { emailjsEnv } from '../config/environment';
+import { crmLeadEnv, emailjsEnv } from '../config/environment';
+import { getAttribution, trackLead } from '../utils/analytics';
+import {
+  createIdempotencyKey,
+  submitCrmWebsiteLead,
+  type CrmWebsiteLeadPayload,
+} from '../utils/crmLead';
 import { sendEmail } from '../utils/emailjs';
 import { buildReport, type Answers } from './report';
 import { whatsappLink } from './showcaseData';
+import TurnstileField from './TurnstileField';
 
 const APARTMENT_OPTIONS = [
   '2 BHK Apartment',
@@ -109,18 +116,26 @@ const normaliseNationalNumber = (value: string, country: CountryOption) => {
   return digits.slice(0, nationalLimit);
 };
 
+const optionalEnum = <T extends readonly [string, ...string[]]>(values: T) => (
+  z.preprocess(
+    (value) => (value === '' ? undefined : value),
+    z.enum(values).optional(),
+  )
+);
+
 const leadSchema = z.object({
   formType: z.enum(FORM_TYPES),
-  apartmentOrVilla: z.enum(APARTMENT_OPTIONS).optional(),
-  budget: z.enum(BUDGET_OPTIONS).optional(),
-  timeline: z.enum(TIMELINE_OPTIONS).optional(),
-  constructionTimeline: z.enum(CONSTRUCTION_TIMELINE_OPTIONS).optional(),
-  priority: z.enum(PRIORITY_OPTIONS).optional(),
+  apartmentOrVilla: optionalEnum(APARTMENT_OPTIONS),
+  budget: optionalEnum(BUDGET_OPTIONS),
+  timeline: optionalEnum(TIMELINE_OPTIONS),
+  constructionTimeline: optionalEnum(CONSTRUCTION_TIMELINE_OPTIONS),
+  priority: optionalEnum(PRIORITY_OPTIONS),
   plotLocation: z.string().trim().max(160, 'Keep the plot location under 160 characters').optional(),
-  name: z.string().trim().min(2, 'Enter your full name'),
+  name: z.string().trim().min(2, 'Enter your full name').max(100, 'Keep your name under 100 characters'),
   countryCode: z.enum(COUNTRY_CODES),
-  phone: z.string().trim(),
-  email: z.string().trim().email('Enter a valid email address'),
+  phone: z.string().trim().max(20, 'Enter a valid phone number'),
+  email: z.string().trim().email('Enter a valid email address').max(254, 'Keep your email under 254 characters'),
+  contactConsent: z.boolean().default(false).refine(Boolean, 'Agree to be contacted about your enquiry'),
 }).superRefine((data, context) => {
   const phoneDigits = digitsOnly(data.phone);
   const country = getCountry(data.countryCode);
@@ -184,6 +199,8 @@ const getInitialValues = (): Partial<LeadFormData> => {
     constructionTimeline: combined.constructionTimeline,
     priority: combined.priority,
     plotLocation: typeof combined.plotLocation === 'string' ? combined.plotLocation : '',
+    // Consent is an explicit action for each enquiry and is never restored.
+    contactConsent: false,
   };
 };
 
@@ -223,9 +240,25 @@ function ChoicePills<T extends string>({
   );
 }
 
-export default function LeadForm({ answers }: { answers: Answers }) {
+export default function LeadForm({
+  answers,
+  onSuccess,
+}: {
+  answers: Answers;
+  onSuccess?: () => void;
+}) {
   const formRef = useRef<HTMLFormElement>(null);
+  const formRenderedAt = useRef(new Date().toISOString());
+  const honeypotRef = useRef<HTMLInputElement>(null);
+  const submissionAttempt = useRef<{
+    signature: string;
+    idempotencyKey: string;
+    consentCapturedAt: string;
+  } | null>(null);
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [submitError, setSubmitError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileResetSignal, setTurnstileResetSignal] = useState(0);
   const [rememberDetails, setRememberDetails] = useState(() => (
     Object.keys(readStoredValues('localStorage', CONTACT_STORAGE_KEY)).length > 0
   ));
@@ -235,9 +268,11 @@ export default function LeadForm({ answers }: { answers: Answers }) {
     register,
     handleSubmit,
     setValue,
+    setError,
+    setFocus,
     watch,
     clearErrors,
-    formState: { errors, touchedFields },
+    formState: { errors, touchedFields, submitCount },
   } = useForm<LeadFormData>({
     resolver: zodResolver(leadSchema),
     shouldUnregister: true,
@@ -256,12 +291,17 @@ export default function LeadForm({ answers }: { answers: Answers }) {
   const name = watch('name') || '';
   const phone = watch('phone') || '';
   const email = watch('email') || '';
+  const contactConsent = watch('contactConsent') === true;
+  const consentError = errors.contactConsent?.message
+    || (!contactConsent && submitCount > 0 ? 'Agree to be contacted about your enquiry' : undefined);
   const selectedCountry = getCountry(countryCode);
+  const crmEnabled = crmLeadEnv.configured;
 
   useEffect(() => {
     const subscription = watch((values) => {
       try {
-        window.sessionStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(values));
+        const { contactConsent: _contactConsent, ...draftValues } = values;
+        window.sessionStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftValues));
       } catch {
         // The form still works when storage is disabled or full.
       }
@@ -288,15 +328,18 @@ export default function LeadForm({ answers }: { answers: Answers }) {
   const chooseFormType = (nextType: FormType) => {
     setValue('formType', nextType, { shouldDirty: true });
     clearErrors();
-    if (status === 'error') setStatus('idle');
+    if (status === 'error') {
+      setStatus('idle');
+      setSubmitError('');
+    }
   };
 
   const onInvalid = (formErrors: FieldErrors<LeadFormData>) => {
     const projectFields: Array<keyof LeadFormData> = formType === 'interiors'
       ? ['apartmentOrVilla', 'budget', 'timeline']
       : ['constructionTimeline', 'priority', 'plotLocation'];
-    const firstInvalid = [...projectFields, 'name', 'phone', 'email']
-      .find((field) => formErrors[field]);
+    const firstInvalid = [...projectFields, 'name', 'phone', 'email', 'contactConsent']
+      .find((field) => formErrors[field] || (field === 'contactConsent' && !contactConsent));
 
     if (!firstInvalid) return;
 
@@ -322,13 +365,23 @@ export default function LeadForm({ answers }: { answers: Answers }) {
   };
 
   const onSubmit = async (data: LeadFormData) => {
+    if (!data.contactConsent) {
+      setError('contactConsent', {
+        type: 'manual',
+        message: 'Agree to be contacted about your enquiry',
+      });
+      setFocus('contactConsent');
+      return;
+    }
+
     setStatus('submitting');
+    setSubmitError('');
     const phoneCountry = getCountry(data.countryCode);
     const nationalNumber = normaliseNationalNumber(data.phone, phoneCountry);
-    const fullPhone = `${phoneCountry.dialCode} ${nationalNumber}`;
-    const quizSummary = Object.values(answers).some(Boolean)
-      ? buildReport(answers).emailText
-      : 'Style quiz: skipped';
+    const fullPhone = `${phoneCountry.dialCode}${nationalNumber}`;
+    const completedQuiz = Object.values(answers).some(Boolean);
+    const quizReport = completedQuiz ? buildReport(answers) : null;
+    const quizSummary = quizReport?.emailText ?? 'Style quiz: skipped';
     const projectLines = data.formType === 'interiors'
       ? [
           `Apartment or Villa Type: ${data.apartmentOrVilla}`,
@@ -353,37 +406,102 @@ export default function LeadForm({ answers }: { answers: Answers }) {
     ].join('\n');
 
     try {
-      await sendEmail({
-        template_id: emailjsEnv.TEMPLATE_ID,
-        service_id: emailjsEnv.SERVICE_ID,
-        user_id: emailjsEnv.PUBLIC_KEY,
-        template_params: {
-          from_name: data.name,
-          from_email: data.email,
+      if (crmEnabled) {
+        if (!turnstileToken) throw new Error('Complete the secure verification before submitting.');
+
+        const signature = JSON.stringify({ data, answers });
+        if (!submissionAttempt.current || submissionAttempt.current.signature !== signature) {
+          submissionAttempt.current = {
+            signature,
+            idempotencyKey: createIdempotencyKey(),
+            consentCapturedAt: new Date().toISOString(),
+          };
+        }
+        const attribution = getAttribution();
+        const bounded = (value: string | undefined, max: number) => (value ?? '').slice(0, max);
+        const payload: CrmWebsiteLeadPayload = {
+          name: data.name.trim(),
           phone: fullPhone,
-          phone_country: phoneCountry.name,
-          phone_country_code: phoneCountry.dialCode,
-          message,
-          to_name: 'DezignPool Team',
-          reply_to: data.email,
-          form_type: 'Website Lead Form',
-          formType: data.formType,
-          apartment_or_villa_type: data.formType === 'interiors' ? data.apartmentOrVilla || '' : '',
-          budget: data.formType === 'interiors' ? data.budget || '' : '',
-          timeline: data.formType === 'interiors' ? data.timeline || '' : '',
-          construction_start: data.formType === 'construction' ? data.constructionTimeline || '' : '',
-          top_priority: data.formType === 'construction' ? data.priority || '' : '',
-          plot_location: data.formType === 'construction' ? data.plotLocation?.trim() || '' : '',
-        },
-      });
+          email: data.email.trim().toLowerCase(),
+          enquiry: {
+            service: data.formType,
+            homeType: data.formType === 'interiors' ? data.apartmentOrVilla ?? '' : '',
+            budgetBand: data.formType === 'interiors' ? data.budget ?? '' : '',
+            timeline: data.formType === 'interiors' ? data.timeline ?? '' : data.constructionTimeline ?? '',
+            plotLocation: data.formType === 'construction' ? data.plotLocation?.trim() ?? '' : '',
+            priority: data.formType === 'construction' ? data.priority ?? '' : '',
+            styleResult: quizReport?.label ?? '',
+            notes: '',
+          },
+          attribution: {
+            source: 'website',
+            pageUrl: `${window.location.origin}${window.location.pathname}`,
+            referrer: bounded(document.referrer, 2048),
+            utmSource: bounded(attribution.utm_source, 200),
+            utmMedium: bounded(attribution.utm_medium, 200),
+            utmCampaign: bounded(attribution.utm_campaign, 200),
+            utmContent: bounded(attribution.utm_content, 200),
+            utmTerm: bounded(attribution.utm_term, 200),
+            fbclid: bounded(attribution.fbclid, 500),
+            gclid: bounded(attribution.gclid, 500),
+          },
+          consent: {
+            phoneAndWhatsApp: true,
+            capturedAt: submissionAttempt.current.consentCapturedAt,
+            copyVersion: 'phone-whatsapp-v1',
+          },
+          antiAbuse: {
+            turnstileToken,
+            honeypot: honeypotRef.current?.value ?? '',
+            renderedAt: formRenderedAt.current,
+          },
+        };
+        await submitCrmWebsiteLead(payload, submissionAttempt.current.idempotencyKey);
+        trackLead({ content_name: 'Website Lead Form', transport: 'crm' });
+      } else {
+        await sendEmail({
+          template_id: emailjsEnv.TEMPLATE_ID,
+          service_id: emailjsEnv.SERVICE_ID,
+          user_id: emailjsEnv.PUBLIC_KEY,
+          template_params: {
+            from_name: data.name,
+            from_email: data.email,
+            phone: fullPhone,
+            phone_country: phoneCountry.name,
+            phone_country_code: phoneCountry.dialCode,
+            message,
+            to_name: 'DezignPool Team',
+            reply_to: data.email,
+            form_type: 'Website Lead Form',
+            contact_consent: 'Accepted: phone and WhatsApp follow-up',
+            formType: data.formType,
+            apartment_or_villa_type: data.formType === 'interiors' ? data.apartmentOrVilla || '' : '',
+            budget: data.formType === 'interiors' ? data.budget || '' : '',
+            timeline: data.formType === 'interiors' ? data.timeline || '' : '',
+            construction_start: data.formType === 'construction' ? data.constructionTimeline || '' : '',
+            top_priority: data.formType === 'construction' ? data.priority || '' : '',
+            plot_location: data.formType === 'construction' ? data.plotLocation?.trim() || '' : '',
+          },
+        });
+      }
       try {
         window.sessionStorage.removeItem(DRAFT_STORAGE_KEY);
       } catch {
         // Submission succeeded; an unavailable storage API needs no recovery.
       }
       setStatus('success');
+      onSuccess?.();
     } catch (error) {
       console.error('Lead form submission failed.', error);
+      setSubmitError(
+        crmEnabled
+          ? 'We could not confirm the enquiry. Please retry—your request is safely de-duplicated.'
+          : 'We could not send that enquiry. Please try again.',
+      );
+      if (crmEnabled) {
+        setTurnstileToken('');
+        setTurnstileResetSignal(value => value + 1);
+      }
       setStatus('error');
     }
   };
@@ -394,7 +512,7 @@ export default function LeadForm({ answers }: { answers: Answers }) {
       <div className="dp-lead__inner">
         <div className="dp-lead__intro">
           <p className="dp-site__eyebrow">Begin a conversation</p>
-          <h2 id="lead-form-title">
+          <h2 id="lead-form-title" tabIndex={-1}>
             Let&apos;s shape your <em>vision</em>
           </h2>
           <p>
@@ -423,6 +541,15 @@ export default function LeadForm({ answers }: { answers: Answers }) {
               noValidate
             >
               <input type="hidden" {...register('formType')} />
+              <div className="dp-lead__honeypot" aria-hidden="true">
+                <input
+                  ref={honeypotRef}
+                  name="company_website"
+                  type="text"
+                  autoComplete="off"
+                  tabIndex={-1}
+                />
+              </div>
               <div className="dp-lead__toggle" role="group" aria-label="Choose enquiry type">
                 {FORM_TYPES.map((type) => (
                   <button
@@ -607,6 +734,32 @@ export default function LeadForm({ answers }: { answers: Answers }) {
                 </label>
               </div>
 
+              <label className="dp-lead__remember" data-lead-field="contactConsent">
+                <input
+                  type="checkbox"
+                  aria-invalid={Boolean(consentError)}
+                  aria-describedby={consentError ? 'lead-consent-error' : undefined}
+                  {...register('contactConsent', {
+                    onChange: (event) => {
+                      if (event.target.checked) clearErrors('contactConsent');
+                      else submissionAttempt.current = null;
+                    },
+                  })}
+                />
+                <span>
+                  I agree to be contacted about my enquiry by phone and WhatsApp.
+                  <small>
+                    Only for this project enquiry and related follow-up. See our{' '}
+                    <a href="/privacy">privacy notice</a>.
+                  </small>
+                </span>
+              </label>
+              {consentError && (
+                <p id="lead-consent-error" className="dp-lead__field-error" role="alert">
+                  {consentError}
+                </p>
+              )}
+
               <label className="dp-lead__remember">
                 <input
                   type="checkbox"
@@ -619,7 +772,29 @@ export default function LeadForm({ answers }: { answers: Answers }) {
                 </span>
               </label>
 
-              <button type="submit" className="dp-lead__submit" disabled={status === 'submitting'}>
+              {crmEnabled && (
+                <TurnstileField
+                  siteKey={crmLeadEnv.TURNSTILE_SITE_KEY}
+                  resetSignal={turnstileResetSignal}
+                  onToken={(token) => {
+                    setTurnstileToken(token);
+                    if (token && status === 'error') {
+                      setStatus('idle');
+                      setSubmitError('');
+                    }
+                  }}
+                  onUnavailable={() => {
+                    setStatus('error');
+                    setSubmitError('Secure verification could not load. Check your connection and refresh this page.');
+                  }}
+                />
+              )}
+
+              <button
+                type="submit"
+                className="dp-lead__submit"
+                disabled={status === 'submitting' || (crmEnabled && !turnstileToken)}
+              >
                 <span>{status === 'submitting' ? 'Sending enquiry' : 'Request a consultation'}</span>
                 <span aria-hidden="true">
                   {status === 'submitting'
@@ -630,7 +805,7 @@ export default function LeadForm({ answers }: { answers: Answers }) {
 
               {status === 'error' && (
                 <p className="dp-lead__submit-error" role="alert">
-                  We couldn&apos;t send that enquiry. Please try again.
+                  {submitError || 'We could not send that enquiry. Please try again.'}
                 </p>
               )}
             </form>

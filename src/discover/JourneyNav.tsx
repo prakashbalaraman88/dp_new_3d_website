@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { Menu, X } from 'lucide-react';
 import RotatingBrandMark from '../components/RotatingBrandMark';
 
@@ -35,6 +35,10 @@ export default function JourneyNav({
     setMenuOpen(false);
     fn();
   };
+  const followJourney = (event: MouseEvent<HTMLAnchorElement>, fn: () => void) => {
+    event.preventDefault();
+    act(fn);
+  };
   const pct = Math.max(0, Math.min(1, progress));
 
   return (
@@ -46,9 +50,18 @@ export default function JourneyNav({
         <div className="relative overflow-hidden rounded-full border border-white/10 bg-[#101012]/90 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
           <div className="relative grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-3 sm:h-16 sm:px-5">
             <div className="hidden min-w-0 items-center justify-evenly pr-5 md:flex lg:pr-10">
-              <button onClick={() => act(onHome)} className={LINK}>Home</button>
-              <button onClick={() => act(() => onNavigate('services'))} className={LINK}>Services</button>
+              <a href="/" onClick={(event) => followJourney(event, onHome)} className={LINK}>Home</a>
+              <a href="/services" onClick={(event) => followJourney(event, () => onNavigate('services'))} className={LINK}>Services</a>
+              <a href="/blog" className={LINK}>Journal</a>
             </div>
+
+            <a
+              href="/#contact"
+              onClick={(event) => followJourney(event, () => onNavigate('lead-form'))}
+              className="col-start-1 row-start-1 justify-self-start rounded-full border border-[#A98E5F]/55 px-3 py-2 text-[10px] uppercase tracking-[1.1px] text-[#f2efe9] transition-colors hover:border-[#A98E5F] hover:text-[#A98E5F] md:hidden"
+            >
+              Enquire
+            </a>
 
             <button onClick={() => act(onHome)} aria-label="Home" className="col-start-2 row-start-1 justify-self-center transition-transform hover:scale-105">
               <RotatingBrandMark
@@ -60,17 +73,18 @@ export default function JourneyNav({
             </button>
 
             <div className="hidden min-w-0 items-center justify-evenly pl-5 md:flex lg:pl-10">
-              <button onClick={() => act(() => onNavigate('about'))} className={LINK}>About</button>
-              <button onClick={() => act(() => onNavigate('gallery'))} className={LINK}>Projects</button>
-              <button
-                onClick={() => act(() => onNavigate('lead-form'))}
+              <a href="/about" onClick={(event) => followJourney(event, () => onNavigate('about'))} className={LINK}>About</a>
+              <a href="/projects" onClick={(event) => followJourney(event, () => onNavigate('gallery'))} className={LINK}>Projects</a>
+              <a
+                href="/#contact"
+                onClick={(event) => followJourney(event, () => onNavigate('lead-form'))}
                 className="rounded-full bg-[#f2efe9] px-5 py-2 text-[12px] uppercase tracking-[1.4px] text-[#101012] transition-transform hover:-translate-y-0.5 lg:px-6"
               >
                 Enquire
-              </button>
+              </a>
             </div>
 
-            <button onClick={() => setMenuOpen((o) => !o)} aria-label="Menu" className="col-start-3 row-start-1 justify-self-end text-[#f2efe9]/65 transition-colors hover:text-[#A98E5F] md:hidden">
+            <button onClick={() => setMenuOpen((o) => !o)} aria-label={menuOpen ? 'Close menu' : 'Open menu'} className="col-start-3 row-start-1 justify-self-end text-[#f2efe9]/65 transition-colors hover:text-[#A98E5F] md:hidden">
               {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
@@ -95,11 +109,12 @@ export default function JourneyNav({
         {menuOpen && (
           <div className="mt-2 rounded-3xl border border-white/10 bg-[#101012]/95 p-3 backdrop-blur-2xl md:hidden">
             <div className="flex flex-col gap-1">
-              <button onClick={() => act(onHome)} className="rounded-xl px-4 py-3 text-left text-[#f2efe9]/65 transition-colors hover:bg-white/5 hover:text-[#A98E5F]">Home</button>
-              <button onClick={() => act(() => onNavigate('services'))} className="rounded-xl px-4 py-3 text-left text-[#f2efe9]/65 transition-colors hover:bg-white/5 hover:text-[#A98E5F]">Services</button>
-              <button onClick={() => act(() => onNavigate('about'))} className="rounded-xl px-4 py-3 text-left text-[#f2efe9]/65 transition-colors hover:bg-white/5 hover:text-[#A98E5F]">About</button>
-              <button onClick={() => act(() => onNavigate('gallery'))} className="rounded-xl px-4 py-3 text-left text-[#f2efe9]/65 transition-colors hover:bg-white/5 hover:text-[#A98E5F]">Projects</button>
-              <button onClick={() => act(() => onNavigate('lead-form'))} className="mt-1 rounded-full bg-[#f2efe9] px-4 py-3 text-center text-[12px] uppercase tracking-[1.4px] text-[#101012]">Enquire</button>
+              <a href="/" onClick={(event) => followJourney(event, onHome)} className="rounded-xl px-4 py-3 text-left text-[#f2efe9]/65 transition-colors hover:bg-white/5 hover:text-[#A98E5F]">Home</a>
+              <a href="/services" onClick={(event) => followJourney(event, () => onNavigate('services'))} className="rounded-xl px-4 py-3 text-left text-[#f2efe9]/65 transition-colors hover:bg-white/5 hover:text-[#A98E5F]">Services</a>
+              <a href="/about" onClick={(event) => followJourney(event, () => onNavigate('about'))} className="rounded-xl px-4 py-3 text-left text-[#f2efe9]/65 transition-colors hover:bg-white/5 hover:text-[#A98E5F]">About</a>
+              <a href="/projects" onClick={(event) => followJourney(event, () => onNavigate('gallery'))} className="rounded-xl px-4 py-3 text-left text-[#f2efe9]/65 transition-colors hover:bg-white/5 hover:text-[#A98E5F]">Projects</a>
+              <a href="/blog" className="rounded-xl px-4 py-3 text-left text-[#f2efe9]/65 transition-colors hover:bg-white/5 hover:text-[#A98E5F]">Journal</a>
+              <a href="/#contact" onClick={(event) => followJourney(event, () => onNavigate('lead-form'))} className="mt-1 rounded-full bg-[#f2efe9] px-4 py-3 text-center text-[12px] uppercase tracking-[1.4px] text-[#101012]">Enquire</a>
             </div>
           </div>
         )}

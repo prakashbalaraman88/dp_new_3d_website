@@ -1,7 +1,6 @@
 import type { CSSProperties } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowDown, ArrowLeft, ArrowUpRight } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { findProject, getNextProject } from './data';
 import ProjectGallery from './ProjectGallery';
@@ -40,11 +39,6 @@ export default function ProjectDetail() {
       className="dp-project-page"
       style={{ '--project-accent': project.accent } as ProjectStyle}
     >
-      <Helmet>
-        <title>{project.title} | DezignPool Project</title>
-        <meta name="description" content={project.summary} />
-      </Helmet>
-
       <header className="dp-project-hero">
         <button type="button" className="dp-project-hero__back" onClick={handleBack}>
           <ArrowLeft size={17} /> Back to projects

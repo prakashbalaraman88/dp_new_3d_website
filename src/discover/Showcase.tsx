@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type MutableRefObject, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type MutableRefObject, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import type Lenis from 'lenis';
 import FAQ from '../components/FAQ';
@@ -10,10 +10,21 @@ import VideoTestimonials from '../components/VideoTestimonials';
 import WhyUs from '../components/WhyUs';
 import type { ScrollBridge } from '../experience/scrollBridge';
 import LeadForm from './LeadForm';
+import LeadReminder from './LeadReminder';
 import { buildReport, type Answers, type DesignReport } from './report';
 import './showcase.css';
 
 const MASTER_EASE: [number, number, number, number] = [0.625, 0.05, 0, 1];
+const LEAD_SUBMITTED_KEY = 'dezignpool:lead-submitted:v1';
+
+const wasLeadSubmitted = () => {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.sessionStorage.getItem(LEAD_SUBMITTED_KEY) === 'true';
+  } catch {
+    return false;
+  }
+};
 
 function SiteSection({
   id,
@@ -108,6 +119,35 @@ export default function Showcase({
 }) {
   const reducedMotion = useReducedMotion();
   const report = useMemo(() => buildReport(answers), [answers]);
+  const [leadSubmitted, setLeadSubmitted] = useState(wasLeadSubmitted);
+
+  const handleLeadSuccess = () => {
+    setLeadSubmitted(true);
+    try {
+      window.sessionStorage.setItem(LEAD_SUBMITTED_KEY, 'true');
+    } catch {
+      // Successful submission should not depend on browser storage.
+    }
+  };
+
+  const scrollToLeadForm = () => {
+    const lenis = scrollBridge?.lenis ?? null;
+    if (lenis) {
+      lenis.scrollTo('#lead-form', {
+        offset: -80,
+        duration: reducedMotion ? 0 : 1.05,
+      });
+    } else {
+      document.getElementById('lead-form')?.scrollIntoView({
+        behavior: reducedMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    }
+
+    window.setTimeout(() => {
+      document.getElementById('lead-form-title')?.focus({ preventScroll: true });
+    }, reducedMotion ? 0 : 700);
+  };
 
   useEffect(() => {
     const lenis = scrollBridge?.lenis ?? null;
@@ -141,6 +181,10 @@ export default function Showcase({
         </SiteSection>
       )}
 
+      <SiteSection id="contact" reducedMotion={reducedMotion}>
+        <LeadForm answers={answers} onSuccess={handleLeadSuccess} />
+      </SiteSection>
+
       <SiteSection id="gallery" reducedMotion={reducedMotion}>
         <Projects />
       </SiteSection>
@@ -153,14 +197,12 @@ export default function Showcase({
       <SiteSection id="reviews" reducedMotion={reducedMotion}>
         <VideoTestimonials />
       </SiteSection>
+      <LeadReminder submitted={leadSubmitted} onGoToForm={scrollToLeadForm} />
       <SiteSection reducedMotion={reducedMotion}>
         <Team />
       </SiteSection>
       <SiteSection reducedMotion={reducedMotion}>
         <FAQ />
-      </SiteSection>
-      <SiteSection id="contact" reducedMotion={reducedMotion}>
-        <LeadForm answers={answers} />
       </SiteSection>
       <Footer />
     </main>

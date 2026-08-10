@@ -1,0 +1,75 @@
+{
+  "auditDate": "2026-08-10",
+  "scope": [
+    "conversion",
+    "visual-sxo",
+    "accessibility-spot-check",
+    "architecture",
+    "performance",
+    "security",
+    "seo-geo",
+    "crm-baileys-readiness"
+  ],
+  "verification": {
+    "productionBuild": "pass",
+    "transformedModules": 2993,
+    "desktopBrowser": "pass",
+    "mobileWidthPx": 390,
+    "realLeadSubmitted": false,
+    "realWhatsAppSent": false,
+    "deployed": false
+  },
+  "performance": {
+    "publicFileCount": 1124,
+    "publicSizeMB": 792.32,
+    "testimonialVideoTotalMB": 169.47,
+    "testimonialPreloadAfter": "none",
+    "artificialInternalRouteDelayBeforeMs": 2500,
+    "artificialInternalRouteDelayAfterMs": 0,
+    "largeChunks": {
+      "calculatorRawKB": 651.26,
+      "calculatorGzipKB": 173.67,
+      "heroExperienceRawKB": 971.44,
+      "heroExperienceGzipKB": 263.26
+    }
+  },
+  "security": {
+    "productionAdvisoriesBefore": {
+      "critical": 2,
+      "high": 7,
+      "moderate": 2,
+      "total": 11
+    },
+    "productionAdvisoriesAfter": {
+      "critical": 0,
+      "high": 0,
+      "moderate": 2,
+      "total": 2
+    },
+    "browserAiCredentialPathRemoved": true,
+    "builtBundleSecretMarkerScan": "pass",
+    "keyRevocationStillRequired": true
+  },
+  "seo": {
+    "sitemapUrlCount": 11,
+    "robotsLocalStatus": 200,
+    "canonicalFamily": "https://www.dezignpool.com",
+    "routeMetadataDomCheck": "pass",
+    "staticRouteDocuments": 11,
+    "prerenderMetadata": "pass",
+    "rawProductionRouteCheck": "pending deployment",
+    "searchConsoleSubmitted": false,
+    "bingSubmitted": false,
+    "indexNowConfigured": false
+  },
+  "crm": {
+    "connected": "implemented-locally-not-deployed",
+    "reason": "Public intake, consent audit, deduplication, and Baileys handoff are implemented and tested locally; migration, environment configuration, deployment, and an approved controlled lead remain",
+    "crmTests": "112/112 pass",
+    "serverTypecheck": "pass",
+    "serverBuild": "pass",
+    "productionAdvisoriesBeforeSafeFix": { "critical": 0, "high": 15, "moderate": 15, "total": 30 },
+    "productionAdvisoriesAfterSafeFix": { "critical": 0, "high": 11, "moderate": 14, "total": 25 },
+    "contract": "docs/integrations/crm-website-lead-contract.md"
+  }
+}

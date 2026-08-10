@@ -1,21 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://dezignpool.com/</loc>
-    <lastmod>2024-03-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <loc>https://www.dezignpool.com/</loc>
+    <lastmod>2026-08-10</lastmod>
   </url>
   <url>
-    <loc>https://dezignpool.com/about</loc>
-    <lastmod>2024-03-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.dezignpool.com/about</loc>
+    <lastmod>2026-06-28</lastmod>
   </url>
   <url>
-    <loc>https://dezignpool.com/services</loc>
-    <lastmod>2024-03-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.dezignpool.com/services</loc>
+    <lastmod>2026-06-28</lastmod>
+  </url>
+  <url>
+    <loc>https://www.dezignpool.com/projects</loc>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <url>
+    <loc>https://www.dezignpool.com/calculator</loc>
+    <lastmod>2026-06-28</lastmod>
+  </url>
+  <url>
+    <loc>https://www.dezignpool.com/interior-calculator</loc>
+    <lastmod>2026-06-28</lastmod>
+  </url>
+  <url>
+    <loc>https://www.dezignpool.com/privacy</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+  <url>
+    <loc>https://www.dezignpool.com/blog</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+  <url>
+    <loc>https://www.dezignpool.com/blog/bangalore-climate-ready-interiors</loc>
+    <lastmod>2026-08-10</lastmod>
+  </url>
+  <url>
+    <loc>https://www.dezignpool.com/project/after-the-rain</loc>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <url>
+    <loc>https://www.dezignpool.com/project/century-ethos</loc>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <url>
+    <loc>https://www.dezignpool.com/project/kolte-patil</loc>
+    <lastmod>2026-08-08</lastmod>
+  </url>
+  <url>
+    <loc>https://www.dezignpool.com/project/prestige-lakeridge</loc>
+    <lastmod>2026-08-08</lastmod>
   </url>
 </urlset>

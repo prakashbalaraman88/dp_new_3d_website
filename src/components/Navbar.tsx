@@ -28,7 +28,9 @@ export default function Navbar() {
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
   const navLink = (href: string, label: string) => {
-    const isActive = location.pathname === href || (href === '/projects' && location.pathname.startsWith('/project/'));
+    const isActive = location.pathname === href
+      || (href === '/projects' && location.pathname.startsWith('/project/'))
+      || (href === '/blog' && location.pathname.startsWith('/blog/'));
     return (
       <Link to={href} className={`${NAV_LINK} ${isActive ? 'text-[#A98E5F]' : ''}`}>
         {label}
@@ -50,6 +52,7 @@ export default function Navbar() {
             <div className="hidden min-w-0 items-center justify-evenly pr-7 md:flex lg:pr-12">
               <span className="group">{navLink('/', 'Home')}</span>
               <span className="group">{navLink('/services', 'Services')}</span>
+              <span className="group">{navLink('/blog', 'Journal')}</span>
             </div>
 
             <Link to="/" aria-label="DezignPool home" className="col-start-2 row-start-1 justify-self-center transition-transform duration-300 hover:scale-105">
@@ -99,6 +102,7 @@ export default function Navbar() {
                 ['/services', 'Services'],
                 ['/about', 'About'],
                 ['/projects', 'Projects'],
+                ['/blog', 'Journal'],
               ].map(([href, label]) => (
                 <Link key={href} to={href} className="rounded-xl px-4 py-3 text-left text-sm text-[#f2efe9]/65 transition-colors hover:bg-white/5 hover:text-[#A98E5F]">
                   {label}

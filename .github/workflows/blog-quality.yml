@@ -1,0 +1,37 @@
+name: Blog quality gate
+
+on:
+  pull_request:
+    paths:
+      - 'src/content/blog/**'
+      - 'src/pages/Blog/**'
+      - 'src/config/seo.ts'
+      - 'scripts/blog/**'
+      - 'scripts/prerender-seo.mjs'
+      - '.github/workflows/blog-*.yml'
+      - '.github/workflows/daily-blog-commission.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/content/blog/**'
+      - 'src/pages/Blog/**'
+      - 'src/config/seo.ts'
+      - 'scripts/blog/**'
+      - 'scripts/prerender-seo.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+      - run: npm ci
+      - run: npm run blog:validate
+      - run: npm run build

@@ -1,0 +1,49 @@
+name: Daily blog commission
+
+on:
+  schedule:
+    # 09:00 Asia/Kolkata. GitHub schedules use UTC.
+    - cron: '30 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  commission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Create today's research and image brief
+        run: node scripts/blog/create-daily-brief.mjs --output tmp/blog-daily-brief.md
+
+      - name: Open one deduplicated editorial reminder
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const today = new Intl.DateTimeFormat('en-CA', {
+              timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit'
+            }).format(new Date());
+            const title = `Daily blog commission — ${today}`;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              per_page: 100
+            });
+            if (!issues.some((issue) => issue.title === title)) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body: fs.readFileSync('tmp/blog-daily-brief.md', 'utf8')
+              });
+            }

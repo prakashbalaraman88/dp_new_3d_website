@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -12,7 +12,6 @@ import Testimonials from './components/Testimonials';
 import VideoTestimonials from './components/VideoTestimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import LoadingScreen from './components/LoadingScreen';
 import IllustratedSection from './components/IllustratedSection';
 import About from './pages/About';
 import ServicesPage from './pages/Services';
@@ -20,16 +19,20 @@ import ScrollToTop from './components/ScrollToTop';
 import SEO from './components/SEO';
 import Breadcrumbs from './components/Breadcrumbs';
 import FAQ from './components/FAQ';
+import AnalyticsConsentBanner from './components/AnalyticsConsentBanner';
+import Privacy from './pages/Privacy';
 
 // 3D scroll experience is heavy (Three.js) — load it only when its route is visited.
 const HeroExperience = lazy(() => import('./experience/HeroExperience'));
 const VideoExperience = lazy(() => import('./experience/VideoExperience'));
 const JourneyExperience = lazy(() => import('./discover/JourneyExperience'));
-// Calculator suite is heavy (firebase / jspdf / xlsx / openai) — lazy-load per route.
+// Calculator suite is heavy (Firebase and PDF generation) — lazy-load per route.
 const Calculator = lazy(() => import('./pages/Calculator'));
 const InteriorCalculator = lazy(() => import('./pages/InteriorCalculator'));
 const ProjectDetail = lazy(() => import('./components/Projects/ProjectDetail'));
 const ChatWidget = lazy(() => import('./components/ChatWidget'));
+const BlogIndex = lazy(() => import('./pages/Blog/BlogIndex'));
+const BlogArticle = lazy(() => import('./pages/Blog/BlogArticle'));
 
 function HomePage() {
   const heroVideoUrl = '/assets/videos/hero-video.mp4';
@@ -56,29 +59,14 @@ function HomePage() {
 }
 
 function SiteLayout() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [showContent, setShowContent] = useState(false);
-
-  useEffect(() => {
-    const loadingTimer = setTimeout(() => {
-      setIsLoading(false);
-      setTimeout(() => setShowContent(true), 100);
-    }, 2500);
-
-    return () => clearTimeout(loadingTimer);
-  }, []);
-
   return (
-    <>
-      {isLoading && <LoadingScreen />}
-      <div className={`min-h-screen transition-opacity duration-1000 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-        <Navbar />
-        <Breadcrumbs />
-        <Outlet />
-        <Footer />
-        <ChatWidget />
-      </div>
-    </>
+    <div className="min-h-screen">
+      <Navbar />
+      <Breadcrumbs />
+      <Outlet />
+      <Footer />
+      <ChatWidget />
+    </div>
   );
 }
 
@@ -101,10 +89,14 @@ export default function App() {
               <Route path="/projects" element={<Projects />} />
               <Route path="/calculator" element={<Calculator />} />
               <Route path="/interior-calculator" element={<InteriorCalculator />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/blog" element={<BlogIndex />} />
+              <Route path="/blog/:slug" element={<BlogArticle />} />
               <Route path="/project/:id" element={<ProjectDetail />} />
             </Route>
           </Routes>
         </Suspense>
+        <AnalyticsConsentBanner />
       </Router>
     </HelmetProvider>
   );

@@ -19,7 +19,8 @@ const footerLinks = [
   { index: '01', label: 'Projects', to: '/projects' },
   { index: '02', label: 'Services', to: '/services' },
   { index: '03', label: 'About', to: '/about' },
-  { index: '04', label: 'Enquire', to: '/#contact' },
+  { index: '04', label: 'Journal', to: '/blog' },
+  { index: '05', label: 'Enquire', to: '/#contact' },
 ];
 
 const socialLinks = [
@@ -151,7 +152,7 @@ export default function Footer() {
               </a>
             ))}
           </div>
-          <p>&copy; {year} DezignPool <span>·</span> All rights reserved.</p>
+          <p>&copy; {year} DezignPool <span>·</span> <Link to="/privacy">Privacy</Link></p>
           <a href="#" className="dp-footer__top">Back to top <ArrowUpRight aria-hidden="true" /></a>
         </div>
       </div>

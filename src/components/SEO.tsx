@@ -1,84 +1,50 @@
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
+import {
+  imageForMeta,
+  pageSchemaForMeta,
+  robotsForMeta,
+  routeMeta,
+} from '../config/seo';
 
-interface SEOProps {
-  title?: string;
-  description?: string;
-  image?: string;
-  url?: string;
-  type?: string;
-}
-
-export default function SEO({
-  title = "DezignPool - Premium Architecture & Interior Design",
-  description = "Transform your space with DezignPool's luxury architecture and interior design services. Specializing in residential, commercial, and hospitality projects in Bangalore.",
-  image = "https://dezignpool.com/assets/images/logo.png",
-  url = "https://dezignpool.com",
-  type = "website"
-}: SEOProps) {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    "name": "DezignPool",
-    "image": image,
-    "description": description,
-    "@id": url,
-    "url": url,
-    "telephone": "+91 (080) 1234-5678",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Your Street Address",
-      "addressLocality": "Bangalore",
-      "postalCode": "Your Postal Code",
-      "addressCountry": "IN"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": 12.9716,
-      "longitude": 77.5946
-    },
-    "openingHoursSpecification": {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday"
-      ],
-      "opens": "09:00",
-      "closes": "18:00"
-    },
-    "sameAs": [
-      "https://www.facebook.com/dezignpool",
-      "https://www.instagram.com/dezignpool",
-      "https://twitter.com/dezignpool",
-      "https://www.linkedin.com/company/dezignpool"
-    ]
-  };
+export default function SEO() {
+  const { pathname } = useLocation();
+  const meta = routeMeta(pathname);
+  const image = imageForMeta(meta);
+  const robots = robotsForMeta(meta);
+  const pageSchema = pageSchemaForMeta(meta);
 
   return (
     <Helmet>
-      <title>{title}</title>
-      <meta name="description" content={description} />
+      <title>{meta.title}</title>
+      <meta name="description" content={meta.description} />
+      <meta name="robots" content={robots} />
+      <link rel="canonical" href={meta.canonical} />
 
-      {/* Open Graph / Facebook */}
-      <meta property="og:type" content={type} />
-      <meta property="og:url" content={url} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
+      <meta property="og:type" content={meta.type ?? 'website'} />
+      <meta property="og:url" content={meta.canonical} />
+      <meta property="og:site_name" content="DezignPool" />
+      <meta property="og:title" content={meta.title} />
+      <meta property="og:description" content={meta.description} />
       <meta property="og:image" content={image} />
+      <meta property="og:image:secure_url" content={image} />
+      <meta property="og:image:type" content={image.endsWith('.png') ? 'image/png' : 'image/webp'} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content="DezignPool interior design and architecture" />
 
-      {/* Twitter */}
-      <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content={url} />
-      <meta property="twitter:title" content={title} />
-      <meta property="twitter:description" content={description} />
-      <meta property="twitter:image" content={image} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={meta.title} />
+      <meta name="twitter:description" content={meta.description} />
+      <meta name="twitter:image" content={image} />
+      <meta name="twitter:image:alt" content="DezignPool interior design and architecture" />
 
-      {/* Structured Data */}
-      <script type="application/ld+json">
-        {JSON.stringify(structuredData)}
-      </script>
+      {meta.publishedAt && <meta property="article:published_time" content={meta.publishedAt} />}
+      {meta.modifiedAt && <meta property="article:modified_time" content={meta.modifiedAt} />}
+      {meta.author && <meta property="article:author" content={meta.author} />}
+      {meta.keywords && <meta name="keywords" content={meta.keywords.join(', ')} />}
+
+      <script id="route-page-schema" type="application/ld+json">{JSON.stringify(pageSchema)}</script>
     </Helmet>
   );
 }

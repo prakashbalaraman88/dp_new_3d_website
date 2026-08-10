@@ -8,7 +8,12 @@ import { captureAttribution, initPixel } from './utils/analytics';
 captureAttribution();
 initPixel();
 
-createRoot(document.getElementById('root')!).render(
+const root = document.getElementById('root')!;
+// SEO prerendering adds readable article markup to the route document. The
+// client app owns the same container once JavaScript is ready.
+if (root.hasChildNodes()) root.replaceChildren();
+
+createRoot(root).render(
   <StrictMode>
     <App />
   </StrictMode>

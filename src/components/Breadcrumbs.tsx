@@ -6,7 +6,7 @@ export default function Breadcrumbs() {
   const pathnames = location.pathname.split('/').filter(x => x);
 
   // Project pages use their own editorial back-navigation and full-bleed header.
-  if (location.pathname === '/' || location.pathname.startsWith('/project')) {
+  if (location.pathname === '/' || location.pathname.startsWith('/project') || location.pathname.startsWith('/blog')) {
     return null;
   }
 

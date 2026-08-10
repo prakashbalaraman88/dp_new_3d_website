@@ -1,9 +1,81 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  
+
 [build.environment]
   NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/about"
+  to = "/about.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/services"
+  to = "/services.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/projects"
+  to = "/projects.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/calculator"
+  to = "/calculator.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/interior-calculator"
+  to = "/interior-calculator.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/blog"
+  to = "/blog.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/blog/*"
+  to = "/blog-:splat.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/project/after-the-rain"
+  to = "/project-after-the-rain.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/project/century-ethos"
+  to = "/project-century-ethos.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/project/kolte-patil"
+  to = "/project-kolte-patil.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/project/prestige-lakeridge"
+  to = "/project-prestige-lakeridge.html"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/*"
@@ -14,10 +86,13 @@
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    Cache-Control = "public, max-age=31536000"
+    Cache-Control = "public, max-age=0, must-revalidate"
     X-Content-Type-Options = "nosniff"
-    Content-Security-Policy = "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"
+    Content-Security-Policy-Report-Only = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; frame-src https://challenges.cloudflare.com; connect-src 'self' https://api.emailjs.com https://api.cloudinary.com https://dezignpool-crm.onrender.com https://challenges.cloudflare.com https://www.facebook.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
 
 [[headers]]
   for = "/assets/*"
@@ -28,13 +103,11 @@
   for = "/*.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-    Content-Encoding = "gzip"
 
 [[headers]]
   for = "/*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-    Content-Encoding = "gzip"
 
 [[headers]]
   for = "/favicon.ico"

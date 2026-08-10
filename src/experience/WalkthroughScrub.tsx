@@ -1125,18 +1125,22 @@ export default function WalkthroughScrub({
         <header className="dp-exp__bar dp-walk__bar">
           <nav className="dp-walk__nav" aria-label="Site">
             {[
-              ['Home', ''],
-              ['Services', 'services'],
-              ['Projects', 'projects'],
-            ].map(([label, section]) => (
-              <button
+              ['Home', '', '/'],
+              ['Services', 'services', '/services'],
+              ['Projects', 'projects', '/projects'],
+            ].map(([label, section, href]) => (
+              <a
                 key={label}
-                type="button"
+                href={href}
                 className="dp-walk__nav-link"
-                onClick={() => (section && onNavigate ? onNavigate(section) : undefined)}
+                onClick={(event) => {
+                  if (!section || !onNavigate) return;
+                  event.preventDefault();
+                  onNavigate(section);
+                }}
               >
                 {label}
-              </button>
+              </a>
             ))}
           </nav>
           <RotatingBrandMark
@@ -1144,19 +1148,34 @@ export default function WalkthroughScrub({
             rotationProgress={chapters.length > 1 ? logoIndex / (chapters.length - 1) : 0}
           />
           <div className="dp-walk__bar-end">
+            <a
+              href="/#contact"
+              className="dp-walk__mobile-enquire"
+              onClick={(event) => {
+                if (!onNavigate) return;
+                event.preventDefault();
+                onNavigate('lead-form');
+              }}
+            >
+              Enquire
+            </a>
             <nav className="dp-walk__nav dp-walk__nav--secondary" aria-label="More">
               {[
-                ['About', 'about'],
-                ['Contact', 'contact'],
-              ].map(([label, section]) => (
-                <button
+                ['About', 'about', '/about'],
+                ['Contact', 'contact', '/#contact'],
+              ].map(([label, section, href]) => (
+                <a
                   key={label}
-                  type="button"
+                  href={href}
                   className="dp-walk__nav-link"
-                  onClick={() => (onNavigate ? onNavigate(section) : undefined)}
+                  onClick={(event) => {
+                    if (!onNavigate) return;
+                    event.preventDefault();
+                    onNavigate(section);
+                  }}
                 >
                   {label}
-                </button>
+                </a>
               ))}
             </nav>
             <button type="button" className="dp-walk__skip" onClick={skip}>
