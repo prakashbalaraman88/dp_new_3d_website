@@ -63,8 +63,8 @@ services:
         source: /blog
         destination: /blog.html
       - type: rewrite
-        source: /blog/*
-        destination: /blog-*.html
+        source: /blog/bangalore-climate-ready-interiors
+        destination: /blog-bangalore-climate-ready-interiors.html
       - type: rewrite
         source: /project/after-the-rain
         destination: /project-after-the-rain.html
