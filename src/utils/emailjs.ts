@@ -1,5 +1,6 @@
 import emailjs from '@emailjs/browser';
 import { emailjsEnv } from '../config/environment';
+import { attributionEmailFields, trackLead } from './analytics';
 
 emailjs.init(emailjsEnv.PUBLIC_KEY);
 
@@ -13,6 +14,13 @@ const withContactAliases = (templateParams: Record<string, unknown>) => {
   return params;
 };
 
+// Every lead form on the site funnels through sendEmail, so stamping the campaign
+// here is what makes a website enquiry attributable to the ad that paid for it.
+const withAttribution = (templateParams: Record<string, unknown>) => ({
+  ...attributionEmailFields(),
+  ...templateParams,
+});
+
 export const sendEmail = async ({ template_id, service_id, user_id, template_params }: {
   template_id: string;
   service_id: string;
@@ -20,12 +28,15 @@ export const sendEmail = async ({ template_id, service_id, user_id, template_par
   template_params: Record<string, unknown>;
 }) => {
   try {
-    return await emailjs.send(
+    const response = await emailjs.send(
       service_id,
       template_id,
-      withContactAliases(template_params),
+      withAttribution(withContactAliases(template_params)),
       user_id
     );
+    // Only a delivered enquiry counts as a Lead — a failed send must not inflate the Pixel.
+    trackLead({ content_name: String(template_params.form_type ?? 'Website enquiry') });
+    return response;
   } catch (error) {
     console.error('Email sending failed:', error);
     throw error;
@@ -46,11 +57,13 @@ export const sendChatLead = async (phone: string, transcript: string) => {
         phone_number: phone,
         chat_transcript: transcript,
         source: "AI Chat Widget",
-        date: new Date().toLocaleString()
+        date: new Date().toLocaleString(),
+        ...attributionEmailFields()
       },
       PUBLIC_KEY
     );
     console.log("Lead sent successfully!", response.status, response.text);
+    trackLead({ content_name: 'AI Chat Widget' });
     return response;
   } catch (error: any) {
     console.error("Failed to send lead:", error);

@@ -7,13 +7,27 @@ import DiscoverExperience from './DiscoverExperience';
 import Showcase from './Showcase';
 import JourneyNav from './JourneyNav';
 import type { Answers } from './report';
+import { trackQuizComplete } from '../utils/analytics';
+
+/**
+ * Paid traffic is sent to /discover?quiz=1 so it lands on the quiz instead of
+ * paying for the cinematic intro first. Organic visitors still get the intro.
+ */
+function initialPhase(): 'hero' | 'quiz' {
+  if (typeof window === 'undefined') return 'hero';
+  try {
+    return new URLSearchParams(window.location.search).get('quiz') === '1' ? 'quiz' : 'hero';
+  } catch {
+    return 'hero';
+  }
+}
 
 /**
  * One continuous journey: cinematic canvas hero → optional discovery quiz →
  * personalized full site.
  */
 export default function JourneyExperience() {
-  const [phase, setPhase] = useState<'hero' | 'quiz' | 'site'>('hero');
+  const [phase, setPhase] = useState<'hero' | 'quiz' | 'site'>(initialPhase);
   const [answers, setAnswers] = useState<Answers>({});
   const [showStyleReport, setShowStyleReport] = useState(false);
   const [targetSection, setTargetSection] = useState<string | null>(null);
@@ -54,6 +68,7 @@ export default function JourneyExperience() {
     setPhase('hero');
   }, []);
   const toSite = useCallback((a: Answers = {}, quizComplete = false) => {
+    if (quizComplete) trackQuizComplete();
     setAnswers(a);
     setShowStyleReport(quizComplete);
     setTargetSection(null);
