@@ -150,6 +150,35 @@ export const projects: Project[] = [
       projectImage('prestige-lakeridge', 'prestige-lakeridge-pooja-alcove', 1746, 982, 'Illuminated pooja alcove with crafted timber screens and integrated storage'),
     ],
   },
+  {
+    id: 'sun-and-sanctum',
+    title: 'Sun and Sanctum',
+    community: 'Private Residence',
+    category: 'Warm contemporary sanctuary',
+    summary: 'Soft ivory rooms, muted blush joinery and an illuminated sanctum shape a home grounded in light and everyday ritual.',
+    story: 'Sun and Sanctum is shaped by warm ivory, walnut notes and gentle illumination. A calm living and dining spine leads from a sculpted foyer to the pooja alcove, while tailored bedrooms introduce muted blush cabinetry and deeply comfortable layers.',
+    designNotes: ['Layered warm illumination', 'Blush and walnut accents', 'Integrated pooja sanctum'],
+    accent: '#c1a06b',
+    teaser: [0, 1, 4],
+    film: {
+      src: '/videos/projects/sun-and-sanctum-montage.mp4',
+      poster: '/images/projects/sun-and-sanctum/sun-and-sanctum-montage-poster.webp',
+      label: 'Sun and Sanctum project film',
+      width: 720,
+      height: 960,
+    },
+    images: [
+      projectImage('sun-and-sanctum', 'sun-and-sanctum-living-room', 2752, 1536, 'Warm ivory living room with tailored wall mouldings, layered lighting and soft plum accents'),
+      projectImage('sun-and-sanctum', 'sun-and-sanctum-foyer', 1856, 2304, 'Sculpted foyer console with arched mirrors, pendant lights and warm walnut detailing'),
+      projectImage('sun-and-sanctum', 'sun-and-sanctum-kitchen', 1856, 2304, 'Light-filled galley kitchen with taupe cabinetry, patterned backsplash and integrated appliances'),
+      projectImage('sun-and-sanctum', 'sun-and-sanctum-dining', 1856, 2304, 'Dining passage framed by tailored cabinetry, warm light and a softly patterned runner'),
+      projectImage('sun-and-sanctum', 'sun-and-sanctum-pooja', 2400, 1792, 'Illuminated pooja sanctum with a decorative screen, warm brass accents and integrated storage'),
+      projectImage('sun-and-sanctum', 'sun-and-sanctum-primary-bedroom', 2400, 1792, 'Primary bedroom with a framed upholstered headboard and layered neutral textiles'),
+      projectImage('sun-and-sanctum', 'sun-and-sanctum-primary-bedroom-angle', 2400, 1792, 'Angled view of the primary bedroom with an arched mirror and warm bedside lighting'),
+      projectImage('sun-and-sanctum', 'sun-and-sanctum-kids-bedroom', 2752, 1536, 'Softly tailored bedroom with muted blush bedside joinery and an integrated study niche'),
+      projectImage('sun-and-sanctum', 'sun-and-sanctum-kids-bedroom-detail', 928, 1152, 'Bedroom study and vanity detail with blush cabinetry, fluted panelling and an arched mirror'),
+    ],
+  },
 ];
 
 export const findProject = (id?: string) => projects.find((project) => project.id === id);

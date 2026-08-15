@@ -78,5 +78,8 @@ services:
         source: /project/prestige-lakeridge
         destination: /project-prestige-lakeridge.html
       - type: rewrite
+        source: /project/sun-and-sanctum
+        destination: /project-sun-and-sanctum.html
+      - type: rewrite
         source: /*
         destination: /index.html

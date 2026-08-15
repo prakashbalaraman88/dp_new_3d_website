@@ -12,6 +12,7 @@ const projectFolders = {
   'Century Ethos': 'century-ethos',
   'Kolte Patil': 'kolte-patil',
   'Prestige Lakeridge': 'prestige-lakeridge',
+  'Sun and Sanctum': 'sun-and-sanctum',
   'Total Environment - After the Rain': 'after-the-rain',
 };
 

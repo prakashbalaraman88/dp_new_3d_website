@@ -68,7 +68,7 @@ export default function Projects() {
           <h2 id="selected-projects-title">Every home has a <em>point of view.</em></h2>
         </div>
         <p>
-          Four distinct homes, seen through material, light and the rituals of everyday life.
+          Five distinct homes, seen through material, light and the rituals of everyday life.
           Open a project to explore every room in its original composition.
         </p>
       </div>
