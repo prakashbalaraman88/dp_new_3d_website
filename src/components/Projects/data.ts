@@ -54,7 +54,7 @@ export const projects: Project[] = [
     accent: '#b79a69',
     teaser: [0, 2, 1],
     film: {
-      src: '/videos/projects/after-the-rain-montage.mp4',
+      src: 'https://pub-2da184b502e147ce853c3352110f9c15.r2.dev/dezignpool/editorial-finals/2026-08-16/after-the-rain-editorial-music-e5262080bebd.mp4',
       poster: '/images/projects/after-the-rain/after-the-rain-montage-poster.webp',
       label: 'After the Rain project film',
       width: 720,
@@ -83,7 +83,7 @@ export const projects: Project[] = [
     accent: '#9e896d',
     teaser: [0, 1, 2, 4],
     film: {
-      src: '/videos/projects/century-ethos-montage.mp4',
+      src: 'https://pub-2da184b502e147ce853c3352110f9c15.r2.dev/dezignpool/editorial-finals/2026-08-16/century-ethos-editorial-music-2a0582f49d2d.mp4',
       poster: '/images/projects/century-ethos/century-ethos-montage-poster.webp',
       label: 'Century Ethos project film',
       width: 720,
@@ -109,7 +109,7 @@ export const projects: Project[] = [
     accent: '#ac936e',
     teaser: [0, 1, 2],
     film: {
-      src: '/videos/projects/kolte-patil-montage.mp4',
+      src: 'https://pub-2da184b502e147ce853c3352110f9c15.r2.dev/dezignpool/editorial-finals/2026-08-16/kolte-patil-corrected-hinged-wardrobe-b75a9b1f8ddb.mp4',
       poster: '/images/projects/kolte-patil/kolte-patil-montage-poster.webp',
       label: 'Kolte Patil project film',
       width: 720,
@@ -135,7 +135,7 @@ export const projects: Project[] = [
     accent: '#b4976c',
     teaser: [0, 1, 4],
     film: {
-      src: '/videos/projects/prestige-lakeridge-montage.mp4',
+      src: 'https://pub-2da184b502e147ce853c3352110f9c15.r2.dev/dezignpool/editorial-finals/2026-08-16/prestige-lakeridge-editorial-music-a78525e20158.mp4',
       poster: '/images/projects/prestige-lakeridge/prestige-lakeridge-montage-poster.webp',
       label: 'Prestige Lakeridge project film',
       width: 720,

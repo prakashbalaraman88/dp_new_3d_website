@@ -1,12 +1,82 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useRef, type CSSProperties } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowDown, ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { findProject, getNextProject } from './data';
+import { findProject, getNextProject, type ProjectFilm } from './data';
 import ProjectGallery from './ProjectGallery';
 import './projects.css';
 
 type ProjectStyle = CSSProperties & { '--project-accent': string };
+
+function ProjectFilmFeature({ film, title, reducedMotion }: {
+  film: ProjectFilm;
+  title: string;
+  reducedMotion: boolean | null;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || reducedMotion) return undefined;
+
+    let isInView = false;
+    const syncPlayback = () => {
+      if (isInView && !document.hidden) video.play().catch(() => undefined);
+      else video.pause();
+    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isInView = entry.isIntersecting;
+        syncPlayback();
+      },
+      { threshold: 0.38 },
+    );
+
+    observer.observe(video);
+    document.addEventListener('visibilitychange', syncPlayback);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', syncPlayback);
+      video.pause();
+    };
+  }, [film.src, reducedMotion]);
+
+  return (
+    <section id="project-film" className="dp-project-film" aria-labelledby="project-film-title">
+      <div className="dp-project-film__heading">
+        <div>
+          <p>Project film</p>
+          <h2 id="project-film-title">The residence,<br /><em>in motion.</em></h2>
+        </div>
+        <div className="dp-project-film__note">
+          <span>02 &mdash; 04</span>
+          <p>A short editorial study of material, light and the way each room unfolds.</p>
+        </div>
+      </div>
+
+      <motion.figure
+        className="dp-project-film__frame"
+        style={{ aspectRatio: `${film.width} / ${film.height}` }}
+        initial={reducedMotion ? false : { opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.18 }}
+        transition={{ duration: reducedMotion ? 0 : 0.85 }}
+      >
+        <video
+          ref={videoRef}
+          src={film.src}
+          poster={film.poster}
+          muted
+          loop
+          controls
+          playsInline
+          preload="metadata"
+          aria-label={film.label ?? `${title} project film`}
+        />
+      </motion.figure>
+    </section>
+  );
+}
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -57,7 +127,9 @@ export default function ProjectDetail() {
           <div className="dp-project-hero__summary">
             <span>Residential interiors</span>
             <span>{String(project.images.length).padStart(2, '0')} photographs</span>
-            <a href="#project-gallery">View the complete story <ArrowDown size={16} /></a>
+            <a href={project.film ? '#project-film' : '#project-gallery'}>
+              {project.film ? 'Watch the project film' : 'View the complete story'} <ArrowDown size={16} />
+            </a>
           </div>
         </motion.div>
 
@@ -82,7 +154,7 @@ export default function ProjectDetail() {
       <section className="dp-project-brief" aria-labelledby="project-brief-title">
         <div className="dp-project-brief__label">
           <span>Project brief</span>
-          <span>01 — 03</span>
+          <span>01 &mdash; 04</span>
         </div>
         <div>
           <h2 id="project-brief-title">Designed as a feeling,<br />resolved in every detail.</h2>
@@ -92,6 +164,10 @@ export default function ProjectDetail() {
           </ul>
         </div>
       </section>
+
+      {project.film && (
+        <ProjectFilmFeature film={project.film} title={project.title} reducedMotion={reducedMotion} />
+      )}
 
       <section id="project-gallery" className="dp-project-gallery-section" aria-labelledby="project-gallery-title">
         <div className="dp-project-gallery-section__heading">

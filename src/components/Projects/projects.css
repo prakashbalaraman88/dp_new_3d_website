@@ -362,6 +362,7 @@
 
 .dp-project-hero,
 .dp-project-brief,
+.dp-project-film,
 .dp-project-gallery-section,
 .dp-next-project {
   width: min(calc(100% - clamp(36px, 8vw, 128px)), 1460px);
@@ -512,6 +513,83 @@
   font-size: 9px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.dp-project-film {
+  padding-block: clamp(100px, 12vw, 180px);
+  border-bottom: 1px solid var(--portfolio-line);
+}
+
+.dp-project-film__heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.38fr);
+  gap: clamp(40px, 9vw, 150px);
+  align-items: end;
+  margin-bottom: clamp(58px, 8vw, 104px);
+}
+
+.dp-project-film__heading > div:first-child > p {
+  margin: 0 0 18px;
+  color: var(--project-accent);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.19em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.dp-project-film__heading h2 {
+  margin: 0;
+  color: var(--portfolio-cream);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(42px, 6vw, 82px);
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  line-height: 0.94;
+  text-transform: none;
+}
+
+.dp-project-film__heading h2 em {
+  color: var(--project-accent);
+  font-weight: 400;
+}
+
+.dp-project-film__note {
+  display: grid;
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 5px;
+}
+
+.dp-project-film__note > span {
+  padding-top: 10px;
+  border-top: 1px solid var(--portfolio-line);
+  color: var(--portfolio-faint);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.dp-project-film__note > p {
+  margin: 0;
+  color: var(--portfolio-muted);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.dp-project-film__frame {
+  position: relative;
+  width: min(100%, 760px);
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--project-accent) 38%, transparent);
+  border-radius: clamp(20px, 3vw, 42px);
+  background: var(--portfolio-raised);
+  box-shadow: 0 44px 120px rgba(0, 0, 0, 0.42);
+}
+
+.dp-project-film__frame video {
+  background: #080809;
 }
 
 .dp-project-gallery-section {
@@ -783,6 +861,7 @@
   .dp-project-chapter.is-reversed,
   .dp-project-hero__heading,
   .dp-project-brief,
+  .dp-project-film__heading,
   .dp-project-gallery-section__heading {
     grid-template-columns: 1fr;
   }
@@ -819,6 +898,7 @@
   }
 
   .dp-project-hero__heading,
+  .dp-project-film__heading,
   .dp-project-gallery-section__heading {
     gap: 30px;
   }
@@ -868,6 +948,7 @@
 
   .dp-project-hero,
   .dp-project-brief,
+  .dp-project-film,
   .dp-project-gallery-section,
   .dp-next-project {
     width: calc(100% - 30px);
